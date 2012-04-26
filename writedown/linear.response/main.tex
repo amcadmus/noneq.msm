@@ -1,0 +1,208 @@
+\documentclass[aps,pre,preprint,unsortedaddress]{revtex4}
+% \documentclass[aps,pre,twocolumn]{revtex4-1}
+% \documentclass[aps,jcp,groupedaddress,twocolumn,unsortedaddress]{revtex4}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[dvips]{graphicx}
+\usepackage{color}
+\usepackage{tabularx}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+
+
+\newcommand{\recheck}[1]{{\color{red} #1}}
+\newcommand{\redc}[1]{{\color{red} #1}}
+\newcommand{\bluec}[1]{{\color{blue} #1}}
+\renewcommand{\v}[1]{\textbf{\textit{#1}}}
+\renewcommand{\d}[1]{\textsf{#1}}
+
+
+\begin{document}
+
+\title{Onsager regression method via Adaptive Resolution Simulation}
+
+
+\begin{abstract}
+We combine the Onsager regression method with the adaptive resolution simulation scheme.
+\end{abstract}
+
+\maketitle
+
+\section{Theoretical Principles}
+Let us suppose we have a system which is in equilibrium with a reservoir of energy and particles (i.e. Grand Canonical ensemble), at a certain time we apply a perturbation to the system. Such a perturbation will induce a response from the system. Let us identify $\hat{O}({\bf r,p})$ as the physical observable which expresses the response to the perturbation. If the system was characterized by a constant number of particle $\hat{N}$, then the average response of the system at time $t$ would be expressed by the equation:
+\begin{equation}
+O(t)=\int d{\bf r}d{\bf p} \hat{O}({\bf r,p})\rho_{\hat{N}}({\bf r,p};t)
+\label{o1}
+\end{equation}
+or equivalently:
+\begin{equation}
+\int d{\bf r}d{\bf p} \hat{O}({\bf r,p})\rho_{\hat{N}}({\bf r,p};t)=\int d{\bf r}d{\bf p} \hat{O}({\bf r}(t),{\bf p}(t))\rho_{\hat{N}}({\bf r,p};0)
+\label{o2}
+\end{equation}
+with:
+\begin{equation}
+\rho_{\hat{N}}({\bf r,p};0)=\rho_{\hat{N}}({\bf r,p}) lim_{T \to\infty}\frac{1}{T}\int_{0}^{T} d\tau \hat{O}\left({\bf r}(t; {\bf r}_{0}(\tau), {\bf p}_{0}(\tau)),{\bf p}(t;{\bf r}_{0}(\tau), {\bf p}_{0}(\tau)\right)
+\label{rhon}
+\end{equation} 
+with $\rho_{\hat{N}}({\bf r,p})$ the standard canonical distribution at fixed $\hat{N}$. However in the present case, already before applying a perturbation we have a system whose total number of particles $N$ fluctuates, moreover when we apply the pertubation to such system the average response needs to be sampled over all possible realization (corresponding to each value of $N$), thus the formulas above are likely to be modified as:
+\begin{equation}
+O(t)=\left<\left<\hat{O}_{N}(t)|N\right>\right>_{N}=\sum_{N=0}^{\infty}P(N)\int d{\bf r}d{\bf p}\rho_{N}({\bf r,p})\hat{O}({\bf r}(t),{\bf p}(t))
+\label{newvers}
+\end{equation}
+where:
+\begin{equation}
+P(N)=\frac{e^{\beta\mu N}Q_{N}}{Q}
+\end{equation}
+and
+\begin{equation}
+Q=\sum_{N}e^{\beta\mu N}Q_{N}
+\end{equation}
+with
+\begin{equation}
+Q_{N}=\int d{\bf r}d{\bf p} \frac{e^{-\beta H_{N}}}{N!h^{3N}}
+\end{equation}
+and
+\begin{equation}
+\rho_{N}({\bf r,p})=\frac{e^{-\beta H_{N}}}{N}.
+\end{equation}
+The essential meaning of Eq.\ref{newvers} is that we let the system evolve and calculate the average, counting the contribution of each $\hat{O}$ at each realization of $N$, weighted by the corresponding distribution for this realization $N$. So far this is the standard average in a Grand Canonical ensemble. The formulation above is nothing else than the extension of the Onsager-Kubo equation to the Grand Canonical case.
+Let us discuss this in detail. Since our central quantities are $\rho_{N}$ , and in general all operators are of the form $X_{N}$ ($X$ generic operator), let us apply the procedure behind the Onsager-Kubo equation to quantities that are $N$ labeled, meaning that they depend on $N$. Liouville equation can then be written as:
+\begin{equation}
+\frac{\partial\rho_{N}}{\partial t}=i L_{N}\rho_{N}=iL_{N}^{0}\rho_{N}+iL_{N}^{P}\rho_{N}=\{H_{N}^{0},\rho_{N}\}+\{H^{P}_{N},\rho_{N}\}
+\label{liouville}
+\end{equation}
+where $0$ and $p$ are indicating the unperturbed $L$ or $H$ operator and the perturbed one respectively.
+For the distribution of the system we have:
+\begin{equation}
+\rho_{N}({\bf r},{\bf p},t)=S^{\dagger}_{N}(t)\rho_{N}({\bf r},{\bf p},0)
+\end{equation}
+% \bluec{ Noted by Han: This may be problematic, because I am not sure
+%   if the probabilty density of an OPEN subsystem can be evolved by the
+%   Liouville operator for a subsystem with FIXED number of particles
+%   $N$.  Actually this equation assumes the number of particle in the
+%   system is a constant, which may not be the case under perturbation.}
+An observable $\hat{O}$ of the system evolves as:
+\begin{equation}
+\hat{O}_{N}(t)=\hat{O}({\bf r}(t),{\bf p}(t),N)=S_{N}(t)\hat{O}(0)
+\end{equation}
+The non equilibrium average of a given observable, $N$-labeled, i.e. $N$-dependent is obtained via:
+\begin{equation}
+\frac{d \hat{J}_{N}}{dt}=iL_{N}\hat{J}_{N};\hat{J}_{N}(t)=S_{N}(t)\hat{J}_{N}
+\end{equation}
+this could be calculated via an "equilibrium average as (Onsager-Kubo equation):
+\begin{equation}
+\hat{J}_{N}(t)=<\hat{J}>_{N}
+\end{equation}
+that is
+\begin{equation}
+<\hat{J}>_{N}=\int d\Gamma_{N}\hat{J}_{N}\rho_{N}(t)=(\hat{J}_{N},S^{\dagger}_{N}(t)\rho_{N}^{0})
+\end{equation}
+where $\Gamma_{N}$ is the phase space of the system, and finally:
+\begin{equation}
+ (\hat{J}_{N},S^{\dagger}_{N}(t)\rho_{N}^{0})=(S_{N}(t)\hat{J}_{N}, \rho_{N}^{0}).
+\end{equation}
+Now its average over the realizations $N$ follows as:
+\begin{equation}
+\left<\left<\hat{J}(t|N)\right>\right>_{N}=\sum_{N}p(N)\hat{J}_{N}(t)=\sum_{N}\int d{\bf r}d{\bf p}\hat{J}_{N}(t)\rho_{N}({\bf r},{\bf p}, t=0)
+\end{equation}
+where it must be noticed that $\rho_{N}({\bf r},{\bf p}, t=0)$ is the $\rho_{equil}({\bf r},{\bf p})$.
+\bluec{Noted by Han:
+  It is unclear for me that maybe $p(N)$ is also a function of time
+  under perturbation. How to deal with it?}
+This obvious extension is physically correct.
+Let us see how to implement it. We have taken an initial condition with a given number of particles. Then, starting from this initial condition we allowed the system to freely evolve (with no constraints on $N$) and let the system go to the Grand Canonical equilibrium. Then we picked from time to time at regular intervals of time, initial conditions for the perturbed dynamics each with its $N$ kept fixed. After certain time we will have picked up a statistically significant realizations with different possible $N$ from the distribution $P(N)$.\\
+The difference between the Grand Canonical approach and the Canonical approach is that:\\
+(a)We need long non equilibrium trajectories to be sure that we sample enough segments with given $N$ along the non equilibrium trajectories\\
+(b)A number of initial conditions with different $N$ large enough to be meaningful, that is, a dense branching along the Grand Canonical equilibrium trajectory.\\
+In any case the advantage of this approach compared to an all atom simulation is the drastic reduction of computational cost of each simulation. 
+
+
+\section{An alternative consideration for the explicit (atomistic) reference system}
+If we assume that the Observable we are interested can be expend by:
+\begin{align}
+  \hat O(\v r, \v p) =
+  \sum_i\hat O^{(1)}(\v r_i, \v p_i) +
+  \sum_{i\neq j}\hat O^{(2)}(\v r_i, \v p_i; \v r_j, \v p_j),
+\end{align}
+namely, we can explicitly writen down the single and pairwise
+component of the observable (this is the case for most of the
+properties, such as energy, pressure, density, RDF, etc.). We further
+assume $\hat O^{(1)}$ and $\hat O^{(2)}$ are smooth up to the infinite
+order (this may not be the case, but it is possible to polish these
+observables and consider the limit of the parameter in the end. So the
+smoothness of the observables is not essential in this argument).
+
+Now assume that the grand-canonical system as a subsystem of an
+``infinitely'' large canonical system. We denote the domain of the
+subsystem by $\Omega$. $\v r_1, \cdots, \v r_N, \v p_1, \cdots, \v
+p_N$ are all degrees of freedoms in the large canonical system. In the fully atomistic system, the
+probability density is govened by a Liouville equation.  The
+observable of the interested sub grand canonical can be written as a
+function of the degrees of freedoms of the large canonical system,
+revised by some proper screening function that shields the unconcerned
+degrees of freedoms outside of the subsystem:
+\begin{align}
+  \hat O_{\textrm{sub-gc}}(\v r, \v p) =
+  \sum_i
+  \chi_\Omega(\v r_i)\,\hat O^{(1)}(\v r_i, \v p_i) +
+  \sum_{i\neq j}
+  \frac12 \,[\,
+  \chi_\Omega(\v r_i) + \chi_\Omega(\v r_j)
+  \,]\,
+  \hat O^{(2)}(\v r_i, \v p_i; \v r_j, \v p_j),  
+\end{align}
+where $\chi_\Omega$ is defined by
+\begin{align}
+  \chi_\Omega(\v r)=
+  \left\{
+    \begin{array}{lcl}
+      1 &\qquad\qquad& \v r \in \Omega; \\
+      0 && \textrm{otherwise}.
+    \end{array}
+  \right.
+\end{align}
+Again, though the screening funciton $\chi_\Omega$ is not smooth, it
+can be polished by some infinitly smooth function and consider the
+limit of the polishing parameter in the end.  Following the argument
+for the nonequilibrium canonical system:
+% , we have the similar argument
+% for the grand canonical subsystem:
+\begin{align}\nonumber
+  O_{\textrm{sub-gc}}(t)
+  & = \langle \hat O_{\textrm{sub-gc}}(\v r, \v p)\rangle_t\\\nonumber
+  & =
+  \int
+  \hat O_{\textrm{sub-gc}}(\v r, \v p) \rho(\v r, \v p, t)\,
+  \d d\v r\d d\v p\\\nonumber
+  & =
+  \int
+  \hat O_{\textrm{sub-gc}}(\v r, \v p) S(t)\rho(\v r, \v p)\,
+  \d d\v r\d d\v p\\\nonumber
+  & =
+  \int
+  S^{\dagger}(t)\hat O_{\textrm{sub-gc}}(\v r, \v p) \rho(\v r, \v p)\,
+  \d d\v r\d d\v p\\
+  & =
+  \int
+  \hat O_{\textrm{sub-gc}}(\v r(t), \v p(t)) \rho(\v r, \v p)\,
+  \d d\v r\d d\v p
+\end{align}
+The $\rho$ is the standard canonical density distribution, which
+includes all information of the grand canonical subsystem (especially
+$p(N)$). The point is that we are able to study the observable of the
+grand canonical subsystem (as a function of time), by the
+non-equilibrium time evolution of the large canonical system, whose
+governing function is well defined (do not need to consider the
+exchange of particles, which is considered by $\rho(\v r, \v p, t)$
+automatically).
+
+
+
+
+
+\bibliography{ref}{}
+\bibliographystyle{unsrt}
+
+\end{document}
