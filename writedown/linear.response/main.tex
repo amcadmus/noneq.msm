@@ -33,10 +33,12 @@
 
 \title{Linear response theory for core set identification}
 \author{Han Wang}
-% \affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Berlin, Germany}
+% \affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Germany}
 \author{Christof Sch\"utte}
-\affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Berlin, Germany}
-% \affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Berlin, Germany}
+\affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Germany}
+% \affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Germany}
+
+\date{\today}
 
 \begin{abstract}
   % In this draft, we are trying to study the core set based Markov
@@ -131,7 +133,7 @@ By defining the \emph{dissipative flux},
 it has been shown that~\cite{tuckeman2010statistical}
 \begin{align}
   i\Delta\ml(s)f_0(\mh(\vect x)) =
-  -\frac{f_0(\mh)}{\partial\mh} j(\vect x)\,F_e(s)
+  -\frac{\partial f_0(\mh)}{\partial\mh} j(\vect x)\,F_e(s)
 \end{align}
 For the canonical invariant measure, this is equivalent to
 \begin{align}
@@ -178,7 +180,7 @@ For any observation:
   j(\vect x)  
 \end{align}
 Notice that $e^{i\ml_0(t-s)}A(\vect x) = A(\phi_{t-s}(\vect x))$,
-where $\phi_t(\vect x)$ is the flow function of the \emph{unperturbed}
+where $\phi_t(\vect x)$ is the flow mapping of the \emph{unperturbed}
 Hamiltonian system. We have
 \begin{align}
   \mathcal A(t)
@@ -194,7 +196,7 @@ Hamiltonian system. We have
   j(\vect x)  
 \end{align}
 or equivalently:
-\begin{align}
+\begin{align}\label{eqn:lr}
   \mathcal A(t)
   =
   \langle A\rangle_0
@@ -295,12 +297,13 @@ $\vect y$ is in the core set $\widetilde C_\alpha $.
 where $[\Delta \mt_\alpha]^\dagger$ is the adjoint operator of $\Delta
 \mt_\alpha$, which is actually $\Delta \mt_{-\alpha}$. The delta
 function is replaced by the limit of a mollifier $K_\sigma(\vect y)$,
-which is infinitely smooth, compact supported, bounded and $\int
+which is infinitely smooth, compact supported of size $\sigma$,
+bounded and $\int
 K_\sigma(\vect y)\dd \vect y = 1$.  The physical meaning is that we
 can consider the expectation value of the stability of the mollifier
 $K_{\sigma, \vect y}$ instead of the stability of the invariant measure.
 This provides the convenience of using the linear response theory showed
-in the previous section:
+in the previous section. By Eqn.~\eqref{eqn:lr},
 \begin{align}\nonumber
   [\mathcal P\circ\Delta \mt_\alpha f_t](\vect y)
   &=
@@ -323,7 +326,15 @@ in the previous section:
   \rangle_0
   \Big\}
 \end{align}
-
+Therefore, the core set at time $t$ is defined by
+\begin{align}
+  \widetilde C_\alpha^t =
+  \Big\{
+  \vect y
+  \,\Big\vert\,
+  [\mathcal P\circ\Delta \mt_\alpha f_t](\vect y) > 0
+  \Big\}
+\end{align}
 
 
 \section*{References}
