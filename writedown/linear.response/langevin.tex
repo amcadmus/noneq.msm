@@ -1,0 +1,382 @@
+% \documentclass[aip,jcp,preprint,unsortedaddress,a4paper,onecolum]{revtex4-1}
+\documentclass[aip,jcp,a4paper,reprint,onecolumn]{revtex4-1}
+% \documentclass[aps,pre,twocolumn]{revtex4-1}
+% \documentclass[aps,jcp,groupedaddress,twocolumn,unsortedaddress]{revtex4}
+
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage[dvips]{graphicx}
+\usepackage{color}
+\usepackage{tabularx}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\makeatletter
+\makeatother
+
+\newcommand{\recheck}[1]{{\color{red} #1}}
+\newcommand{\redc}[1]{{\color{red} #1}}
+\newcommand{\bluec}[1]{{\color{blue} #1}}
+\newcommand{\vect}[1]{\textbf{\textit{#1}}}
+\newcommand{\dd}{\textsf{d}}
+
+\newcommand{\mh}{\mathcal H}
+\newcommand{\ml}{\mathcal L}
+\newcommand{\mt}{\mathcal T}
+\newcommand{\fwg}{{\mathcal A}}
+\newcommand{\bwg}{{\mathcal B}}
+\newcommand{\EX}{{\textrm{EX}}}
+\newcommand{\CG}{{\textrm{CG}}}
+\newcommand{\HY}{{\Delta}}
+
+
+
+\begin{document}
+
+\title{Linear response theory for core set identification}
+\author{Han Wang}
+% \affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Germany}
+\author{Christof Sch\"utte}
+\affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Germany}
+% \affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Germany}
+
+\date{\today}
+
+\begin{abstract}
+  % In this draft, we are trying to study the core set based Markov
+  % State Model (MSM) under non-equilirbium conditions.
+\end{abstract}
+
+\maketitle
+
+\section{Theoretical considerations}
+\subsection{The linear response theory}
+In this sub-section, we give a brief description of the linear response
+theory, for details see Ref.~\cite{tuckeman2010statistical} for
+example. Here we assume the system is governed by the
+perturbed Langevin equation:
+\begin{align}\label{eqn:gov-1}
+  \dot{\vect q} & = \frac{\partial\mh}{\partial \vect p}
+  + \vect C(\vect q,\vect p) F_e(t)\\\label{eqn:gov-2}
+  \dot{\vect p} & =- \frac{\partial\mh}{\partial \vect q}
+  + \vect D(\vect q,\vect p) F_e(t)
+  - \gamma\vect p
+  + \sigma\dot{\vect W}
+\end{align}
+Where $\vect C$ and $\vect D$ are perturbations to the system, and
+$F_e(t)$ is the strength of the perturbation as a function of time.
+The phase space imcompressibility condition is assumed:
+\begin{align}
+  \nabla_{\vect q}\cdot\vect C + \nabla_{\vect p}\cdot\vect D = 0
+\end{align}
+Then the phase space distribution $f(\vect x, t)$ ($\vect x = \{\vect
+q, \vect p\}$) is subject to the Fokker-Planck equation:
+\begin{align}
+  \frac{\partial}{\partial t} f(\vect x, t) - \fwg f(\vect x, t) = 0
+\end{align}
+where $\fwg$ is the infiniesimal generator gieven by
+\begin{align}
+  \fwg =
+  \frac{\sigma^2}2\Delta_{\vect p}
+  - \Big(
+  \frac{\partial \mh}{\partial\vect p} + \vect C F_e(t)
+  \Big)\cdot\nabla_{\vect q}
+  - \Big(
+  -\frac{\partial \mh}{\partial\vect q} +
+  \vect D F_e(t) - \gamma\vect p
+  \Big)\cdot\nabla_{\vect p}
+  + 3N\gamma
+\end{align}
+The equilibrium and unperturbed system
+is governed by
+the standard Langevin equation, i.e. with
+vanishing input perturbation $F_e(t) = 0$ in
+Eqn.~\eqref{eqn:gov-1} and \eqref{eqn:gov-2}.
+We assume that the perturbation to the
+system is so small that both the phase space distribution and the
+infiniesimal generator can be viewed as perturbation from the equilibrium
+distribution (invariant measure) and the unperturbed operator,
+respectively. We have
+\begin{align}
+  f(\vect x, t) &= f_0(\vect x) + \Delta  f(\vect x, t)
+\end{align}
+and 
+\begin{align}
+  \fwg = \fwg_0 + \Delta\fwg(t)
+\end{align}
+Where the invariant measure satisfies $\fwg_0f_0(\vect x) = 0$,
+which is nothing but the Boltzmann distribution
+\begin{align}
+  f_0(\vect x) \propto e^{-\beta\mh(\vect x)}
+\end{align}
+The Fokker-Planck equation for the perturbation is therefore
+\begin{align}
+  \frac{\partial}{\partial t}
+  [f_0(\vect x) + \Delta  f(\vect x, t)]
+  -
+  [\,\fwg_0 + \Delta\fwg(t)\,]
+  [\,f_0(\vect x) + \Delta  f(\vect x, t)\,] = 0
+\end{align}
+The basic assumption for the ``linear response'' is that the high order
+term $\Delta\fwg(t)  \Delta  f(\vect x, t)$ in the Fokker-Planck equation
+can be neglected. Noticing $\fwg_0 f_0(\vect x) = 0$, we have the
+Fokker-Planck
+for the leading order of the perturbation:
+\begin{align}
+  \bigg[
+  \frac{\partial}{\partial t}
+  - \fwg_0
+  \bigg]
+  \Delta  f(\vect x, t)
+  =
+  \Delta\fwg(t) f_0(\vect x)
+\end{align}
+The operator on l.h.s. is the same as the unperturbed Fokker-Planck equation.
+Formally solving this equation with initial condition
+$\Delta f(\vect x, 0) = 0$ gives
+\begin{align}
+  \Delta  f(\vect x, t) =
+  \int_0^t \dd s \:
+  e^{(t-s)\fwg_0}
+  \Delta\fwg(s)f_0(\vect x)
+\end{align}
+By defining the \emph{dissipative flux},
+\begin{align}
+  j(\vect x) =
+  -\vect C\cdot\nabla_{\vect q}\mh 
+  -\vect D\cdot\nabla_{\vect p}\mh
+\end{align}
+it has been shown that~\cite{tuckeman2010statistical}
+\begin{align}
+  \Delta\fwg(s)f_0(\vect x) =
+  -\beta f_0(\vect x)\, j(\vect x) F_e(s)
+\end{align}
+For any observation:
+\begin{align}\nonumber
+  \mathcal O(t)
+  &=
+  \int\dd \vect x \:O(\vect x)f(\vect x, t)  \\\nonumber
+  &=
+  \int\dd \vect x\, O(\vect x)\,
+  [f_0(\vect x) + \Delta f(\vect x, t)] \\\nonumber
+  &=
+  \langle O\rangle_0
+  -
+  \beta
+  \int \dd \vect x\:
+  O(\vect x)
+  \int_0^t\dd s\,
+  e^{(t-s)\fwg_0}
+  f_0(\vect x)\, j(\vect x)F_e(s)  \\\nonumber
+  &=
+  \langle O\rangle_0
+  -
+  \beta
+  \int_0^t\dd s\,
+  F_e(s)
+  \int \dd \vect x\,
+  O(\vect x)\,
+  e^{(t-s)\fwg_0}
+  f_0(\vect x) j(\vect x)  \\
+  &=
+  \langle O\rangle_0
+  -
+  \beta
+  \int_0^t\dd s\,
+  F_e(s)
+  \int \dd \vect x\,
+  f_0(\vect x) j(\vect x)\,
+  e^{(t-s)\bwg_0}
+  O(\vect x)\\
+  &=
+  \langle O\rangle_0
+  -
+  \beta
+  \int_0^t\dd s\,
+  F_e(t-s)
+  \int \dd \vect x\,
+  f_0(\vect x) j(\vect x)\,
+  e^{s\bwg_0}
+  O(\vect x)
+\end{align}
+Where $\bwg_0$ is the infiniesimal generator of the \emph{unperturbed} backward
+Kolmogorov equation, which is the adjoint operator of $\fwg_0$.
+We have
+\begin{align}
+  e^{s\bwg_0} O(\vect x) = \mathbb E_{\vect x} [O(\vect X_s)]
+\end{align}
+where $\vect X_t$ is the trajectory of the unperturbed Langevin equation
+starting at $\vect x$.
+Therefore, we have
+% Notice that $e^{i\ml_0(t-s)}O(\vect x) = O(\phi_{t-s}(\vect x))$,
+% where $\phi_t(\vect x)$ is the flow mapping of the \emph{unperturbed}
+% Hamiltonian system. We have
+\begin{align}
+  \mathcal O(t)
+  =
+  \langle O\rangle_0
+  -
+  \beta
+  \int_0^t\dd s\,
+  F_e(t-s)
+  \int \dd \vect x\,
+  f_0(\vect x)
+  j(\vect x)\,
+  \mathbb E_{\vect x} [O(\vect X_s)]
+\end{align}
+or equivalently:
+\begin{align}\label{eqn:lr}
+  \mathcal O(t)
+  =
+  \langle O\rangle_0
+  -
+  \beta
+  \int_0^t\dd s\,
+  F_e(t-s)
+  \langle
+  j(0)\,
+  \mathbb E_{\vect x} [O(\vect X_s)]
+  \rangle_0
+\end{align}
+where $  \langle
+  j(0)\,
+  \mathbb E_{\vect x} [O(\vect X_s)]
+  \rangle_0$ is the \emph{equilibrium time
+  correlation} between the observation $O$ at time $s$ and the
+dissipative flux $j$ at time 0.
+
+
+\subsection{The Core set as an observation of the system}
+
+The core set plays a very important role in the MSM theory. One way to
+identify core set is to consider the ``stability'' of the invariant
+measure $f_0$ under some mapping $\mt_\alpha$ of time step $\alpha$:
+\begin{align}
+  C_\alpha = \big\{
+  \vect x \,\vert\, \mt_\alpha f_0(\vect x) > f_0(\vect x)
+  \big\}
+\end{align}
+Generally, it is impossible and not necessary to consider the core set
+in the $3N$ dimensional configuration space. For example, a
+macromolecule solving in water, the DOFs of water is not of interest
+at all. Therefore, we consider some phase space compressing function
+$\vect y = \vect y(\vect x)$, with $\vect y \in \Omega \subset \mathbb
+R^M,\ M\ll 3N$. We call $\Omega$ the observation space.  The projected
+invariant measure on the observation space is therefore
+\begin{align}
+  \mathcal P f_0 (\vect y)
+  =
+  \int
+  \dd \vect x\,
+  f_0(\vect x) \,
+  \delta (\vect y - \vect y(\vect x)) 
+\end{align}
+The core set on the observation space is
+\begin{align}
+  \widetilde
+  C_\alpha = \big\{
+  \vect y \,\vert\,
+  \mathcal P\mt_\alpha f_0(\vect y) > \mathcal P f_0(\vect y)
+  \big\}
+\end{align}
+% with $\widetilde \mt_\alpha$ defined by
+% $\widetilde\mt_\alpha = \mathcal P\circ\mt_\alpha$, namely
+% \begin{align}
+%   \widetilde\mt_\alpha\, p_0(\vect y)
+%   =
+%   \mathcal P\circ\mt_\alpha f_0 (\vect y)
+%   =
+%   \int
+%   \dd \vect x\,
+%   [\mt_\alpha f_0](\vect x) \,
+%   \delta (\vect y - \vect y(\vect x)) 
+% \end{align}
+For convenience, we define $\Delta \mt_\alpha =
+\mt_\alpha - \mathcal I$, where $\mathcal I$ is the
+identity. If $[\mathcal P\circ\Delta \mt_\alpha f_0](\vect y) > 0$, then
+$\vect y$ is in the core set $\widetilde C_\alpha $.
+\begin{align}\nonumber
+  [\mathcal P\circ\Delta \mt_\alpha f_0](\vect y)
+  &=
+  \int
+  \dd \vect x\,
+  \Delta \mt_\alpha f_0(\vect x) \,
+  \delta (\vect y - \vect y(\vect x))  \\\nonumber
+  &=
+  \lim_{\sigma \rightarrow 0}
+  \int
+  \dd \vect x\,
+  \Delta \mt_\alpha f_0(\vect x) \,
+  K_{\sigma} (\vect y - \vect y(\vect x))  \\\nonumber
+  &=
+  \lim_{\sigma \rightarrow 0}
+  \int
+  \dd \vect x\,
+  \Delta \mt_\alpha f_0(\vect x) \,
+  K_{\sigma, \vect y} (\vect x)  \\\nonumber
+  &=
+  \lim_{\sigma \rightarrow 0}
+  \int
+  \dd \vect x\,
+  f_0(\vect x) \,
+  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y} (\vect x)\\
+  &=
+  \lim_{\sigma \rightarrow 0}\,
+  \langle
+  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}
+  \rangle_0
+\end{align}
+where $[\Delta \mt_\alpha]^\dagger$ is the adjoint operator of $\Delta
+\mt_\alpha$, which is actually $\Delta \mt_{-\alpha}$. The delta
+function is replaced by the limit of a mollifier $K_\sigma(\vect y)$,
+which is infinitely smooth, compact supported of size $\sigma$,
+bounded and $\int
+K_\sigma(\vect y)\dd \vect y = 1$.  The physical meaning is that we
+can consider the expectation value of the stability of the mollifier
+$K_{\sigma, \vect y}$ instead of the stability of the invariant measure.
+This provides the convenience of using the linear response theory showed
+in the previous section. By Eqn.~\eqref{eqn:lr},
+\begin{align}\nonumber
+  [\mathcal P\circ\Delta \mt_\alpha f_t](\vect y)
+  &=
+  \lim_{\sigma \rightarrow 0}\,
+  \langle
+  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}
+  \rangle_t \\
+  &=
+  \lim_{\sigma \rightarrow 0}\,
+  \Big\{
+  \langle
+  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}
+  \rangle_0  -
+  \beta
+  \int_0^t\dd s\,
+  F_e(t-s)
+  \langle
+  j(0)\,
+  \mathbb E_{\vect x}\{
+  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}(s)\,
+  \}
+  \rangle_0
+  \Big\}
+\end{align}
+Therefore, the core set at time $t$ is defined by
+\begin{align}
+  \widetilde C_\alpha^t =
+  \Big\{
+  \vect y
+  \,\Big\vert\,
+  [\mathcal P\circ\Delta \mt_\alpha f_t](\vect y) > 0
+  \Big\}
+\end{align}
+
+
+\section*{References}
+\bibliography{ref}{}
+\bibliographystyle{unsrt}
+
+
+
+
+
+\end{document}
