@@ -14,6 +14,7 @@
 
 #include "Force.h"
 #include "Integrator.h"
+#include "Distribution.h"
 #include <boost/program_options.hpp>
 
 namespace po = boost::program_options;
@@ -27,14 +28,14 @@ int main(int argc, char * argv[])
   double pertSt;
   double aa;
   double kk;
-  unsigned nst;
+  double nst;
   unsigned nstprint = 1;
   
   po::options_description desc ("Allow options");
   desc.add_options()
       ("help,h", "print this message")
       ("dt,d",po::value<double > (&dt)->default_value(0.01), "time step [ps]")
-      ("nst,n",po::value<unsigned > (&nst)->default_value(1000), "number of time step")
+      ("nst,n",po::value<double > (&nst)->default_value(1000), "number of time step")
       ("nstprint,p",po::value<unsigned > (&nstprint)->default_value(10), "print frequency")
       ("gamma,g", po::value<double > (&gamma)->default_value(1.), "gamma [ps^-1]")
       ("temperture,t",po::value<double > (&T)->default_value(300.), "temerature [K]")
@@ -71,15 +72,38 @@ int main(int argc, char * argv[])
   xx.xx[0] = aa;
   xx.vv[0] = 0.;
   double time = 0.;
+
+  Distribution_1d dist(-2, 2, 50, -8, 8, 50);
   
   printf ("%f %f %f\n", time, xx.xx[0], xx.vv[0]);
-  for (unsigned ii = 0; ii < nst; ++ii){
+  int count = 0;
+  for (double ii = 0.; ii < nst; ii += 1.){
     inte.step (xx, time);
     time += dt;
-    if ((ii+1) % nstprint == 0){
+    count ++;
+    if (int(nstprint) == count){
       printf ("%f %f %f\n", time, xx.xx[0], xx.vv[0]);
+      dist.deposite (xx);
+      count = 0;
     }
   }
+
+  dist.average();
+
+  FILE * fp = fopen ("distrib.xv.out", "w");
+  if (fp == NULL){
+    std::cerr << "cannot open file " << std::endl;
+    return 1;
+  }
+  dist.print_xv (fp);
+  fclose (fp);
+  fp = fopen ("distrib.x.out", "w");
+  if (fp == NULL){
+    std::cerr << "cannot open file " << std::endl;
+    return 1;
+  }
+  dist.print_x (fp);
+  fclose (fp);
 
   return 0;
 }
