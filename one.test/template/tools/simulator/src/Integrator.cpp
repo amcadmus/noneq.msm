@@ -16,7 +16,7 @@ step (Dofs & dofs,
     }
   }
   vector<double > fvalue (NUMDOFS);
-  if (pert != NULL){
+  if (force != NULL){
     (*force) (dofs, time, fvalue);
   }
   else {
@@ -25,6 +25,7 @@ step (Dofs & dofs,
     }
   }
 
+  // printf ("%f\n", fvalue[0]);
   Dofs oldDofs(dofs);
   for (unsigned dd = 0; dd < NUMDOFS; ++dd){
     dofs.xx[dd] = oldDofs.xx[dd] + dt * oldDofs.vv[dd] + dt * pvalue.xx[dd];
