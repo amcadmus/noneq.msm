@@ -70,11 +70,11 @@ The phase space imcompressibility condition is assumed:
   \nabla_{\vect q}\cdot\vect C + \nabla_{\vect p}\cdot\vect D = 0
 \end{align}
 Then the phase space distribution $f(\vect x, t)$ ($\vect x = \{\vect
-q, \vect p\}$) is subject to the Fokker-Planck equation:
+q, \vect p\}$) is subject to the Kolmogorov forward equation:
 \begin{align}
   \frac{\partial}{\partial t} f(\vect x, t) - \fwg f(\vect x, t) = 0
 \end{align}
-where $\fwg$ is the infiniesimal generator gieven by
+where $\fwg$ is the forward infiniesimal generator gieven by
 \begin{align}
   \fwg =
   \frac{\sigma^2}2\Delta_{\vect p}
@@ -95,7 +95,8 @@ Eqn.~\eqref{eqn:gov-1} and \eqref{eqn:gov-2}.
 We assume that the perturbation to the
 system is so small that both the phase space distribution and the
 infiniesimal generator can be viewed as perturbation from the equilibrium
-distribution (invariant measure) and the unperturbed operator,
+distribution (invariant measure) and the unperturbed operator
+($\vect C = \vect D = 0$),
 respectively. We have
 \begin{align}
   f(\vect x, t) &= f_0(\vect x) + \Delta  f(\vect x, t)
@@ -109,7 +110,7 @@ which is nothing but the Boltzmann distribution
 \begin{align}
   f_0(\vect x) \propto e^{-\beta\mh(\vect x)}
 \end{align}
-The Fokker-Planck equation for the perturbation is therefore
+The Kolmogorov forward equation for the perturbation is therefore
 \begin{align}
   \frac{\partial}{\partial t}
   [f_0(\vect x) + \Delta  f(\vect x, t)]
@@ -118,9 +119,9 @@ The Fokker-Planck equation for the perturbation is therefore
   [\,f_0(\vect x) + \Delta  f(\vect x, t)\,] = 0
 \end{align}
 The basic assumption for the ``linear response'' is that the high order
-term $\Delta\fwg(t)  \Delta  f(\vect x, t)$ in the Fokker-Planck equation
+term $\Delta\fwg(t)  \Delta  f(\vect x, t)$ 
 can be neglected. Noticing $\fwg_0 f_0(\vect x) = 0$, we have the
-Fokker-Planck
+Kolmogorov forward equation
 for the leading order of the perturbation:
 \begin{align}
   \bigg[
@@ -131,7 +132,7 @@ for the leading order of the perturbation:
   =
   \Delta\fwg(t) f_0(\vect x)
 \end{align}
-The operator on l.h.s. is the same as the unperturbed Fokker-Planck equation.
+The operator on l.h.s. is the same as the unperturbed equation.
 Formally solving this equation with initial condition
 $\Delta f(\vect x, 0) = 0$ gives
 \begin{align}
@@ -177,7 +178,7 @@ For any observation:
   \int \dd \vect x\,
   O(\vect x)\,
   e^{(t-s)\fwg_0}
-  f_0(\vect x) j(\vect x)  \\
+  f_0(\vect x) j(\vect x)  \\\nonumber
   &=
   \langle O\rangle_0
   -
@@ -199,8 +200,8 @@ For any observation:
   e^{s\bwg_0}
   O(\vect x)
 \end{align}
-Where $\bwg_0$ is the infiniesimal generator of the \emph{unperturbed} backward
-Kolmogorov equation, which is the adjoint operator of $\fwg_0$.
+Where $\bwg_0$ is the infiniesimal generator of the \emph{unperturbed} 
+Kolmogorov backward equation, which is the adjoint operator of $\fwg_0$.
 We have
 \begin{align}
   e^{s\bwg_0} O(\vect x) = \mathbb E_{\vect x} [O(\vect X_s)]
@@ -246,7 +247,7 @@ where $  \langle
 dissipative flux $j$ at time 0.
 
 
-\subsection{The Core set as an observation of the system}
+\subsection{The core set as an observation of the system}
 
 The core set plays a very important role in the MSM theory. One way to
 identify core set is to consider the ``stability'' of the invariant
