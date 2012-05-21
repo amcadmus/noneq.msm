@@ -40,13 +40,13 @@ public:
 inline void Distribution_1d::
 deposite (const Dofs & dof)
 {
-  nframe += 1.;
   int ix = (dof.xx[0] - x0) / hx;
   int iv = (dof.vv[0] - v0) / hv;
   if ((ix < 0 || ix >= int(nx)) || (iv < 0 || iv >= int(nv))){
     return;
   }
   else {
+    nframe += 1.;
     values[ix][iv] += valuepp;
   }
 }
