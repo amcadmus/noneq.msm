@@ -11,6 +11,9 @@ class Distribution_1d
   double valuepp;
   unsigned nx, nv;
   vector<vector<double > > values;
+  vector<vector<double > > backup_values;
+  double backup_number;
+  double backup_unbacked_count;
   vector<double > gridx;
   vector<double > gridv;
   double nframe;
@@ -47,7 +50,18 @@ deposite (const Dofs & dof)
   }
   else {
     nframe += 1.;
+    backup_unbacked_count += 1.;
     values[ix][iv] += valuepp;
+    if (backup_unbacked_count >= backup_number){
+      // std::cout << "backuped" << std::endl;
+      for (unsigned ii = 0; ii < nx; ++ii){
+	for (unsigned jj = 0; jj < nv; ++jj){
+	  backup_values[ii][jj] += values[ii][jj];
+	  values[ii][jj] = 0.;
+	}
+      }
+      backup_unbacked_count = 0.;
+    }
   }
 }
 

@@ -45,7 +45,13 @@ reinit (const double & x0_,
   for (unsigned ii = 0; ii < nx; ++ii){
     values[ii].resize(nv);
   }
+  backup_values.resize(nx);
+  for (unsigned ii = 0; ii < nx; ++ii){
+    backup_values[ii].resize(nv);
+  }
 
+  backup_number = 1e4;
+  backup_unbacked_count = 0.;
   clear ();
 }
 
@@ -57,6 +63,7 @@ clear ()
   for (unsigned ii = 0; ii < nx; ++ii){
     for (unsigned jj = 0; jj < nv; ++jj){
       values[ii][jj] = 0.;
+      backup_values[ii][jj] = 0.;
     }
   }
 }
@@ -68,6 +75,7 @@ average ()
   if (nframe == 0.) return;
   for (unsigned ii = 0; ii < nx; ++ii){
     for (unsigned jj = 0; jj < nv; ++jj){
+      values[ii][jj] += backup_values[ii][jj];
       values[ii][jj] /= double(nframe);
     }
   }  
