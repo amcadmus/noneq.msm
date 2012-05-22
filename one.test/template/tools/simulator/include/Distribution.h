@@ -18,6 +18,7 @@ class Distribution_1d
   vector<double > gridv;
   double nframe;
 public:
+  Distribution_1d () {};
   Distribution_1d (const double & x0,
 		   const double & x1,
 		   const unsigned & nx,
