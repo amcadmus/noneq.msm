@@ -50,7 +50,7 @@ reinit (const double & x0_,
     backup_values[ii].resize(nv);
   }
 
-  backup_number = 1e4;
+  backup_number = 1e6;
   backup_unbacked_count = 0.;
   clear ();
 }
