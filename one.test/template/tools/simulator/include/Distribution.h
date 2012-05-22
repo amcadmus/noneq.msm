@@ -35,6 +35,8 @@ public:
   void deposite (const Dofs & dof);
   void average ();
   void calTraj ();
+  void print_x  (const string & filename) const;
+  void print_xv (const string & filename) const;
   void print_x  (FILE * fp) const;
   void print_xv (FILE * fp) const;
 }

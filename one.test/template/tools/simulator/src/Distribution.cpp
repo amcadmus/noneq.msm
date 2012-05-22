@@ -84,11 +84,36 @@ average ()
 #include <fstream>
 
 void Distribution_1d::
+print_xv (const string & filename) const
+{
+  FILE * fp = fopen (filename.c_str(), "w");
+  if (fp == NULL){
+    std::cerr << "cannot open file " << std::endl;
+    return;
+  }
+  print_xv (fp);
+  fclose(fp);
+}
+
+void Distribution_1d::
+print_x (const string & filename) const
+{
+  FILE * fp = fopen (filename.c_str(), "w");
+  if (fp == NULL){
+    std::cerr << "cannot open file " << std::endl;
+    return;
+  }
+  print_x (fp);
+  fclose(fp);
+}
+
+
+void Distribution_1d::
 print_xv (FILE * fp) const
 {
   for (unsigned ii = 0; ii < nx; ++ii){
     for (unsigned jj = 0; jj < nv; ++jj){
-      fprintf (fp, "%f %f %f\n", gridx[ii], gridv[jj], values[ii][jj]);
+      fprintf (fp, "%f %f %.16e\n", gridx[ii], gridv[jj], values[ii][jj]);
     }
     fprintf (fp, "\n");
   }
@@ -102,7 +127,7 @@ print_x (FILE * fp) const
     for (unsigned jj = 0; jj < nv; ++jj){
       avg += values[ii][jj] * hv;
     }
-    fprintf (fp, "%f %f\n", gridx[ii], avg);
+    fprintf (fp, "%f %.16e\n", gridx[ii], avg);
   }
 }
 
