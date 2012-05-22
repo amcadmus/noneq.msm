@@ -31,7 +31,8 @@ int main(int argc, char * argv[])
   double kk;
   double nst;
   unsigned nstprint = 1;
-
+  double warmTime;
+  
   double noneqTime;
   double noneqCheckFeq;
   double branchFeq;
@@ -58,6 +59,7 @@ int main(int argc, char * argv[])
       ("noneq-time", po::value<double > (&noneqTime)->default_value(200.), "non-equilibrium simulation time [ps]")
       ("quench-temperature", po::value<double > (&quenchTemperture)->default_value(150.), "quench temperature [K]")
       ("quench-time", po::value<double > (&quenchTime)->default_value(1.), "quench time [ps]")
+      ("warm-time", po::value<double > (&warmTime)->default_value(100.), "warm up time of perturbation [ps]")
       ("seed",po::value<unsigned long > (&seed)->default_value(1), "random seed")      
       ("pert-strength,s",po::value<double > (&pertSt)->default_value(1.0), "perturbation strength [kJ/(mol nm)]");
       
@@ -93,8 +95,8 @@ int main(int argc, char * argv[])
   std::cout << "###################################################" << std::endl;  
 
   DoubleWell dw (kk, aa);
-  // PertConstTilt pert (pertSt);
-  PertConstTilt pert (0.);
+  PertConstTilt pert (pertSt, warmTime);
+  // PertConstTilt pert (0.);
   
   EulerMaruyama inte (gamma, kT, dt,
 		      NULL,

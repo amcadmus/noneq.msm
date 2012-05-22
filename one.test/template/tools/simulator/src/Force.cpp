@@ -1,8 +1,9 @@
 #include "Force.h"
 
 PertConstTilt::
-PertConstTilt (const double & s)
-    : strength(s)
+PertConstTilt (const double & s,
+	       const double w)
+    : strength(s), warmTime(w)
 {
 }
 
@@ -11,7 +12,11 @@ operator () (const Dofs & dofs,
 	     const double & time,
 	     Dofs & pvalue) const
 {
-  pvalue.vv[0] = strength;
+  double tmp = strength;
+  if (time < warmTime){
+    tmp = tmp * time / warmTime;
+  }
+  pvalue.vv[0] = tmp;
 }
 
 DoubleWell::

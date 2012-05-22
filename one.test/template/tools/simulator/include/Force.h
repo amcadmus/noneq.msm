@@ -26,8 +26,10 @@ public:
 class PertConstTilt : public Perturbation
 {
   double strength;
+  double warmTime;
 public:
-  PertConstTilt (const double & s);
+  PertConstTilt (const double & s,
+		 const double warmTime = 0.);
   virtual void operator () (const Dofs & dofs,
 			    const double & time,
 			    Dofs & pvalue) const;
