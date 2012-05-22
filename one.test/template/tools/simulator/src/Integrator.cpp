@@ -31,6 +31,12 @@ step (Dofs & dofs,
     dofs.xx[dd] = oldDofs.xx[dd] + dt * oldDofs.vv[dd] + dt * pvalue.xx[dd];
     dofs.vv[dd] = oldDofs.vv[dd] + dt * fvalue[dd] - dt * gamma * oldDofs.vv[dd] + dt * pvalue.vv[dd]
 	+ sqrtdt * sigma * RandomGenerator_MT19937::gaussian();
+    if (! (dofs.xx[dd] >= -10 && dofs.xx[dd] <= 10. && dofs.vv[dd]>= -20. && dofs.vv[dd] <= 20.)  ){
+      fprintf (stderr, "dd: %d   old: %f %f    new: %f %f",
+    	       dd,
+    	       oldDofs.xx[dd], oldDofs.vv[dd],
+    	       dofs.xx[dd], dofs.vv[dd]);
+    }
   }
 }
 
