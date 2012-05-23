@@ -7,6 +7,8 @@ class Perturbation
 {
 public:
   virtual void operator () (const Dofs & dofs,
+			    Dofs & pvalue) const = 0;
+  virtual void operator () (const Dofs & dofs,
 			    const double & time,
 			    Dofs & pvalue) const = 0;
 }
@@ -18,10 +20,26 @@ public:
   virtual double potential (const Dofs & dofs,
 			    const double & time) const = 0;
   virtual void operator () (const Dofs & dofs,
+			    vector<double> & fvalue) const = 0;
+  virtual void operator () (const Dofs & dofs,
 			    const double & time,
 			    vector<double> & fvalue) const = 0;
 }
     ;
+
+class DissipativeFlux 
+{
+  const Perturbation * pert;
+  const Force * force;
+  mutable Dofs pvalue;
+  mutable vector<double > fvalue;
+public:
+  DissipativeFlux (const Perturbation * p,
+		   const Force * f);
+  double operator () (const Dofs & dofs) const;
+}
+    ;
+
 
 class PertConstTilt : public Perturbation
 {
@@ -30,6 +48,8 @@ class PertConstTilt : public Perturbation
 public:
   PertConstTilt (const double & s,
 		 const double warmTime = 0.);
+  virtual void operator () (const Dofs & dofs,
+			    Dofs & pvalue) const;
   virtual void operator () (const Dofs & dofs,
 			    const double & time,
 			    Dofs & pvalue) const;
@@ -45,6 +65,8 @@ public:
 	      const double & a);
   virtual double potential (const Dofs & dofs,
 			    const double & time) const;
+  virtual void operator () (const Dofs & dofs,
+			    vector<double> & fvalue) const ;
   virtual void operator () (const Dofs & dofs,
 			    const double & time,
 			    vector<double> & fvalue) const ;

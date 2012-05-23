@@ -68,6 +68,41 @@ clear ()
   }
 }
 
+void Distribution_1d::
+deposite (const Dofs & dof)
+{
+  deposite (dof, 1.);
+}
+
+void Distribution_1d::
+deposite (const Dofs & dof,
+	  const double& scale)
+{
+  int ix = (dof.xx[0] - x0) / hx;
+  int iv = (dof.vv[0] - v0) / hv;
+  if ((ix < 0 || ix >= int(nx)) || (iv < 0 || iv >= int(nv))){
+    return;
+  }
+  else {
+    nframe += 1.;
+    backup_unbacked_count += 1.;
+    values[ix][iv] += valuepp * scale;
+    if (backup_unbacked_count >= backup_number){
+      // std::cout << "backuped" << std::endl;
+      /* fprintf (stderr, "backup: %.16e %.16e\n", backup_unbacked_count, backup_number); */
+      for (unsigned ii = 0; ii < nx; ++ii){
+	for (unsigned jj = 0; jj < nv; ++jj){
+	  /* if (ii == nx/2 && jj == nv/2){ */
+	  /*   fprintf (stderr,"average: %.16e %.16e    %.16e\n" , backup_values[ii][jj], values[ii][jj], nframe); */
+	  /* } */
+	  backup_values[ii][jj] += values[ii][jj];
+	  values[ii][jj] = 0.;
+	}
+      }
+      backup_unbacked_count = 0.;
+    }
+  }
+}
 
 void Distribution_1d::
 average ()

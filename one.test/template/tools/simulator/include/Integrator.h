@@ -7,6 +7,7 @@
 class Integrator
 {
 public:
+  virtual double getDt () const =0;
   virtual void step (Dofs & dofs,
 		     const double time) const = 0;
 }
@@ -33,6 +34,7 @@ public:
 	       const double & dt,
 	       const Perturbation * p = NULL,
 	       const Force * f = NULL);
+  virtual double getDt () const {return dt;}
   virtual void step (Dofs & dofs,
 		     const double time) const;
 }
