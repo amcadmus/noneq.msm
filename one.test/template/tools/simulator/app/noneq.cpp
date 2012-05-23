@@ -123,16 +123,18 @@ int main(int argc, char * argv[])
   vector<string > xvQuenchFileNames(numNoneqCheck);
   for (unsigned ii = 0; ii < numNoneqCheck; ++ii){
     checkTimes[ii] = ii * noneqCheckFeq;
+    int timeI = int(checkTimes[ii]);
+    int timeF = int(100 * (checkTimes[ii] - timeI));
     dists[ii].reinit (-2, 2, 50, -8, 8, 50);
     distsQuench[ii].reinit (-2, 2, 50, -8, 8, 50);
     char name[2048];
-    sprintf (name, "distrib.x.%.6e.out", checkTimes[ii]);
+    sprintf (name, "distrib.x.%05d.%02d.out", timeI, timeF);
     xFileNames[ii] = string(name);
-    sprintf (name, "distrib.xv.%.6e.out", checkTimes[ii]);
+    sprintf (name, "distrib.xv.%05d.%02d.out", timeI, timeF);
     xvFileNames[ii] = string(name);
-    sprintf (name, "distrib.quench.x.%.6e.out", checkTimes[ii]);
+    sprintf (name, "distrib.quench.x.%05d.%02d.out", timeI, timeF);
     xQuenchFileNames[ii] = string(name);
-    sprintf (name, "distrib.quench.xv.%.6e.out", checkTimes[ii]);
+    sprintf (name, "distrib.quench.xv.%05d.%02d.out", timeI, timeF);
     xvQuenchFileNames[ii] = string(name);
   }
   
