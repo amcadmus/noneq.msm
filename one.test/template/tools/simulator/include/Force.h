@@ -8,6 +8,7 @@ class Perturbation
 public:
   virtual void operator () (const Dofs & dofs,
 			    Dofs & pvalue) const = 0;
+  virtual double Fe (const double & time) const = 0;
   virtual void operator () (const Dofs & dofs,
 			    const double & time,
 			    Dofs & pvalue) const = 0;
@@ -50,6 +51,7 @@ public:
 		 const double warmTime = 0.);
   virtual void operator () (const Dofs & dofs,
 			    Dofs & pvalue) const;
+  virtual double Fe (const double & time) const;
   virtual void operator () (const Dofs & dofs,
 			    const double & time,
 			    Dofs & pvalue) const;

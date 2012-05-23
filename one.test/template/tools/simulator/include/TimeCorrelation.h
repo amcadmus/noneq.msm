@@ -33,8 +33,14 @@ public:
 	       const unsigned quenchNumStep,
 	       const Integrator * quenchInte,
 	       const DissipativeFlux * flux);
-  void calculate (const Dofs & initDof,
-		  const double & totalTime);
+  void calCorr (const Dofs & initDof,
+		const double & totalTime);
+  void calIndicator (const vector<vector<double > > & old,
+		     const double & idTime,
+		     const double & idStep,
+		     const double & beta,
+		     const Perturbation & pert,
+		     vector<vector<vector<double > > > & timeNew);
   void print () const ;
 }
     ;

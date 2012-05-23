@@ -42,6 +42,7 @@ public:
   void print_xv (const string & filename) const;
   void print_x  (FILE * fp) const;
   void print_xv (FILE * fp) const;
+  void substract (const Distribution_1d & d);
 }
     ;
 

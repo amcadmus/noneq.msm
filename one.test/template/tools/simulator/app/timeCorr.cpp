@@ -34,16 +34,16 @@ int main(int argc, char * argv[])
   unsigned nstprint = 1;
   double warmTime;
   
-  // double noneqTime;
-  // double noneqCheckFeq;
-  // double branchFeq;
+  double noneqTime;
+  double noneqCheckFeq;
+  double branchFeq;
   double quenchTime;
   double quenchTemperture;
   double quenchkT;
   double corrTime;
   double corrStep;
   // unsigned noneqCheckNumFeq;
-  // unsigned branchNumFeq;
+  unsigned branchNumFeq;
       
   unsigned long seed;
   
@@ -57,9 +57,9 @@ int main(int argc, char * argv[])
       ("temperture,t", po::value<double > (&T)->default_value(300.), "temerature [K]")
       ("double-well-k,k", po::value<double > (&kk)->default_value(8.0), "k parameter of the double well potential [kJ/(mol nm^4)]")
       ("double-well-a,a", po::value<double > (&aa)->default_value(1.0), "a parameter of the double well potential [nm]")
-      // ("branch-feq", po::value<double > (&branchFeq)->default_value(1.), "branch frequency [ps]")
-      // ("noneq-check-feq", po::value<double > (&noneqCheckFeq)->default_value(10.), "non-equilibrium branch check frequency [ps]")
-      // ("noneq-time", po::value<double > (&noneqTime)->default_value(200.), "non-equilibrium simulation time [ps]")
+      ("branch-feq", po::value<double > (&branchFeq)->default_value(1.), "branch frequency [ps]")
+      ("noneq-check-feq", po::value<double > (&noneqCheckFeq)->default_value(10.), "non-equilibrium branch check frequency [ps]")
+      ("noneq-time", po::value<double > (&noneqTime)->default_value(200.), "non-equilibrium simulation time [ps]")
       ("corr-time", po::value<double > (&corrTime)->default_value(1.), "correlation cal time [ps]")
       ("corr-step", po::value<double > (&corrStep)->default_value(.01), "step of correlation [ps]")
       ("quench-temperature", po::value<double > (&quenchTemperture)->default_value(150.), "quench temperature [K]")
@@ -79,7 +79,7 @@ int main(int argc, char * argv[])
   RandomGenerator_MT19937::init_genrand (seed);
   kT = T * 1.38 * 6.02 * 1e-3;
   quenchkT = quenchTemperture * 1.38 * 6.02 * 1e-3;
-  // branchNumFeq = (branchFeq+0.5*dt) / dt;
+  branchNumFeq = (branchFeq+0.5*dt) / dt;
   // noneqCheckNumFeq = (noneqCheckFeq+0.5*dt) / dt;
   
   std::cout << "###################################################" << std::endl;
@@ -94,9 +94,9 @@ int main(int argc, char * argv[])
   std::cout << "# quench kT: " << quenchkT << " [kJ/mol]" << std::endl;
   // std::cout << "# branch Feq: " << branchFeq << " [ps]" << std::endl;
   // std::cout << "# branch every: " << branchNumFeq << " steps" << std::endl;
-  // std::cout << "# noneq check Feq: " << noneqCheckFeq << " [ps]" << std::endl;
+  std::cout << "# noneq check Feq: " << noneqCheckFeq << " [ps]" << std::endl;
   // std::cout << "# noneq check every: " << noneqCheckNumFeq << " steps" << std::endl;
-  // std::cout << "# noneq time: " << noneqTime << " [ps]" << std::endl;
+  std::cout << "# noneq time: " << noneqTime << " [ps]" << std::endl;
   std::cout << "###################################################" << std::endl;  
 
   DoubleWell dw (kk, aa);
@@ -123,8 +123,55 @@ int main(int argc, char * argv[])
 	     (quenchTime + .5*dt) / dt,
 	     &quenchInte,
 	     &flux);
-  tc.calculate (xx, nst*dt);
+  tc.calCorr (xx, nst*dt);
   tc.print();
+
+
+
+  int count = 0;
+  int countBranch = 0;
+  double time = 0;
+  Distribution_1d dist       (-2, 2, 50, -8, 8, 50);
+  Distribution_1d distQuench (-2, 2, 50, -8, 8, 50);
+
+  for (double ii = 0.; ii < nst+0.1; ii += 1.){
+    inte.step (xx, 0.);
+    count ++;
+    countBranch ++;
+    time += dt;
+    if (int(nstprint) == count){
+      count = 0;
+      printf ("%f %f %f\n", time, xx.xx[0], xx.vv[0]);
+    }
+    if (countBranch == int(branchNumFeq)){
+      countBranch = 0;
+      dist.deposite (xx);
+      Dofs quenchXX (xx);
+      // branching
+      for (double ttQuench = 0.; ttQuench <= quenchTime+0.5*dt; ttQuench += dt){
+	quenchInte.step(quenchXX, 0.);
+      }
+      distQuench.deposite (quenchXX);
+    }
+  }
+  dist.average();
+  distQuench.average();
+  dist.substract (distQuench);
+  
+  vector<vector<vector<double > > > timeNew;
+  tc.calIndicator (dist.values,
+		   noneqTime, noneqCheckFeq, 1./kT, pert, timeNew);
+  for (double tt = 0; tt < noneqTime + 0.5 * noneqCheckFeq; tt += noneqCheckFeq){
+    unsigned ii = (tt + 0.5 * noneqCheckFeq) / noneqCheckFeq;
+    dist.values = timeNew[ii];
+    int timeI = int(tt);
+    int timeF = int(100 * (tt - timeI));
+    char name[2048];
+    sprintf (name, "indicator.linear.x.%05d.%02d.out", timeI, timeF);
+    dist.print_x (name);
+    sprintf (name, "indicator.linear.xv.%05d.%02d.out", timeI, timeF);
+    dist.print_xv (name);
+  }
   
   return 0;
 }

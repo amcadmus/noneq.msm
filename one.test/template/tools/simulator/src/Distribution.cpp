@@ -170,3 +170,18 @@ print_x (FILE * fp) const
 }
 
 
+void Distribution_1d::
+substract (const Distribution_1d & d)
+{
+  if (d.nx != nx || d.nv != nv){
+    std::cerr << "unmatch distributions, do nothing" << std::endl;
+    return;
+  }
+
+  for (unsigned ii = 0; ii < nx; ++ii){
+    for (unsigned jj = 0; jj < nv; ++jj){
+      values[ii][jj] -= d.values[ii][jj];
+    }
+  }
+}
+

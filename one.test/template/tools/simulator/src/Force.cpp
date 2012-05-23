@@ -32,18 +32,25 @@ operator () (const Dofs & dofs,
 	     const double & time,
 	     Dofs & pvalue) const
 {
-  double tmp = strength;
-  if (time < warmTime){
-    tmp = tmp * time / warmTime;
-  }
-  pvalue.vv[0] = tmp;
+  (*this) (dofs, pvalue);
+  pvalue.vv[0] *= Fe(time);
 }
 
 void PertConstTilt::
 operator () (const Dofs & dofs,
 	     Dofs & pvalue) const
 {
-  operator () (dofs, warmTime, pvalue);
+  pvalue.vv[0] = strength;
+}
+
+double PertConstTilt::
+Fe (const double & time) const
+{
+  double tmp = 1.;
+  if (time < warmTime){
+    tmp = time / warmTime;
+  }
+  return tmp;
 }
 
 

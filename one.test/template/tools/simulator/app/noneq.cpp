@@ -121,6 +121,8 @@ int main(int argc, char * argv[])
   vector<string > xvFileNames(numNoneqCheck);
   vector<string > xQuenchFileNames(numNoneqCheck);
   vector<string > xvQuenchFileNames(numNoneqCheck);
+  vector<string > diffxFileNames(numNoneqCheck);
+  vector<string > diffxvFileNames(numNoneqCheck);
   for (unsigned ii = 0; ii < numNoneqCheck; ++ii){
     checkTimes[ii] = ii * noneqCheckFeq;
     int timeI = int(checkTimes[ii]);
@@ -136,6 +138,10 @@ int main(int argc, char * argv[])
     xQuenchFileNames[ii] = string(name);
     sprintf (name, "distrib.quench.vx.%05d.%02d.out", timeI, timeF);
     xvQuenchFileNames[ii] = string(name);
+    sprintf (name, "indicator.x.%05d.%02d.out", timeI, timeF);
+    diffxFileNames[ii] = string(name);
+    sprintf (name, "indicator.xv.%05d.%02d.out", timeI, timeF);
+    diffxvFileNames[ii] = string(name);
   }
   
   int count = 0;
@@ -209,6 +215,10 @@ int main(int argc, char * argv[])
     dists[ii].print_xv (xvFileNames[ii]);
     distsQuench[ii].print_x  (xQuenchFileNames[ii]);
     distsQuench[ii].print_xv (xvQuenchFileNames[ii]);
+    
+    dists[ii].substract (distsQuench[ii]);
+    dists[ii].print_x  (diffxFileNames[ii]);
+    dists[ii].print_xv (diffxvFileNames[ii]);
   }
 
   return 0;

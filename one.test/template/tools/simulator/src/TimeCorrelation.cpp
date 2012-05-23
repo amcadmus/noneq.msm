@@ -61,8 +61,8 @@ increasePosi (const vector<double > & ring,
 }
 
 void TimeCorrelation::
-calculate (const Dofs & initDof,
-	   const double & totalTime)
+calCorr (const Dofs & initDof,
+	 const double & totalTime)
 {
   unsigned countStep = 0;
   Dofs dof (initDof);
@@ -102,6 +102,55 @@ calculate (const Dofs & initDof,
     }
   }
 }
+
+void TimeCorrelation::
+calIndicator (const vector<vector<double > > & old,
+	      const double & idTime,
+	      const double & idStep,
+	      const double & beta,
+	      const Perturbation & pert,
+	      vector<vector<vector<double > > > & timeNew)
+{
+  timeNew.clear();
+  for (double nowTime = 0; nowTime <= idTime + 0.5 * idStep; nowTime += idStep){
+    vector<vector<double > > tmp (old);
+    for (double inteTime = 0; inteTime <= nowTime - 0.5 * step; inteTime += step){
+      double Fe0 = pert.Fe (nowTime - inteTime);
+      double Fe1 = pert.Fe (nowTime - inteTime - step);
+      int corr0Idx, corr1Idx;
+      if (inteTime <= time + 0.5 * step){
+	corr0Idx = (inteTime + 0.5 * step) / step;
+      }
+      else {
+	corr0Idx = -1;
+      }
+      if (inteTime <= time - 0.5 * step){
+	corr1Idx = (inteTime + 1.5 * step) / step;
+      }
+      else {
+	corr1Idx = -1;
+      }
+	
+      for (unsigned ii = 0; ii < dists0[0].nx; ++ii){
+	for (unsigned jj = 0; jj < dists0[0].nv; ++jj){
+	  double value0 = 0;
+	  double value1 = 0;
+	  if (corr0Idx >= 0) {
+	    value0 = dists0[corr0Idx].values[ii][jj];
+	  }
+	  if (corr1Idx >= 0) {
+	    value1 = dists0[corr1Idx].values[ii][jj];
+	  }
+	  
+	  tmp[ii][jj] -= beta * 0.5 * step * (Fe0 * value0 + Fe1 * value1);
+	}
+      }
+    }
+    timeNew.push_back (tmp);
+  }
+}
+
+
 
 void TimeCorrelation::
 print () const
