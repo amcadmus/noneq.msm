@@ -75,6 +75,9 @@ average ()
   if (nframe == 0.) return;
   for (unsigned ii = 0; ii < nx; ++ii){
     for (unsigned jj = 0; jj < nv; ++jj){
+      // if (ii == nx/2 && jj == nv/2){
+      // 	fprintf (stderr,"average: %.16e %.16e     %.16e\n" , backup_values[ii][jj], values[ii][jj], nframe);
+      // }
       values[ii][jj] += backup_values[ii][jj];
       values[ii][jj] /= double(nframe);
     }

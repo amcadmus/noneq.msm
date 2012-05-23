@@ -57,8 +57,12 @@ deposite (const Dofs & dof)
     values[ix][iv] += valuepp;
     if (backup_unbacked_count >= backup_number){
       // std::cout << "backuped" << std::endl;
+      /* fprintf (stderr, "backup: %.16e %.16e\n", backup_unbacked_count, backup_number); */
       for (unsigned ii = 0; ii < nx; ++ii){
 	for (unsigned jj = 0; jj < nv; ++jj){
+	  /* if (ii == nx/2 && jj == nv/2){ */
+	  /*   fprintf (stderr,"average: %.16e %.16e    %.16e\n" , backup_values[ii][jj], values[ii][jj], nframe); */
+	  /* } */
 	  backup_values[ii][jj] += values[ii][jj];
 	  values[ii][jj] = 0.;
 	}

@@ -81,7 +81,7 @@ int main(int argc, char * argv[])
     inte.step (xx, time);
     time += dt;
     count ++;
-    if (int(nstprint) == count){
+    if (int(nstprint) <= count){
       printf ("%f %f %f\n", time, xx.xx[0], xx.vv[0]);
       dist.deposite (xx);
       count = 0;
