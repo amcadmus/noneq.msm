@@ -107,11 +107,13 @@ void TimeCorrelation::
 print () const
 {
   for (unsigned kk = 0; kk < nFrame; ++kk){
-    // double printTime = step * kk;
+    double printTime = step * kk;
+    int timeI = int(printTime);
+    int timeF = int(100 * (printTime - timeI));
     char name[2048];
-    sprintf (name, "corr.x.%05d.out", kk);
+    sprintf (name, "corr.x.%05d.%02d.out", timeI, timeF);
     dists0[kk].print_x (string(name));
-    sprintf (name, "corr.xv.%05d.out", kk);
+    sprintf (name, "corr.vx.%05d.%02d.out", timeI, timeF);
     dists0[kk].print_xv (string(name));
   }
 }

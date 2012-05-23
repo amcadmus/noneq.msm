@@ -130,11 +130,11 @@ int main(int argc, char * argv[])
     char name[2048];
     sprintf (name, "distrib.x.%05d.%02d.out", timeI, timeF);
     xFileNames[ii] = string(name);
-    sprintf (name, "distrib.xv.%05d.%02d.out", timeI, timeF);
+    sprintf (name, "distrib.vx.%05d.%02d.out", timeI, timeF);
     xvFileNames[ii] = string(name);
     sprintf (name, "distrib.quench.x.%05d.%02d.out", timeI, timeF);
     xQuenchFileNames[ii] = string(name);
-    sprintf (name, "distrib.quench.xv.%05d.%02d.out", timeI, timeF);
+    sprintf (name, "distrib.quench.vx.%05d.%02d.out", timeI, timeF);
     xvQuenchFileNames[ii] = string(name);
   }
   
