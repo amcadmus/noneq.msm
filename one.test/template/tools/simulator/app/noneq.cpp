@@ -140,7 +140,7 @@ int main(int argc, char * argv[])
     xvQuenchFileNames[ii] = string(name);
     sprintf (name, "indicator.x.%05d.%02d.out", timeI, timeF);
     diffxFileNames[ii] = string(name);
-    sprintf (name, "indicator.xv.%05d.%02d.out", timeI, timeF);
+    sprintf (name, "indicator.vx.%05d.%02d.out", timeI, timeF);
     diffxvFileNames[ii] = string(name);
   }
   

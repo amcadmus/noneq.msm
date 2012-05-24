@@ -90,7 +90,7 @@ int main(int argc, char * argv[])
 
   dist.average();
 
-  FILE * fp = fopen ("distrib.xv.out", "w");
+  FILE * fp = fopen ("distrib.vx.out", "w");
   if (fp == NULL){
     std::cerr << "cannot open file " << std::endl;
     return 1;

@@ -83,7 +83,7 @@ calCorr (const Dofs & initDof,
       unsigned considerPosi = savePosi;
       savePosi = increasePosi (savedFlux, savePosi);
       for (unsigned ii = 0; ii < countValidSaved; ++ii){
-	dists0[ii].deposite (dof, -savedFlux[considerPosi]);
+	dists0[ii].deposite (dof, savedFlux[considerPosi]);
 	dists1[ii].deposite (quenchDof, savedFlux[considerPosi]);
 	considerPosi = decreasePosi (savedFlux, considerPosi);
       }

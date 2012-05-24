@@ -52,7 +52,7 @@ int main(int argc, char * argv[])
       ("help,h", "print this message")
       ("dt,d", po::value<double > (&dt)->default_value(0.01), "time step [ps]")
       ("nst,n", po::value<double > (&nst)->default_value(1000), "number of time step")
-      ("nstprint,p", po::value<unsigned > (&nstprint)->default_value(10), "print frequency")
+      ("nstprint,p", po::value<unsigned > (&nstprint)->default_value(1000), "print frequency")
       ("gamma,g", po::value<double > (&gamma)->default_value(1.), "gamma [ps^-1]")
       ("temperture,t", po::value<double > (&T)->default_value(300.), "temerature [K]")
       ("double-well-k,k", po::value<double > (&kk)->default_value(8.0), "k parameter of the double well potential [kJ/(mol nm^4)]")
@@ -125,9 +125,7 @@ int main(int argc, char * argv[])
 	     &flux);
   tc.calCorr (xx, nst*dt);
   tc.print();
-
-
-
+  
   int count = 0;
   int countBranch = 0;
   double time = 0;
@@ -169,7 +167,7 @@ int main(int argc, char * argv[])
     char name[2048];
     sprintf (name, "indicator.linear.x.%05d.%02d.out", timeI, timeF);
     dist.print_x (name);
-    sprintf (name, "indicator.linear.xv.%05d.%02d.out", timeI, timeF);
+    sprintf (name, "indicator.linear.vx.%05d.%02d.out", timeI, timeF);
     dist.print_xv (name);
   }
   
