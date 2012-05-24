@@ -8,7 +8,7 @@ make -C tools/simulator -j8 &>> make.log
 rm -f run.log
 
 command="`pwd`/tools/simulator/timeCorr \
---dt $dt --nst $nst --nstprint 100000 --gamma $gamma --temperature $temperature \
+--dt $dt --nst $nst -p 100000 --gamma $gamma --temperature $temperature \
 --double-well-k $double_well_k --double-well-a $double_well_a \
 --branch-feq $branch_feq \
 --noneq-check-feq $noneq_check_feq --noneq-time $noneq_time \
@@ -21,7 +21,7 @@ $command > output.timeCorr &
 echo "# pid is $!" &>> run.log
 
 command="`pwd`/tools/simulator/noneq \
---dt $dt --nst $nst --nstprint 100000 --gamma $gamma --temperature $temperature \
+--dt $dt --nst $nst -p 100000 --gamma $gamma --temperature $temperature \
 --double-well-k $double_well_k --double-well-a $double_well_a \
 --branch-feq $branch_feq \
 --noneq-check-feq $noneq_check_feq --noneq-time $noneq_time \
