@@ -251,7 +251,9 @@ dissipative flux $j$ at time 0.
 
 The core set plays a very important role in the MSM theory. One way to
 identify core set is to consider the ``stability'' of the invariant
-measure $f_0$ under some mapping $\mt_\alpha$ of time step $\alpha$:
+measure $f_0$ under a propagator $\mt_\alpha$
+of time step $\alpha$, which is associated with a
+stochasitc process denoted by $\vect Y_\alpha$:
 \begin{align}
   C_\alpha = \big\{
   \vect x \,\vert\, \mt_\alpha f_0(\vect x) > f_0(\vect x)
@@ -328,7 +330,7 @@ $\vect y$ is in the core set $\widetilde C_\alpha $.
   \rangle_0
 \end{align}
 where $[\Delta \mt_\alpha]^\dagger$ is the adjoint operator of $\Delta
-\mt_\alpha$, which is actually $\Delta \mt_{-\alpha}$. The delta
+\mt_\alpha$. The delta
 function is replaced by the limit of a mollifier $K_\sigma(\vect y)$,
 which is infinitely smooth, compact supported of size $\sigma$,
 bounded and $\int
@@ -343,7 +345,7 @@ in the previous section. By Eqn.~\eqref{eqn:lr},
   \lim_{\sigma \rightarrow 0}\,
   \langle
   [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}
-  \rangle_t \\
+  \rangle_t \\\nonumber
   &=
   \lim_{\sigma \rightarrow 0}\,
   \Big\{
@@ -356,10 +358,34 @@ in the previous section. By Eqn.~\eqref{eqn:lr},
   \langle
   j(0)\,
   \mathbb E_{\vect x}\{
-  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}(s)\,
+  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}(\vect X_s)\,
   \}
   \rangle_0
+  \Big\} \\
+  &=
+  \lim_{\sigma \rightarrow 0}\,
+  \Big\{
+  \langle
+  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}
+  \rangle_0  -
+  \beta
+  \int_0^t\dd s\,
+  F_e(t-s)
+  \Big\langle
+  j(0)\,
+  \mathbb E_{\vect x}
+  \big[
+  \mathbb E_{\vect X_s}
+  (K_{\sigma, \vect y}(\vect Y_\alpha))
+  -
+  K_{\sigma, \vect y}(\vect X_s)
+  \big]
+  \Big\rangle_0
   \Big\}
+\end{align}
+with initial condistions:
+\begin{align}
+  \vect X_0 = \vect x; \quad \vect Y_0 = \vect X_s.
 \end{align}
 Therefore, the core set at time $t$ is defined by
 \begin{align}
