@@ -5,6 +5,8 @@ source parameters.sh
 make -C tools/simulator makedir &> make.log
 make -C tools/simulator -j8 &>> make.log
 
+rm -f run.log
+
 command="`pwd`/tools/simulator/timeCorr \
 --dt $dt --nst $nst --nstprint 100000 --gamma $gamma --temperature $temperature \
 --double-well-k $double_well_k --double-well-a $double_well_a \
@@ -14,9 +16,9 @@ command="`pwd`/tools/simulator/timeCorr \
 --corr-time $corr_time --corr-step $corr_step \
 --warm-time $warm_time --seed $seed --pert-strength $pert_strength"
 
-echo "# command is $command"
+echo "# command is $command" &>> run.log
 $command > output.timeCorr &
-echo "# pid is $!"
+echo "# pid is $!" &>> run.log
 
 command="`pwd`/tools/simulator/noneq \
 --dt $dt --nst $nst --nstprint 100000 --gamma $gamma --temperature $temperature \
@@ -26,7 +28,7 @@ command="`pwd`/tools/simulator/noneq \
 --quench-temperature $quench_temperature --quench-time $quench_time \
 --warm-time $warm_time --seed $seed --pert-strength $pert_strength"
 
-echo "# command is $command"
+echo "# command is $command" &>> run.log
 $command > output.noneq &
-echo "# pid is $!"
+echo "# pid is $!" &>> run.log
 
