@@ -69,10 +69,14 @@ calCorr (const Dofs & initDof,
   vector<double > savedFlux (nFrame, 0.);
   unsigned savePosi = 0;
   unsigned countValidSaved = 0;
+  int printCount = 0;
   
   for (double now = 0; now <= totalTime; now += dt){
     if (countStep == calCorrFeq){
-      std::cout << "now t: " << now << " / " << totalTime << std::endl;
+      if (++printCount == 100){
+	std::cout << "now t: " << now << " / " << totalTime << std::endl;
+	printCount = 0;
+      }
       countStep = 0;
       Dofs quenchDof (dof);
       for (unsigned tt = 0; tt < quenchNumStep; ++tt){
