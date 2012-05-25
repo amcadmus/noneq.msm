@@ -7,6 +7,9 @@ corr_time=10.0
 warm_time=0.0
 pert_strength=1.0
 
+load_saved_corr=no
+saved_corr_dir=~/study/noneq.msm/one.test/saved.corr
+saved_corr_equi_time=1e5
 
 gamma=1.0
 temperature=300.0
