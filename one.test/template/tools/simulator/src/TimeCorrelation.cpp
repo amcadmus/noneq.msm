@@ -171,3 +171,110 @@ print () const
   }
 }
 
+void TimeCorrelation::
+save (const string & filename) const
+{
+  FILE * fp = fopen (filename.c_str(), "w");
+  if (fp == NULL){
+    cerr << "cannot open file " << filename << std::endl;
+    exit(1) ;
+  }
+
+  fwrite (&(dists0[0].x0), sizeof(double), 1, fp);
+  fwrite (&(dists0[0].x1), sizeof(double), 1, fp);
+  fwrite (&(dists0[0].v0), sizeof(double), 1, fp);
+  fwrite (&(dists0[0].v1), sizeof(double), 1, fp);
+  fwrite (&(dists0[0].nx), sizeof(unsigned), 1, fp);
+  fwrite (&(dists0[0].nv), sizeof(unsigned), 1, fp);
+
+  fwrite (&step, sizeof(double), 1, fp);
+  fwrite (&time, sizeof(double), 1, fp);
+  fwrite (&nFrame, sizeof(unsigned), 1, fp);
+  fwrite (&nStep,  sizeof(unsigned), 1, fp);
+  // cout << step << endl;
+  // cout << time << endl;
+  // cout << nFrame << endl;
+  // cout << nStep << endl;
+
+  double * buff = (double *) malloc (sizeof(double) * dists0[0].nx * dists0[0].nv);
+
+  for (unsigned kk = 0; kk < nFrame; ++kk){
+    for (unsigned ii = 0; ii < dists0[0].nx; ++ii) {
+      for (unsigned jj = 0; jj < dists0[0].nv; ++jj) {
+	buff[ii*dists0[0].nv +jj] = dists0[kk].values[ii][jj];
+      }
+    }
+    fwrite (buff, sizeof(double), dists0[0].nx*dists0[0].nv, fp);
+  }
+
+  free (buff);
+  fclose (fp);
+}
+
+void TimeCorrelation::
+load (const string & filename) 
+{
+  FILE * fp = fopen (filename.c_str(), "r");
+  if (fp == NULL){
+    cerr << "cannot open file " << filename << std::endl;
+    exit(1) ;
+  }
+
+  double x0, x1, v0, v1;
+  unsigned nx, nv;
+  size_t rv;
+  rv = fread (&x0, sizeof(double), 1, fp);
+  rv = fread (&x1, sizeof(double), 1, fp);
+  rv = fread (&v0, sizeof(double), 1, fp);
+  rv = fread (&v1, sizeof(double), 1, fp);
+  rv = fread (&nx, sizeof(unsigned), 1, fp);
+  rv = fread (&nv, sizeof(unsigned), 1, fp);
+
+  rv = fread (&step, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&time, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&nFrame, sizeof(unsigned), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&nStep,  sizeof(unsigned), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+
+  dists0.resize (nFrame);
+  dists1.resize (nFrame);
+  
+  for (unsigned ii = 0; ii < nFrame; ++ii){
+    dists0[ii].reinit (x0, x1, nx, v0, v1, nv);
+    dists1[ii].reinit (x0, x1, nx, v0, v1, nv);
+  }
+
+  double * buff = (double *) malloc (sizeof(double) * nx * nv);
+
+  for (unsigned kk = 0; kk < nFrame; ++kk){
+    rv = fread (buff, sizeof(double), nx*nv, fp);
+    if (rv != nx*nv){
+      cerr << "error reading corr file " << endl;
+      exit(1);
+    }
+    for (unsigned ii = 0; ii < nx; ++ii) {
+      for (unsigned jj = 0; jj < nv; ++jj) {
+	dists0[kk].values[ii][jj] = buff[ii*nv +jj];
+      }
+    }
+  }
+
+  free (buff);
+  fclose (fp);
+}
+

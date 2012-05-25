@@ -42,6 +42,8 @@ public:
 		     const Perturbation & pert,
 		     vector<vector<vector<double > > > & timeNew);
   void print () const ;
+  void save (const string & filename) const;
+  void load (const string & filename);
 }
     ;
 

@@ -44,7 +44,8 @@ int main(int argc, char * argv[])
   double corrStep;
   // unsigned noneqCheckNumFeq;
   unsigned branchNumFeq;
-      
+  string sfile, lfile;
+  
   unsigned long seed;
   
   po::options_description desc ("Allow options");
@@ -65,8 +66,11 @@ int main(int argc, char * argv[])
       ("quench-temperature", po::value<double > (&quenchTemperture)->default_value(150.), "quench temperature [K]")
       ("quench-time", po::value<double > (&quenchTime)->default_value(1.), "quench time [ps]")
       ("warm-time", po::value<double > (&warmTime)->default_value(100.), "warm up time of perturbation [ps]")
-      ("seed",po::value<unsigned long > (&seed)->default_value(1), "random seed")      
-      ("pert-strength,s",po::value<double > (&pertSt)->default_value(1.0), "perturbation strength [kJ/(mol nm)]");
+      ("pert-strength,s",po::value<double > (&pertSt)->default_value(1.0), "perturbation strength [kJ/(mol nm)]")
+      ("save-corr",po::value<string > (&sfile), "save correlation")
+      ("load-corr",po::value<string > (&lfile), "load saved correlation")
+      ("seed",po::value<unsigned long > (&seed)->default_value(1), "random seed");
+  
       
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -126,8 +130,17 @@ int main(int argc, char * argv[])
 	     (quenchTime + .5*dt) / dt,
 	     &quenchInte,
 	     &flux);
-  tc.calCorr (xx, nst*dt);
-  // tc.print();
+  if (!vm.count("load-corr")){
+    tc.calCorr (xx, nst*dt);
+    if (vm.count("save-corr")){
+      tc.save (sfile);
+      tc.print();
+    }
+  }
+  else {
+    cout << "# load corr file " << lfile << endl;
+    tc.load (lfile);
+  }
   
   int count = 0;
   int countBranch = 0;
