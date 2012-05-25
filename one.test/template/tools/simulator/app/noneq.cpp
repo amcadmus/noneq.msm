@@ -41,6 +41,8 @@ int main(int argc, char * argv[])
   double quenchkT;
   unsigned noneqCheckNumFeq;
   unsigned branchNumFeq;
+  double x0, x1, v0, v1;
+  unsigned nx, nv;
       
   unsigned long seed;
   
@@ -59,9 +61,15 @@ int main(int argc, char * argv[])
       ("noneq-time", po::value<double > (&noneqTime)->default_value(200.), "non-equilibrium simulation time [ps]")
       ("quench-temperature", po::value<double > (&quenchTemperture)->default_value(150.), "quench temperature [K]")
       ("quench-time", po::value<double > (&quenchTime)->default_value(1.), "quench time [ps]")
+      ("pert-strength,s",po::value<double > (&pertSt)->default_value(1.0), "perturbation strength [kJ/(mol nm)]")
       ("warm-time", po::value<double > (&warmTime)->default_value(100.), "warm up time of perturbation [ps]")
-      ("seed",po::value<unsigned long > (&seed)->default_value(1), "random seed")      
-      ("pert-strength,s",po::value<double > (&pertSt)->default_value(1.0), "perturbation strength [kJ/(mol nm)]");
+      ("x-low", po::value<double > (&x0)->default_value (-2.0), "the lower bound of x range considered")
+      ("x-up",  po::value<double > (&x1)->default_value ( 2.0), "the upper bound of x range considered")
+      ("v-low", po::value<double > (&v0)->default_value (-8.0), "the lower bound of v range considered")
+      ("v-up",  po::value<double > (&v1)->default_value ( 8.0), "the upper bound of v range considered")
+      ("x-grid", po::value<unsigned > (&nx)->default_value (50), "the number of grid point of x")
+      ("v-grid", po::value<unsigned > (&nv)->default_value (50), "the number of grid point of v")
+      ("seed",po::value<unsigned long > (&seed)->default_value(1), "random seed");
       
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -93,6 +101,10 @@ int main(int argc, char * argv[])
   std::cout << "# noneq check Feq: " << noneqCheckFeq << " [ps]" << std::endl;
   std::cout << "# noneq check every: " << noneqCheckNumFeq << " steps" << std::endl;
   std::cout << "# noneq time: " << noneqTime << " [ps]" << std::endl;
+  std::cout << "# xrange: [ " << x0 << " , " << x1 << " ] " << std::endl;
+  std::cout << "# vrange: [ " << v0 << " , " << v1 << " ] " << std::endl;
+  std::cout << "# nx: " << nx << std::endl;
+  std::cout << "# nv: " << nv << std::endl;
   std::cout << "###################################################" << std::endl;  
 
   DoubleWell dw (kk, aa);
@@ -128,8 +140,8 @@ int main(int argc, char * argv[])
     checkTimes[ii] = ii * noneqCheckFeq;
     int timeI = int(checkTimes[ii]);
     int timeF = int(100 * (checkTimes[ii] - timeI));
-    dists[ii].reinit (-2, 2, 50, -8, 8, 50);
-    distsQuench[ii].reinit (-2, 2, 50, -8, 8, 50);
+    dists      [ii].reinit (x0, x1, nx, v0, v1, nv);
+    distsQuench[ii].reinit (x0, x1, nx, v0, v1, nv);
     char name[2048];
     sprintf (name, "distrib.x.%05d.%02d.out", timeI, timeF);
     xFileNames[ii] = string(name);

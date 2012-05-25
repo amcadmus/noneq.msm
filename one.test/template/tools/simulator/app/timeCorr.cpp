@@ -45,6 +45,8 @@ int main(int argc, char * argv[])
   // unsigned noneqCheckNumFeq;
   unsigned branchNumFeq;
   string sfile, lfile;
+  double x0, x1, v0, v1;
+  unsigned nx, nv;
   
   unsigned long seed;
   
@@ -65,10 +67,16 @@ int main(int argc, char * argv[])
       ("corr-step", po::value<double > (&corrStep)->default_value(.01), "step of correlation [ps]")
       ("quench-temperature", po::value<double > (&quenchTemperture)->default_value(150.), "quench temperature [K]")
       ("quench-time", po::value<double > (&quenchTime)->default_value(1.), "quench time [ps]")
+      ("pert-strength,s", po::value<double > (&pertSt)->default_value(1.0), "perturbation strength [kJ/(mol nm)]")
       ("warm-time", po::value<double > (&warmTime)->default_value(100.), "warm up time of perturbation [ps]")
-      ("pert-strength,s",po::value<double > (&pertSt)->default_value(1.0), "perturbation strength [kJ/(mol nm)]")
-      ("save-corr",po::value<string > (&sfile), "save correlation")
-      ("load-corr",po::value<string > (&lfile), "load saved correlation")
+      ("save-corr", po::value<string > (&sfile), "save correlation")
+      ("load-corr", po::value<string > (&lfile), "load saved correlation")
+      ("x-low", po::value<double > (&x0)->default_value (-2.0), "the lower bound of x range considered")
+      ("x-up",  po::value<double > (&x1)->default_value ( 2.0), "the upper bound of x range considered")
+      ("v-low", po::value<double > (&v0)->default_value (-8.0), "the lower bound of v range considered")
+      ("v-up",  po::value<double > (&v1)->default_value ( 8.0), "the upper bound of v range considered")
+      ("x-grid", po::value<unsigned > (&nx)->default_value (50), "the number of grid point of x")
+      ("v-grid", po::value<unsigned > (&nv)->default_value (50), "the number of grid point of v")
       ("seed",po::value<unsigned long > (&seed)->default_value(1), "random seed");
   
       
@@ -104,6 +112,10 @@ int main(int argc, char * argv[])
   std::cout << "# noneq check Feq: " << noneqCheckFeq << " [ps]" << std::endl;
   // std::cout << "# noneq check every: " << noneqCheckNumFeq << " steps" << std::endl;
   std::cout << "# noneq time: " << noneqTime << " [ps]" << std::endl;
+  std::cout << "# xrange: [ " << x0 << " , " << x1 << " ] " << std::endl;
+  std::cout << "# vrange: [ " << v0 << " , " << v1 << " ] " << std::endl;
+  std::cout << "# nx: " << nx << std::endl;
+  std::cout << "# nv: " << nv << std::endl;
   std::cout << "###################################################" << std::endl;  
 
   DoubleWell dw (kk, aa);
@@ -125,7 +137,7 @@ int main(int argc, char * argv[])
 
   TimeCorrelation tc;
   tc.reinit (corrStep, corrTime,
-	     -2, 2, 50, -8, 8, 50,
+	     x0, x1, nx, v0, v1, nv,
 	     &inte,
 	     (quenchTime + .5*dt) / dt,
 	     &quenchInte,
@@ -145,8 +157,10 @@ int main(int argc, char * argv[])
   int count = 0;
   int countBranch = 0;
   double time = 0;
-  Distribution_1d dist       (-2, 2, 50, -8, 8, 50);
-  Distribution_1d distQuench (-2, 2, 50, -8, 8, 50);
+  // Distribution_1d dist       (-2, 2, 50, -8, 8, 50);
+  // Distribution_1d distQuench (-2, 2, 50, -8, 8, 50);
+  Distribution_1d dist       (x0, x1, nx, v0, v1, nv);
+  Distribution_1d distQuench (x0, x1, nx, v0, v1, nv);
 
   for (double ii = 0.; ii < nst+0.1; ii += 1.){
     inte.step (xx, 0.);

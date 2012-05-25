@@ -116,6 +116,10 @@ calIndicator (const vector<vector<double > > & old,
 	      vector<vector<vector<double > > > & timeNew)
 {
   timeNew.clear();
+  if (old.size() != dists0[0].nx || old[0].size() != dists0[0].nv){
+    cerr << "inconsistent size of grid" << endl;
+    exit (1);
+  }
   for (double nowTime = 0; nowTime <= idTime + 0.5 * idStep; nowTime += idStep){
     vector<vector<double > > tmp (old);
     for (double inteTime = 0; inteTime <= nowTime - 0.5 * step; inteTime += step){

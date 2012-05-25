@@ -9,7 +9,7 @@ pert_strength=1.0
 
 load_saved_corr=no
 saved_corr_dir=~/study/noneq.msm/one.test/saved.corr
-saved_corr_equi_time=1e5
+saved_corr_nst=1e9
 
 gamma=1.0
 temperature=300.0
@@ -18,5 +18,11 @@ double_well_a=1.0
 branch_feq=1.0
 quench_temperature=150
 quench_time=1.0
+x0=-2.0
+x1=2.0
+v0=-8.0
+v1=8.0
+nx=60
+nv=50
 seed=`date +%s`
 
