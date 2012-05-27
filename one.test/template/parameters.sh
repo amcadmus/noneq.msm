@@ -1,6 +1,6 @@
 dt=1e-4
-nst=1e9
-noneq_check_feq=1.0
+nst=1e6
+noneq_check_feq=0.2
 noneq_time=20.0
 corr_step=0.01
 corr_time=10.0

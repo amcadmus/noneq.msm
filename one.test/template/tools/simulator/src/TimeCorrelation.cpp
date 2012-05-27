@@ -138,7 +138,8 @@ calIndicator (const vector<vector<double > > & old,
       else {
 	corr1Idx = -1;
       }
-	
+      // printf ("step: %f value0 %f value1 %f Fe0 %f Fe1 %f\n",
+      // 	      step, value0, value1, Fe0, Fe1);	
       for (unsigned ii = 0; ii < dists0[0].nx; ++ii){
 	for (unsigned jj = 0; jj < dists0[0].nv; ++jj){
 	  double value0 = 0;
@@ -151,6 +152,8 @@ calIndicator (const vector<vector<double > > & old,
 	  }
 	  
 	  tmp[ii][jj] -= beta * 0.5 * step * (Fe0 * value0 + Fe1 * value1);
+	  // printf ("step: %f value0 %f value1 %f Fe0 %f Fe1 %f\n",
+	  // 	  step, value0, value1, Fe0, Fe1);
 	}
       }
     }

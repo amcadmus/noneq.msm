@@ -47,7 +47,7 @@ double PertConstTilt::
 Fe (const double & time) const
 {
   double tmp = 1.;
-  if (time < warmTime){
+  if (warmTime > 0.0 && time < warmTime){
     tmp = time / warmTime;
   }
   return tmp;
