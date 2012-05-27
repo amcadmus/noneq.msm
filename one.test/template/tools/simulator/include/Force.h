@@ -7,7 +7,7 @@ class Perturbation
 {
 public:
   virtual void operator () (const Dofs & dofs,
-			    Dofs & pvalue) const = 0;
+  			    Dofs & pvalue) const = 0;
   virtual double Fe (const double & time) const = 0;
   virtual void operator () (const Dofs & dofs,
 			    const double & time,
@@ -50,7 +50,7 @@ public:
   PertConstTilt (const double & s,
 		 const double warmTime = 0.);
   virtual void operator () (const Dofs & dofs,
-			    Dofs & pvalue) const;
+  			    Dofs & pvalue) const;
   virtual double Fe (const double & time) const;
   virtual void operator () (const Dofs & dofs,
 			    const double & time,

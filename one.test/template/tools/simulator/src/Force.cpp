@@ -40,13 +40,13 @@ void PertConstTilt::
 operator () (const Dofs & dofs,
 	     Dofs & pvalue) const
 {
-  pvalue.vv[0] = strength;
+  pvalue.vv[0] = 1.0;
 }
 
 double PertConstTilt::
 Fe (const double & time) const
 {
-  double tmp = 1.;
+  double tmp = strength;
   if (warmTime > 0.0 && time < warmTime){
     tmp = time / warmTime;
   }
