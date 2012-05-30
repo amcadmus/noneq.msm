@@ -48,7 +48,7 @@ Fe (const double & time) const
 {
   double tmp = strength;
   if (warmTime > 0.0 && time < warmTime){
-    tmp = time / warmTime;
+    tmp *= time / warmTime;
   }
   return tmp;
 }
