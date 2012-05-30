@@ -170,6 +170,7 @@ int main(int argc, char * argv[])
     if (int(nstprint) == count){
       count = 0;
       printf ("%f %f %f\n", time, xx.xx[0], xx.vv[0]);
+      fflush (stdout);      
     }
     if (countBranch == int(branchNumFeq)){
       countBranch = 0;
