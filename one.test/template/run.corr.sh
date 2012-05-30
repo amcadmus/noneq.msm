@@ -58,6 +58,7 @@ else
 --warm-time $warm_time --seed $seed --pert-strength $pert_strength"
 fi
 
+echo "# run on `hostname`"
 echo "# command is $command" &>> run.corr.log
 $command > output.timeCorr 2> error.timeCorr&
 echo "# pid is $!" &>> run.corr.log
