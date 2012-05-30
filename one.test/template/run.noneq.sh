@@ -16,7 +16,7 @@ command="`pwd`/tools/simulator/noneq \
 --x-low $x0 --x-up $x1 --v-low $v0 --v-up $v1 --x-grid $nx --v-grid $nv \
 --warm-time $warm_time --seed $seed --pert-strength $pert_strength"
 
-echo "# run on `hostname`"
+echo "# run on `hostname`" &>> run.noneq.log
 echo "# command is $command" &>> run.noneq.log
 $command > output.noneq 2> error.noneq &
 echo "# pid is $!" &>> run.noneq.log
