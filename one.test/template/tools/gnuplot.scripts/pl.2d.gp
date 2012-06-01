@@ -47,29 +47,29 @@ unset ylabel
 
 set origin 0.25, 0.45
 unset xlabel
-set title 't = 50 ps'
-spl 'indicator.vx.00050.00.out' not
+set title 't = 30 ps'
+spl 'indicator.vx.00030.00.out' not
 
 set origin 0.5, 0.45
-set title 't = 100 ps'
-spl 'indicator.vx.00100.00.out' not
+set title 't = 60 ps'
+spl 'indicator.vx.00060.00.out' not
 
 set origin 0.75, 0.45
-set title 't = 150 ps'
-spl 'indicator.vx.00150.00.out' not
+set title 't = 100 ps'
+spl 'indicator.vx.00100.00.out' not
 
 
 unset title
 set xlabel "x [nm]"
 
 set origin 0.25, 0.0
-spl 'indicator.linear.vx.00050.00.out' not
+spl 'indicator.linear.vx.00030.00.out' not
 
 set origin 0.5, 0.0
-spl 'indicator.linear.vx.00100.00.out' not
+spl 'indicator.linear.vx.00060.00.out' not
 
 set origin 0.75, 0.0
-spl 'indicator.linear.vx.00150.00.out' not
+spl 'indicator.linear.vx.00100.00.out' not
 
 
 
