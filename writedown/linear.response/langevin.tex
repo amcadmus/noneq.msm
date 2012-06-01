@@ -65,7 +65,7 @@ perturbed Langevin equation:
 \end{align}
 Where $\vect C$ and $\vect D$ are perturbations to the system, and
 $F_e(t)$ is the strength of the perturbation as a function of time.
-The phase space imcompressibility condition is assumed:
+The phase space incompressibility condition is assumed:
 \begin{align}
   \nabla_{\vect q}\cdot\vect C + \nabla_{\vect p}\cdot\vect D = 0
 \end{align}
@@ -74,7 +74,7 @@ q, \vect p\}$) is subject to the Kolmogorov forward equation:
 \begin{align}
   \frac{\partial}{\partial t} f(\vect x, t) - \fwg f(\vect x, t) = 0
 \end{align}
-where $\fwg$ is the forward infiniesimal generator gieven by
+where $\fwg$ is the forward infiniesimal generator given by
 \begin{align}
   \fwg =
   \frac{\sigma^2}2\Delta_{\vect p}
@@ -253,7 +253,7 @@ The core set plays a very important role in the MSM theory. One way to
 identify core set is to consider the ``stability'' of the invariant
 measure $f_0$ under a propagator $\mt_\alpha$
 of time step $\alpha$, which is associated with a
-stochasitc process denoted by $\vect Y_\alpha$:
+stochastic process denoted by $\vect Y_\alpha$:
 \begin{align}
   C_\alpha = \big\{
   \vect x \,\vert\, \mt_\alpha f_0(\vect x) > f_0(\vect x)
@@ -361,7 +361,7 @@ in the previous section. By Eqn.~\eqref{eqn:lr},
   [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}(\vect X_s)\,
   \}
   \rangle_0
-  \Big\} \\
+  \Big\} \\ \label{eqn:main}
   &=
   \lim_{\sigma \rightarrow 0}\,
   \Big\{
@@ -383,7 +383,7 @@ in the previous section. By Eqn.~\eqref{eqn:lr},
   \Big\rangle_0
   \Big\}
 \end{align}
-with initial condistions:
+with initial conditions:
 \begin{align}
   \vect X_0 = \vect x; \quad \vect Y_0 = \vect X_s.
 \end{align}
@@ -396,6 +396,92 @@ Therefore, the core set at time $t$ is defined by
   [\mathcal P\circ\Delta \mt_\alpha f_t](\vect y) > 0
   \Big\}
 \end{align}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.35\textwidth]{figs/fig-pot.eps}
+  \caption{The potential with and without perturbation.}
+  \label{fig:tmp1}
+\end{figure}
+
+
+\section{Numerical test}
+
+We test the idea by a one-dimensional model system: one particle in a
+double-well potential. For convenience, we let the mass of the
+particle to be 1 \textsf{amu}. The Hamiltonian of the system is given
+by:
+\begin{align}
+  \mh (\vect p, \vect q) = \frac 12 \vect p^2 + U(\vect q) 
+\end{align}
+with
+\begin{align}
+  U(\vect q) = \frac12 k (\vect q^2 - a^2)^2
+\end{align}
+Here $k = 8$ $\textsf{kJ} / (\textsf{mol nm}^4)$, and $ a = 1 \textsf{nm}$.
+Notice at room temperature $300 \textsf{K}$, $k_BT = 2.48$ \textsf{kJ/mol}.
+See the red line in Fig.~\ref{fig:tmp1}.
+%$\textsf{kJ} / (\textsf{mol nm}^4)}$
+The perturbation is given by
+\begin{align}
+  \vect C(\vect p, \vect q) = 0; \qquad
+  \vect D(\vect p, \vect q) = -\nabla_{\vect q} V(\vect q) = 1
+\end{align}
+Here $V(\vect q) = -\vect q$, which effectively tilt the original
+potential $U(\vect q)$. The strength of the perturbation $F_e(t)$ is given
+by the following function:
+\begin{align}
+  F_e(t) = 
+  \begin{cases}
+    F_e^{\textrm{max}}\times (t / t_c) & t < t_c \\
+    F_e^{\textrm{max}} & t \geq t_c
+  \end{cases}
+\end{align}
+$t_c = 100$ \textsf{ps} so that the perturbation increases slow
+enough: the typical decaying time scale of the correlation function
+in~\eqref{eqn:main} is roughly 3 \textsf{ps}.  We choose $\mt_\alpha$
+to be the propagator of the Langevin dynamics at temperature $150$
+\textsf{K} with $\alpha = 1$ \textsf{ps}.  Since the dynamics is in
+1-d, the projection is identity.  We consider the stability of the
+distribution $f_t$ at time $t$: $-\Delta\mt_\alpha f_t$. The smaller
+this value, the more stable the core sets are.
+
+See Fig. \ref{fig:tmp2} and \ref{fig:tmp3} for numerical result.  Both
+the direct non-equilirbium simulaiton and the linear response
+approximation are presented. Time slice $t = 1$, 30, 60 and 100
+\textsf{ps} are shown.  When the perturbation is small,
+i.e. $F_e^{\textrm{max}} = 2$, the direct non-equilibrium simulation
+and the linear response results consistent very well. As the
+perturbation grows stronger, the left well becomes less stable, while
+the right well becomes more stable.  When the perturbation is big,
+i.e. $F_e^{\textrm{max}} = 6$, the linear response results are no
+longer precise. When $t\geq 60$ \textsf{ps}, the left well basically
+disappears, however, the linear response calculation present a well
+that is nearly as stable as the right well.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]
+  {figs/warm100.str2.0.nst1e09.smallgrid/fig-2d.eps}
+  \caption{The stability of distribution $f_t$ under perturbation of
+    $F_e^{\textrm{max}} = 2$.
+    Upper row: the direct non-equilibrium simulation. Lower row: the
+    results of linear response formula~\eqref{eqn:main}.
+  }
+  \label{fig:tmp2}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]
+  {figs/warm100.str6.0.nst1e09.smallgrid/fig-2d.eps}
+  \caption{The stability of distribution $f_t$ under perturbation of
+    $F_e^{\textrm{max}} = 6$.  Upper row: the direct non-equilibrium
+    simulation. Lower row: the results of linear response
+    formula~\eqref{eqn:main}.  }
+  \label{fig:tmp3}
+\end{figure}
 
 
 \section*{References}

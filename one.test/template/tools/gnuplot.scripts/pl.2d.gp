@@ -9,8 +9,8 @@ unset surface
 set style data pm3d
 set style function pm3d
 set ticslevel 0
-set xlabel "x [nm]" 
-set ylabel "v [nm/ps]"
+set xlabel "q [nm]" 
+set ylabel "p [nm/ps]"
 set xtics 1.0
 set ytics 2.0
 set pm3d implicit at b
@@ -38,7 +38,7 @@ spl 'indicator.vx.00000.00.out' not
 
 set origin 0.0, 0.0
 unset title
-set xlabel "x [nm]" 
+set xlabel "q [nm]" 
 #set title 'direct, t=00000 ps' font "tt,16"
 spl 'indicator.linear.vx.00000.00.out' not
 
@@ -60,7 +60,7 @@ spl 'indicator.vx.00100.00.out' not
 
 
 unset title
-set xlabel "x [nm]"
+set xlabel "q [nm]"
 
 set origin 0.25, 0.0
 spl 'indicator.linear.vx.00030.00.out' not
