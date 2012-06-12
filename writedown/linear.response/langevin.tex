@@ -581,7 +581,7 @@ By writing Eqn.~\eqref{eqn:langevin-1} and \eqref{eqn:langevin-2} as
   \dd t
   +
   \left[
-    \begin{array}{ll}
+    \begin{array}{cc}
       \epsilon \vect I & 0\\
       0 & \sigma\vect I
     \end{array}
@@ -637,39 +637,40 @@ antisymmetric parts~\cite{baiesi2010nonequilibrium2}, we have:
   \Delta F_e(s)\,
   \vect p_s\cdot \vect D(\vect q_s,\vect p_s)\,
   \dd s\\  \label{eqn:girsanov-langevin-2}
-  &\,+
+  &\,-
   \frac 1{\sigma^2}
   \int_0^t
   \Delta F_e(s)\,
-  \nabla_q\mh(\vect q_s,\vect p_s)\cdot \vect D(\vect q_s,\vect p_s)\,
+  \vect F^1(\vect q_s,\vect p_s)\cdot \vect D(\vect q_s,\vect p_s)\,
   \dd s  
   +
   \frac 1{\sigma^2}
   \int_0^t
-  \Delta F_e(s) \vect D(\vect q_s,\vect p_s)\cdot \dd \vect p_s
+  \Delta F_e(s) \vect D(\vect q_s,\vect p_s)\cdot \dd \vect p_s,
 \end{align}
-The first line of the r.h.s. of Eqn.~\eqref{eqn:girsanov-langevin-2}
-is the time integrated excess entropy flux, which is
-time-antisymmetric, while the second line is the excess dynamic
-activity that is time-symmetric.  Inserting
-Eqn.~\eqref{eqn:girsanov-langevin-2} into \eqref{eqn:noneq-pert-1}, we
-have
+where $\vect F^1(\vect q_s,\vect p_s) = -\nabla_{\vect q}\mh(\vect
+q_s,\vect p_s) + F_e^1(t) \vect D(\vect q_s,\vect p_s)$.  The first
+line of the r.h.s. of Eqn.~\eqref{eqn:girsanov-langevin-2} is the time
+integrated excess entropy flux, which is time-antisymmetric, while the
+second line is the excess dynamic activity that is time-symmetric.
+Inserting Eqn.~\eqref{eqn:girsanov-langevin-2} into
+\eqref{eqn:noneq-pert-1}, we have
 \begin{align}\nonumber
-  \langle Q(t)\rangle_{\mu}^{2}  -\langle Q(t)\rangle_{\mu}^{1}
+  \langle O(t)\rangle_{\mu}^{2}  -\langle O(t)\rangle_{\mu}^{1}
   =&\,
   \frac\beta 2
   \int_0^t\dd s\,
   \Delta F_e(s)\,
   \big\langle
-  \vect p_s\cdot\vect D(\vect X_s)\,Q(\vect X_t)
+  \vect p_s\cdot\vect D(\vect X_s)\,O(\vect X_t)
   \big\rangle_\mu^1 \\  \label{eqn:noneq-pert-2}
   &
-  +
+  -
   \frac1{\sigma^2}
   \int_0^t\dd s\,
   \Delta F_e(s)\,
   \big\langle
-  \nabla_{\vect q}\mh(\vect X_s)\cdot\vect D(\vect X_s)\,Q(\vect X_t)
+  \vect F^1(\vect X_s)\cdot\vect D(\vect X_s)\,O(\vect X_t)
   \big\rangle_\mu^1
   +
   \frac1{\sigma^2}
@@ -677,7 +678,7 @@ have
   \Delta F_e(s)\,
   \big\langle
   \dd \vect p_s\cdot\,
-  \vect D(\vect X_s)\,Q(\vect X_t)
+  \vect D(\vect X_s)\,O(\vect X_t)
   \big\rangle_\mu^1  
 \end{align}
 If $\vect D(\vect x)$ is independent of momentum and is conservative,
@@ -692,22 +693,22 @@ further simplified, because
 \end{align}
 then \eqref{eqn:noneq-pert-2} changes to
 \begin{align}\nonumber
-  \langle Q(t)\rangle_{\mu}^{2}  -\langle Q(t)\rangle_{\mu}^{1}
+  \langle O(t)\rangle_{\mu}^{2}  -\langle O(t)\rangle_{\mu}^{1}
   =&\,
-  \frac\beta 2
+  -\frac\beta 2
   \int_0^t\dd s\,
   \Delta F_e(s)\,
   \big\langle
-  \vect p_s\cdot\vect D(\vect X_s)\,Q(\vect X_t)
+  \vect p_s\cdot\nabla_{\vect q} V(\vect X_s)\,O(\vect X_t)
   \big\rangle_\mu^1 \\\nonumber
-  & -
+  & +
   \frac1{\sigma^2}
   \int_0^t\dd s\,
   \Delta F_e(s)\,
   \big\langle
-  \nabla_{\vect q}\mh(\vect X_s)
+  \vect F^1(\vect X_s)
   \cdot\nabla_{\vect q} V(\vect X_s)
-  \,Q(\vect X_t)
+  \,O(\vect X_t)
   \big\rangle_\mu^1 \\\nonumber
   & -
   \frac1{\sigma^2}
@@ -718,7 +719,7 @@ then \eqref{eqn:noneq-pert-2} changes to
   \big\langle
   \vect p_s\cdot\,
   \nabla_{\vect q} V(\vect X_s)
-  \,Q(\vect X_t)
+  \,O(\vect X_t)
   \big\rangle_\mu^1    \\\label{eqn:noneq-pert-3}
   & +
   \frac1{\sigma^2}
@@ -728,7 +729,7 @@ then \eqref{eqn:noneq-pert-2} changes to
   \big\langle
   \vect p_s\vect p_s:
   \nabla^2_{\vect q} V(\vect X_s)
-  \,Q(\vect X_t)
+  \,O(\vect X_t)
   \big\rangle_\mu^1      
 \end{align}
 
@@ -747,6 +748,8 @@ then \eqref{eqn:noneq-pert-2} changes to
   weaker, for example $F_e^2$ starts from $\mu_2$ and $F_e^1$ starts
   from $\mu_1$, however, $\mu_2$ should be similar to $\mu_1$,
   otherwise the sampling is of poor accuracy.
+  (2) means all possible trajectories of perturbation $F_e^2$ should be
+  effciently sampled by perturbation $F_e^1$.
 \item Eqn.~\eqref{eqn:noneq-pert-3}, may be used in this way:
   assume we want to study the dynamics of $F_e^2$, which is very slow
   and difficult to handle directly.
@@ -755,6 +758,11 @@ then \eqref{eqn:noneq-pert-2} changes to
   And then use \eqref{eqn:noneq-pert-3} to calculate the averages of
   the target dynamics $F_e^2$.
   A possible choice of  $F_e^1$ may be  $F_e^1 = \alpha F_e^2,\ \alpha > 1$.
+  On the other hand, perturbation $F_e^2$ should be not very far
+  from $F_e^1$, that means $F_e^2$ can not arbitrarily accelerate
+  $F_e^1$. Fortunately we have the freedom to design $F_e^2$, therefore,
+  an error estimate may help, and a path optimization of $F_e^2$
+  may be developed.
 \item The perturbation $F_e^1$ can be kept a constant so that the
   system reaches a stationary state.
   $F_e^2$ is perturbation from that stationary state.
@@ -762,10 +770,11 @@ then \eqref{eqn:noneq-pert-2} changes to
   \eqref{eqn:noneq-pert-3} can be calculated easier, because
   what we sample is the stationary state, rather the trajectories.
   When the system is far from the stationary state, the
-  accuracy is low.
+  accuracy is low. 
 \item It may also be possible to study multiple reference dynamics,
   and use interpolations to increase the accuracy of the linear
   approximation.
+\item Extension to nonlinear response?
 \end{itemize}
 }
 
