@@ -24,10 +24,10 @@ fi
 if echo $load_saved_corr | grep yes &> /dev/null; then
     equi_time=`echo "$dt * $saved_corr_nst" | octave | grep ans | cut -d '=' -f 2`
     print_equi_time=`printf %.2f $equi_time`
-    saved_corr_name=save.corr.step$print_corr_step.time$print_corr_time.equiT$print_equi_time.grid$print_x0.$print_x1.$print_nx.$print_v0.$print_v1.$print_nv
+    saved_corr_name=$project_name.save.corr.step$print_corr_step.time$print_corr_time.equiT$print_equi_time.grid$print_x0.$print_x1.$print_nx.$print_v0.$print_v1.$print_nv
     if test -f $saved_corr_dir/$saved_corr_name; then
 	echo "# existing saved corr $saved_corr_dir/$saved_corr_name, load it"
-	command="`pwd`/tools/simulator/timeCorr \
+	command="`pwd`/tools/simulator/$project_name.timeCorr \
 --dt $dt --nst $nst -p 100000 --gamma $gamma --temperature $temperature \
 --double-well-k $double_well_k --double-well-a $double_well_a \
 --branch-feq $branch_feq \
@@ -44,9 +44,9 @@ if echo $load_saved_corr | grep yes &> /dev/null; then
 else
     equi_time=`echo "$dt * $nst" | octave | grep ans | cut -d '=' -f 2`
     print_equi_time=`printf %.2f $equi_time`
-    saved_corr_name=save.corr.step$print_corr_step.time$print_corr_time.equiT$print_equi_time.grid$print_x0.$print_x1.$print_nx.$print_v0.$print_v1.$print_nv
+    saved_corr_name=$project_name.save.corr.step$print_corr_step.time$print_corr_time.equiT$print_equi_time.grid$print_x0.$print_x1.$print_nx.$print_v0.$print_v1.$print_nv
     echo "# save corr to $saved_corr_dir/$saved_corr_name"
-    command="`pwd`/tools/simulator/timeCorr \
+    command="`pwd`/tools/simulator/$project_name.timeCorr \
 --dt $dt --nst $nst -p 100000 --gamma $gamma --temperature $temperature \
 --double-well-k $double_well_k --double-well-a $double_well_a \
 --branch-feq $branch_feq \

@@ -7,7 +7,7 @@ make -C tools/simulator -j8 &>> make.log
 
 rm -f run.noneq.log
 
-command="`pwd`/tools/simulator/noneq \
+command="`pwd`/tools/simulator/$project_name.noneq \
 --dt $dt --nst $nst -p 100000 --gamma $gamma --temperature $temperature \
 --double-well-k $double_well_k --double-well-a $double_well_a \
 --branch-feq $branch_feq \

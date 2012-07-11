@@ -6,6 +6,7 @@ corr_step=0.01
 corr_time=10.0
 warm_time=0.0
 pert_strength=1.0
+project_name=tiltDoubleWell
 
 load_saved_corr=no
 saved_corr_dir=~/study/noneq.msm/one.test/saved.corr
