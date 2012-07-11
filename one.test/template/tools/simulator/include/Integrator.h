@@ -3,6 +3,7 @@
 
 #include "Defines.h"
 #include "Force.h"
+#include "Perturbation.h"
 
 class Integrator
 {

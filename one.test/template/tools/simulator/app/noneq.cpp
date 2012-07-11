@@ -13,6 +13,7 @@
 #include <cmath>
 
 #include "Force.h"
+#include "Perturbation.h"
 #include "Integrator.h"
 #include "Distribution.h"
 #include <boost/program_options.hpp>
