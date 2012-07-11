@@ -9,7 +9,7 @@ rm -f run.noneq.log
 
 command="`pwd`/tools/simulator/$project_name.noneq \
 --dt $dt --nst $nst -p 100000 --gamma $gamma --temperature $temperature \
---double-well-k $double_well_k --double-well-a $double_well_a \
+$command_line_param_print \
 --branch-feq $branch_feq \
 --noneq-check-feq $noneq_check_feq --noneq-time $noneq_time \
 --quench-temperature $quench_temperature --quench-time $quench_time \
