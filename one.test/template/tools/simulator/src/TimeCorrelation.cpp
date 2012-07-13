@@ -10,8 +10,9 @@ reinit (const double & step_,
 	const double & v1,
 	const unsigned & nv,
 	const Integrator * equiInte_,
-	const unsigned quenchNumStep_,
 	const Integrator * quenchInte_,
+	const unsigned & quenchNumStep_,
+	const double & quenchAtTime_,
 	const DissipativeFlux * flux_)
 {
   equiInte = equiInte_;
@@ -27,6 +28,7 @@ reinit (const double & step_,
   nFrame = (time + dt) / step + 1;
   nStep = nFrame - 1;
   quenchNumStep = quenchNumStep_;
+  quenchAtTime = quenchAtTime_;
   calCorrFeq = (step + .5 * dt) / dt;
 
   dists0.resize (nFrame);
@@ -80,7 +82,7 @@ calCorr (const Dofs & initDof,
       countStep = 0;
       Dofs quenchDof (dof);
       for (unsigned tt = 0; tt < quenchNumStep; ++tt){
-	quenchInte->step (quenchDof, 0.);
+	quenchInte->step (quenchDof, quenchAtTime);
       }
       savedFlux[savePosi] = (*flux) (dof);
       if (countValidSaved < nFrame) countValidSaved ++;

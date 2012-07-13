@@ -129,7 +129,8 @@ int main(int argc, char * argv[])
 		      NULL,
 		      dynamic_cast<Force *> (&dw));
   EulerMaruyama quenchInte (gamma, quenchkT, dt,
-			    NULL,
+			    // NULL,
+			    dynamic_cast<Perturbation *> (&pert),
 			    dynamic_cast<Force *> (&dw));
   
   Dofs xx;
@@ -140,8 +141,9 @@ int main(int argc, char * argv[])
   tc.reinit (corrStep, corrTime,
 	     x0, x1, nx, v0, v1, nv,
 	     &inte,
-	     (quenchTime + .5*dt) / dt,
 	     &quenchInte,
+	     (quenchTime + .5*dt) / dt,
+	     warmTime + 1.0,
 	     &flux);
   if (!vm.count("load-corr")){
     tc.calCorr (xx, nst*dt);
@@ -179,7 +181,8 @@ int main(int argc, char * argv[])
       Dofs quenchXX (xx);
       // branching
       for (double ttQuench = 0.; ttQuench <= quenchTime+0.5*dt; ttQuench += dt){
-	quenchInte.step(quenchXX, 0.);
+	// quenchInte.step(quenchXX, 0.);
+	quenchInte.step(quenchXX, warmTime + 1.0);
       }
       distQuench.deposite (quenchXX);
     }

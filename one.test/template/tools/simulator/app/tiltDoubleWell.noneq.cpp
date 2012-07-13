@@ -116,7 +116,8 @@ int main(int argc, char * argv[])
 		      NULL,
 		      dynamic_cast<Force *> (&dw));
   EulerMaruyama quenchInte (gamma, quenchkT, dt,
-			    NULL,
+			    // NULL,
+			    dynamic_cast<Perturbation *> (&pert),
 			    dynamic_cast<Force *> (&dw));
   EulerMaruyama noneqInte (gamma, kT, dt,
 			   dynamic_cast<Perturbation *> (&pert),
@@ -190,7 +191,8 @@ int main(int argc, char * argv[])
 	  // quenching
 	  Dofs quenchXX (branchXX);
 	  for (ttQuench = 0.; ttQuench <= quenchTime+0.5*dt; ttQuench += dt){
-	    quenchInte.step(quenchXX, ttNoneq);
+	    // wrong quenching: quenchInte.step(quenchXX, ttNoneq);
+	    quenchInte.step(quenchXX, warmTime + 1.);
 	  }
 	  distsQuench[iiCheck].deposite (quenchXX);
 	  iiCheck ++;

@@ -17,6 +17,7 @@ class TimeCorrelation
   std::vector<Distribution_1d > dists0;
   std::vector<Distribution_1d > dists1;
   const Integrator * equiInte;
+  double quenchAtTime;
   unsigned quenchNumStep;
   const Integrator * quenchInte;
   const DissipativeFlux * flux;
@@ -30,8 +31,9 @@ public:
 	       const double & v1,
 	       const unsigned & nv,
 	       const Integrator * equiInte,
-	       const unsigned quenchNumStep,
 	       const Integrator * quenchInte,
+	       const unsigned & quenchNumStep,
+	       const double & quenchAtTime,
 	       const DissipativeFlux * flux);
   void calCorr (const Dofs & initDof,
 		const double & totalTime);
