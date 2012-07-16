@@ -198,7 +198,7 @@ int main(int argc, char * argv[])
     unsigned ii = (tt + 0.5 * noneqCheckFeq) / noneqCheckFeq;
     dist.values = timeNew[ii];
     int timeI = int(tt);
-    int timeF = int(100 * (tt - timeI));
+    int timeF = int(100 * (tt - timeI) + 0.5);
     char name[2048];
     sprintf (name, "indicator.linear.x.%05d.%02d.out", timeI, timeF);
     dist.print_x (name);

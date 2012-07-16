@@ -141,7 +141,7 @@ int main(int argc, char * argv[])
   for (unsigned ii = 0; ii < numNoneqCheck; ++ii){
     checkTimes[ii] = ii * noneqCheckFeq;
     int timeI = int(checkTimes[ii]);
-    int timeF = int(100 * (checkTimes[ii] - timeI));
+    int timeF = int(100 * (checkTimes[ii] - timeI) + 0.5);
     dists      [ii].reinit (x0, x1, nx, v0, v1, nv);
     distsQuench[ii].reinit (x0, x1, nx, v0, v1, nv);
     char name[2048];
