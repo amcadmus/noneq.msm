@@ -191,8 +191,8 @@ int main(int argc, char * argv[])
 	  // quenching
 	  Dofs quenchXX (branchXX);
 	  for (ttQuench = 0.; ttQuench <= quenchTime+0.5*dt; ttQuench += dt){
-	    // wrong quenching: quenchInte.step(quenchXX, ttNoneq);
-	    quenchInte.step(quenchXX, warmTime + 1.);
+	    quenchInte.step(quenchXX, ttNoneq);
+	    // quenchInte.step(quenchXX, warmTime + 1.);
 	  }
 	  distsQuench[iiCheck].deposite (quenchXX);
 	  iiCheck ++;
