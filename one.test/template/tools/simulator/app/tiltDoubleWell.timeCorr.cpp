@@ -144,6 +144,7 @@ int main(int argc, char * argv[])
 	     &inte,
 	     &quenchInte,
 	     (quenchTime + .5*dt) / dt,
+	     // warmTime + 1.0,
 	     0.,
 	     &flux);
   if (!vm.count("load-corr")){
