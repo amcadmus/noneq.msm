@@ -14,6 +14,7 @@ class QuenchCorr
   const Perturbation * pert;
   double calG (const std::vector<Dofs > & dofs,
 	       const std::vector<Dofs > & dw);
+  FILE * fp;
 public:
   QuenchCorr (const double & x0,
 	      const double & x1,
@@ -23,6 +24,7 @@ public:
 	      const unsigned & nv,
 	      const EulerMaruyama & quench_inte0,	// quench integrator at equilibrium
 	      const Perturbation & pert);		// perturbation
+  ~QuenchCorr ();
   void deposit (const Dofs & endpoint,
 		const std::vector<Dofs > & dofs,
 		const std::vector<Dofs > & dw);

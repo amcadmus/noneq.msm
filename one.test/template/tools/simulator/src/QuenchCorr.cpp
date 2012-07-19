@@ -14,6 +14,13 @@ QuenchCorr (const double & x0,
   sigma = quench_inte0.getSigma();
   dt = quench_inte0.getDt();
   pert = &pert_;
+  fp = fopen ("gx.record.out", "w");
+}
+
+QuenchCorr::
+~QuenchCorr ()
+{
+  fclose (fp);
 }
 
 void QuenchCorr::
@@ -23,6 +30,7 @@ deposit (const Dofs & endpoint,
 {
   double Gx = calG(dofs, dw);
   corr.deposite (endpoint, Gx);
+  fprintf (fp, "%f\n", Gx);
 }
 
 double QuenchCorr::

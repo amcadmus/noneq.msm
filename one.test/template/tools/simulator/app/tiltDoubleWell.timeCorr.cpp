@@ -203,6 +203,7 @@ int main(int argc, char * argv[])
   qc.average();
   qc.getDist().print_x ("quenchCorr.x.out");
   qc.getDist().print_xv ("quenchCorr.xv.out");
+  std::cout << "sigma is: " << quenchInte.getSigma() << std::endl;
   
   vector<vector<vector<double > > > timeNew;
   tc.calIndicator (dist.values,
