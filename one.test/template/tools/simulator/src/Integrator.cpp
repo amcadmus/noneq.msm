@@ -32,7 +32,7 @@ step (Dofs & dofs,
     dofs.xx[dd] = oldDofs.xx[dd] + dt * oldDofs.vv[dd] + dt * pvalue.xx[dd];
     dofs.vv[dd] = oldDofs.vv[dd] + dt * fvalue[dd] - dt * gamma * oldDofs.vv[dd] + dt * pvalue.vv[dd]
 	+ sqrtdt * sigma * rand;
-    storedw.vv[dd] = rand;
+    storedw.vv[dd] = rand * sqrtdt;
     if (! (dofs.xx[dd] >= -10 && dofs.xx[dd] <= 10. && dofs.vv[dd]>= -20. && dofs.vv[dd] <= 20.)  ){
       fprintf (stderr, "dd: %d   old: %f %f    new: %f %f\n",
     	       dd,
