@@ -191,7 +191,7 @@ int main(int argc, char * argv[])
 	dofs[countQuench] = quenchXX;
 	quenchInte.step(quenchXX, 0.);
 	// quenchInte.step(quenchXX, warmTime + 1.0);
-	dws [countQuench] = inte.getDw ();
+	dws [countQuench] = quenchInte.getDw ();
       }
       distQuench.deposite (quenchXX);
       qc.deposit (quenchXX, dofs, dws);
