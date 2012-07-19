@@ -53,5 +53,6 @@ calG (const std::vector<Dofs > & dofs,
 void QuenchCorr::
 average ()
 {
+  std::cout << "quench: nframe is " << corr.getNframe() << std::endl;
   corr.average();
 }
