@@ -19,15 +19,16 @@
 \newcommand{\bluec}[1]{{\color{blue} #1}}
 \newcommand{\vect}[1]{\textbf{\textit{#1}}}
 \newcommand{\dd}{\textsf{d}}
+\newcommand{\inv}{\textrm{inv}}
 
 \newcommand{\mh}{\mathcal H}
 \newcommand{\ml}{\mathcal L}
 \newcommand{\mt}{\mathcal T}
+\newcommand{\mo}{\mathcal O}
+\newcommand{\mi}{\mathcal I}
+\newcommand{\mc}{\mathcal C}
 \newcommand{\fwg}{{\mathcal A}}
 \newcommand{\bwg}{{\mathcal B}}
-\newcommand{\EX}{{\textrm{EX}}}
-\newcommand{\CG}{{\textrm{CG}}}
-\newcommand{\HY}{{\Delta}}
 \newcommand{\bsigma}{\boldsymbol\sigma}
 
 
@@ -56,37 +57,41 @@ theory, for details see Ref.~\cite{tuckeman2010statistical} for
 example. Here we assume the system is governed by the
 perturbed Langevin equation:
 \begin{align}\label{eqn:langevin-1}
-  \dot{\vect q} & = \frac{\partial\mh}{\partial \vect p}
+  \dot{\vect q} & = \nabla_{\vect p}\mh(\vect q,\vect p)
   + \vect C(\vect q,\vect p) F_e(t)\\\label{eqn:langevin-2}
-  \dot{\vect p} & =- \frac{\partial\mh}{\partial \vect q}
+  \dot{\vect p} & =- \nabla_{\vect q}\mh(\vect q,\vect p)
   + \vect D(\vect q,\vect p) F_e(t)
   - \gamma\vect p
   + \sigma\dot{\vect W}
 \end{align}
 Where $\vect C$ and $\vect D$ are perturbations to the system, and
-$F_e(t)$ is the strength of the perturbation as a function of time.
+$F_e(t)$ is the strength of the perturbation as a function of time,
+and is of order $\mo (\varepsilon)$, where $\varepsilon$ is assumed to be small.
 The phase space incompressibility condition is assumed:
 \begin{align}
   \nabla_{\vect q}\cdot\vect C + \nabla_{\vect p}\cdot\vect D = 0
 \end{align}
 Then the phase space distribution $f(\vect x, t)$ ($\vect x = \{\vect
 q, \vect p\}$) is subject to the Kolmogorov forward equation:
-\begin{align}
-  \frac{\partial}{\partial t} f(\vect x, t) - \fwg f(\vect x, t) = 0
+\begin{align}\label{eqn:orig-forward}
+  \frac{\partial}{\partial t} f(\vect x, t) - \fwg^\beta(t) f(\vect x, t) = 0
 \end{align}
-where $\fwg$ is the forward infiniesimal generator given by
+where $\fwg^\beta(t)$ is the forward infiniesimal generator given by
 \begin{align}
-  \fwg =
+  \fwg^\beta(t) =
   \frac{\sigma^2}2\Delta_{\vect p}
   - \Big(
-  \frac{\partial \mh}{\partial\vect p} + \vect C F_e(t)
+  \nabla_{\vect p}\mh + \vect C F_e(t)
   \Big)\cdot\nabla_{\vect q}
   - \Big(
-  -\frac{\partial \mh}{\partial\vect q} +
+  -\nabla_{\vect q}\mh +
   \vect D F_e(t) - \gamma\vect p
   \Big)\cdot\nabla_{\vect p}
-  + 3N\gamma
+  + 3N\gamma,
 \end{align}
+and $\beta$ is the inverse temperature.
+The fluctuation-dissipation relation is always true:
+$\beta = 2\gamma / \sigma^2$.
 The equilibrium and unperturbed system
 is governed by
 the standard Langevin equation, i.e. with
@@ -94,119 +99,218 @@ vanishing input perturbation $F_e(t) = 0$ in
 Eqn.~\eqref{eqn:langevin-1} and \eqref{eqn:langevin-2}.
 We assume that the perturbation to the
 system is so small that both the phase space distribution and the
-infiniesimal generator can be viewed as perturbation from the equilibrium
-distribution (invariant measure) and the unperturbed operator
+infiniesimal generator can be viewed as perturbation from the initial
+distribution and the unperturbed operator
 ($\vect C = \vect D = 0$),
-respectively. We have
-\begin{align}
-  f(\vect x, t) &= f_0(\vect x) + \Delta  f(\vect x, t)
+respectively. We the expansion with respect to small
+variable $\varepsilon$:
+\begin{align}\label{eqn:f-expan}
+  f(\vect x, t) &= f_0(\vect x, t) + \varepsilon f_1(\vect x, t)
+  +\varepsilon^2 f_2(\vect x, t) + \mo (\varepsilon^3),
 \end{align}
 and 
-\begin{align}
-  \fwg = \fwg_0 + \Delta\fwg(t)
+\begin{align}\label{eqn:A-expan}
+  \fwg^\beta(t) = \fwg^\beta_0 + \varepsilon\fwg_1(t),
 \end{align}
-Where the invariant measure satisfies $\fwg_0f_0(\vect x) = 0$,
+where
+\begin{align}
+  \fwg_0^\beta =&
+  \frac{\sigma^2}2\Delta_{\vect p}
+  -
+  \nabla_{\vect p}\mh\cdot\nabla_{\vect q}
+  - \big(
+  -\nabla_{\vect q}\mh - \gamma\vect p
+  \big)\cdot\nabla_{\vect p}
+  + 3N\gamma,\\
+  \fwg_1(t) =&
+  - \frac{F_e(t)}{\varepsilon} \big(
+  \vect C \cdot\nabla_{\vect q}
+  +
+  \vect D \cdot\nabla_{\vect p}
+  \big).
+\end{align}
+Notice $F_e(t) \sim \mo(\varepsilon)$, so $\Vert\fwg_1(t)\Vert\sim\mo(1)$.
+The invariant measure of $\fwg^\beta_0$ satisfies $\fwg^\beta_0f^\beta_{\inv}(\vect x) = 0$,
 which is nothing but the Boltzmann distribution
 \begin{align}
-  f_0(\vect x) \propto e^{-\beta\mh(\vect x)}
+  f^\beta_{\inv}(\vect x) \propto e^{-\beta\mh(\vect x)}
 \end{align}
-The Kolmogorov forward equation for the perturbation is therefore
+Inserting \eqref{eqn:f-expan} and \eqref{eqn:A-expan} into
+\eqref{eqn:orig-forward}, 
+the Kolmogorov forward equation becomes:
 \begin{align}
   \frac{\partial}{\partial t}
-  [f_0(\vect x) + \Delta  f(\vect x, t)]
+  [f_0(\vect x, t) + \varepsilon  f_1(\vect x, t) + \varepsilon^2f_2(\vect x, t)]
   -
-  [\,\fwg_0 + \Delta\fwg(t)\,]
-  [\,f_0(\vect x) + \Delta  f(\vect x, t)\,] = 0
+  [\,\fwg^\beta_0 + \varepsilon\fwg_1(t)\,]
+  [f_0(\vect x, t) + \varepsilon  f_1(\vect x, t) + \varepsilon^2f_2(\vect x, t)]
+  = 0
 \end{align}
-The basic assumption for the ``linear response'' is that the high order
-term $\Delta\fwg(t)  \Delta  f(\vect x, t)$ 
-can be neglected. Noticing $\fwg_0 f_0(\vect x) = 0$, we have the
-Kolmogorov forward equation
-for the leading order of the perturbation:
-\begin{align}
+Matching this equation at different orders of $\varepsilon$, the zeroth
+order gives:
+\begin{align}\label{eqn:e-o0}
   \bigg[
   \frac{\partial}{\partial t}
-  - \fwg_0
+  - \fwg_0^\beta
   \bigg]
-  \Delta  f(\vect x, t)
+  f_0(\vect x, t)
+  = 0
+\end{align}
+which is the unperturbed equation. Matching the first and the second order gives:
+\begin{align}\label{eqn:e-o1}
+  \bigg[
+  \frac{\partial}{\partial t}
+  - \fwg_0^\beta
+  \bigg]
+  f_1(\vect x, t)
+  =&
+  \fwg_1(t) f_0(\vect x, t)\\\label{eqn:e-o2}
+  \bigg[
+  \frac{\partial}{\partial t}
+  - \fwg_0^\beta
+  \bigg]
+  f_2(\vect x, t)
+  =&
+  \fwg_1(t) f_1(\vect x, t)
+\end{align}
+Formally solving \eqref{eqn:e-o0} -- \eqref{eqn:e-o2} with
+inital conditions $f_1(\vect x, 0) = 0$ and $f_2(\vect x, 0) = 0$
+gives
+\begin{align}\label{eqn:f0-0}
+  f_0(\vect x, t)
+  =&\,
+  e^{t\fwg^\beta_0}f_0(\vect x, 0) \\\label{eqn:f1-0}
+  f_1(\vect x, t)
+  =&\,
+  \int_0^t\dd s\,
+  e^{(t-s)\fwg^\beta_0}\circ
+  \fwg_1(s) f_0(\vect x,s)
   =
-  \Delta\fwg(t) f_0(\vect x)
+  \int_0^t\dd s\,
+  e^{(t-s)\fwg^\beta_0}\circ
+  \fwg_1(s)\circ
+  e^{s\fwg^\beta_0}f_0(\vect x, 0) \\\nonumber
+  f_2(\vect x, t)
+  =&\,
+  \int_0^t\dd s\,
+  e^{(t-s)\fwg^\beta_0}\circ
+  \fwg_1(s) f_1(\vect x,s) \\\label{eqn:f2-0}
+  &=
+  \int_0^t\dd s
+  \int_0^s\dd u\,\,
+  e^{(t-s)\fwg^\beta_0}\circ
+  \fwg_1(s)\circ
+  e^{(s-u)\fwg^\beta_0}\circ
+  \fwg_1(u)\circ
+  e^{u\fwg^\beta_0}
+  f_0(\vect x, 0) 
 \end{align}
-The operator on l.h.s. is the same as the unperturbed equation.
-Formally solving this equation with initial condition
-$\Delta f(\vect x, 0) = 0$ gives
+If the initial distribution is the invariant distribution, i.e.
+$f_0(\vect x, 0) = f_{\inv}^\beta(\vect x)$,
+\eqref{eqn:f0-0} becomes:
 \begin{align}
-  \Delta  f(\vect x, t) =
-  \int_0^t \dd s \:
-  e^{(t-s)\fwg_0}
-  \Delta\fwg(s)f_0(\vect x)
+  f_0(\vect x, t) = f_{\inv}^\beta(\vect x)
 \end{align}
-By defining the \emph{dissipative flux},
+It can be shown that
+\begin{align}
+  \fwg_1(s) f_{\inv}^\beta(\vect x)
+  =
+  -\frac{F_e(s)}{\varepsilon}\beta
+  j(\vect x)
+  f_{\inv}^\beta(\vect x),
+\end{align}
+where the \emph{dissipative flux} $j(\vect x)$ is defined by,
 \begin{align}
   j(\vect x) =
   -\vect C\cdot\nabla_{\vect q}\mh 
   -\vect D\cdot\nabla_{\vect p}\mh
 \end{align}
-it has been shown that %~\cite{tuckeman2010statistical}
+Then $f_1(\vect x, t)$ becomes:
 \begin{align}
-  \Delta\fwg(s)f_0(\vect x) =
-  -\beta f_0(\vect x)\, j(\vect x) F_e(s)
+  f_1(\vect x, t)
+  =
+  -\frac\beta\varepsilon
+  \int_0^t\dd s\,
+  F_e(s)\,
+  e^{(t-s)\fwg^\beta_0}
+  \big[
+  j(\vect x)
+  f_{\inv}^\beta(\vect x)
+  \big]
 \end{align}
-For any observation:
+Therefore, the linear order approximation to
+the solution of~\eqref{eqn:orig-forward} is 
+\begin{align}\label{eqn:solv-orig-linear}
+  f(\vect x, t) =
+  f_{\inv}^\beta(\vect x)
+  - \beta
+  \int_0^t\dd s\,
+  F_e(s)\,
+  e^{(t-s)\fwg^\beta_0}
+  \big[
+  j(\vect x)
+  f_{\inv}^\beta(\vect x)
+  \big]
+  + \mo(\varepsilon^2)
+\end{align}
+For any time-dependent observation, the linear response approximation
+would be:
 \begin{align}\nonumber
   \mathcal O(t)
   &=
   \int\dd \vect x \:O(\vect x)f(\vect x, t)  \\\nonumber
   &=
   \int\dd \vect x\, O(\vect x)\,
-  [f_0(\vect x) + \Delta f(\vect x, t)] \\\nonumber
+  [\,f_{\inv}^\beta(\vect x) + \varepsilon f_1(\vect x, t)] \\\nonumber
   &=
-  \langle O\rangle_0
+  \langle O\rangle
   -
   \beta
   \int \dd \vect x\:
   O(\vect x)
-  \int_0^t\dd s\,
-  e^{(t-s)\fwg_0}
-  f_0(\vect x)\, j(\vect x)F_e(s)  \\\nonumber
+  \int_0^t\dd s\,F_e(s)
+  e^{(t-s)\fwg_0^\beta}
+  \big[j(\vect x)f^\beta_{\inv}(\vect x)\big]
+  \\\nonumber
   &=
-  \langle O\rangle_0
+  \langle O\rangle
   -
   \beta
   \int_0^t\dd s\,
   F_e(s)
   \int \dd \vect x\,
   O(\vect x)\,
-  e^{(t-s)\fwg_0}
-  f_0(\vect x) j(\vect x)  \\\nonumber
+  e^{(t-s)\fwg_0^\beta}
+  \big[j(\vect x)f^\beta_{\inv}(\vect x)\big]
+  \\\nonumber
   &=
-  \langle O\rangle_0
+  \langle O\rangle
   -
   \beta
   \int_0^t\dd s\,
   F_e(s)
   \int \dd \vect x\,
-  f_0(\vect x) j(\vect x)\,
-  e^{(t-s)\bwg_0}
+  f^\beta_{\inv}(\vect x) j(\vect x)\,
+  e^{(t-s)\bwg^\beta_0}
   O(\vect x)\\ \label{eqn:eqi-pert-1}
   &=
-  \langle O\rangle_0
+  \langle O\rangle
   -
   \beta
   \int_0^t\dd s\,
   F_e(t-s)
   \int \dd \vect x\,
-  f_0(\vect x) j(\vect x)\,
-  e^{s\bwg_0}
+  f^\beta_{\inv}(\vect x) j(\vect x)\,
+  e^{s\bwg_0^\beta}
   O(\vect x)
 \end{align}
-Where $\bwg_0$ is the infiniesimal generator of the \emph{unperturbed} 
-Kolmogorov backward equation, which is the adjoint operator of $\fwg_0$.
+Where $\bwg^\beta_0$ is the infiniesimal generator of the \emph{unperturbed} 
+Kolmogorov backward equation, which is the adjoint operator of $\fwg^\beta_0$.
 We have
 \begin{align}
-  e^{s\bwg_0} O(\vect x) = \mathbb E_{\vect x} [O(\vect X_s)]
+  e^{s\bwg^\beta_0} O(\vect x) = \mathbb E_{\vect x} [O(\vect X^\beta_s)]
 \end{align}
-where $\vect X_t$ is the trajectory of the unperturbed Langevin equation
+where $\vect X^\beta_t$ is the trajectory of the unperturbed Langevin equation
 starting at $\vect x$.
 Therefore, we have
 % Notice that $e^{i\ml_0(t-s)}O(\vect x) = O(\phi_{t-s}(\vect x))$,
@@ -215,48 +319,55 @@ Therefore, we have
 \begin{align}
   \mathcal O(t)
   =
-  \langle O\rangle_0
+  \langle O\rangle
   -
   \beta
   \int_0^t\dd s\,
   F_e(t-s)
   \int \dd \vect x\,
-  f_0(\vect x)
+  f^\beta_{\inv}(\vect x)
   j(\vect x)\,
-  \mathbb E_{\vect x} [O(\vect X_s)]
+  \mathbb E_{\vect x} [O(\vect X^\beta_s)]
 \end{align}
 or equivalently:
 \begin{align}\label{eqn:lr}
   \mathcal O(t)
   =
-  \langle O\rangle_0
+  \langle O\rangle
   -
   \beta
   \int_0^t\dd s\,
   F_e(t-s)
-  \langle
+  \big\langle
   j(0)\,
-  \mathbb E_{\vect x} [O(\vect X_s)]
-  \rangle_0
+  \mathbb E_{\vect x} [O(\vect X^\beta_s)]
+  \big\rangle
 \end{align}
 where $  \langle
   j(0)\,
-  \mathbb E_{\vect x} [O(\vect X_s)]
-  \rangle_0$ is the \emph{equilibrium time
+  \mathbb E_{\vect x} [O(\vect X^\beta_s)]
+  \rangle$ is the \emph{equilibrium time
   correlation} between the observation $O$ at time $s$ and the
-dissipative flux $j$ at time 0.
+dissipative flux $j$.
 
 
 \subsection{The core set as an observation of the system}
 
 The core set plays a very important role in the MSM theory. One way to
 identify core set is to consider the ``stability'' of the invariant
-measure $f_0$ under a propagator $\mt_\alpha$
-of time step $\alpha$, which is associated with a
-stochastic process denoted by $\vect Y_\alpha$:
+measure $f^\beta_{\inv}$ under a propagator $\mt_\tau$
+of time step $\tau$.
+For example, the propagator is chosen $\mt_\tau = e^{\tau\fwg_t^{2\beta}}$,
+i.e. integrating the Langevin equation~\eqref{eqn:langevin-1}
+and \eqref{eqn:langevin-2} at temperature $1/2\beta$ for time $\tau$.
+Notice $\tau$ is an artificial time that is ``orthogonal'' to the real
+time $t$.
+% , which is associated with a
+% stochastic process denoted by $\vect Y_\alpha$:
+The core set is identified by:
 \begin{align}
-  C_\alpha = \big\{
-  \vect x \,\vert\, \mt_\alpha f_0(\vect x) > f_0(\vect x)
+  C_\tau(t) = \big\{
+  \vect x \,\vert\, \mt_\tau f(\vect x, t) > f(\vect x, t)
   \big\}
 \end{align}
 Generally, it is impossible and not necessary to consider the core set
@@ -267,19 +378,19 @@ $\vect y = \vect y(\vect x)$, with $\vect y \in \Omega \subset \mathbb
 R^M,\ M\ll 3N$. We call $\Omega$ the observation space.  The projected
 invariant measure on the observation space is therefore
 \begin{align}
-  \mathcal P f_0 (\vect y)
+  \mathcal P f (\vect y, t)
   =
   \int
   \dd \vect x\,
-  f_0(\vect x) \,
+  f(\vect x, t) \,
   \delta (\vect y - \vect y(\vect x)) 
 \end{align}
 The core set on the observation space is
 \begin{align}
   \widetilde
-  C_\alpha = \big\{
+  C_\tau(t) = \big\{
   \vect y \,\vert\,
-  \mathcal P\mt_\alpha f_0(\vect y) > \mathcal P f_0(\vect y)
+  \mathcal P\mt_\tau f(\vect y, t) > \mathcal P f(\vect y, t)
   \big\}
 \end{align}
 % with $\widetilde \mt_\alpha$ defined by
@@ -294,119 +405,546 @@ The core set on the observation space is
 %   [\mt_\alpha f_0](\vect x) \,
 %   \delta (\vect y - \vect y(\vect x)) 
 % \end{align}
-For convenience, we define $\Delta \mt_\alpha =
-\mt_\alpha - \mathcal I$, where $\mathcal I$ is the
-identity. If $[\mathcal P\circ\Delta \mt_\alpha f_0](\vect y) > 0$, then
-$\vect y$ is in the core set $\widetilde C_\alpha $.
+For convenience, we define $\Delta \mt_\tau =
+\mt_\tau - \mathcal I$, where $\mathcal I$ is the
+identity. If $[\mathcal P\circ\Delta \mt_\tau f](\vect y, t) > 0$, then
+$\vect y$ is in the core set $\widetilde C_\tau(t) $.
 \begin{align}\nonumber
-  [\mathcal P\circ\Delta \mt_\alpha f_0](\vect y)
+  [\mathcal P\circ\Delta \mt_\tau f](\vect y, t)
   &=
   \int
   \dd \vect x\,
-  \Delta \mt_\alpha f_0(\vect x) \,
+  \Delta \mt_\tau f(\vect x, t) \,
   \delta (\vect y - \vect y(\vect x))  \\\nonumber
   &=
   \lim_{\sigma \rightarrow 0}
   \int
   \dd \vect x\,
-  \Delta \mt_\alpha f_0(\vect x) \,
-  K_{\sigma} (\vect y - \vect y(\vect x))  \\\nonumber
+  \Delta \mt_\tau f(\vect x, t) \,
+  K_{\sigma} (\vect y - \vect y(\vect x))  \\\label{eqn:core-identify}
   &=
   \lim_{\sigma \rightarrow 0}
   \int
   \dd \vect x\,
-  \Delta \mt_\alpha f_0(\vect x) \,
-  K_{\sigma, \vect y} (\vect x)  \\\nonumber
-  &=
-  \lim_{\sigma \rightarrow 0}
-  \int
-  \dd \vect x\,
-  f_0(\vect x) \,
-  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y} (\vect x)\\
-  &=
-  \lim_{\sigma \rightarrow 0}\,
-  \langle
-  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}
-  \rangle_0
+  \Delta \mt_\tau f(\vect x, t) \,
+  K_{\sigma, \vect y} (\vect x)
+  % \\\nonumber
+  % &=
+  % \lim_{\sigma \rightarrow 0}
+  % \int
+  % \dd \vect x\,
+  % f_0(\vect x) \,
+  % [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y} (\vect x)\\
+  % &=
+  % \lim_{\sigma \rightarrow 0}\,
+  % \langle
+  % [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}
+  % \rangle_0
 \end{align}
-where $[\Delta \mt_\alpha]^\dagger$ is the adjoint operator of $\Delta
-\mt_\alpha$. The delta
-function is replaced by the limit of a mollifier $K_\sigma(\vect y)$,
-which is infinitely smooth, compact supported of size $\sigma$,
-bounded and $\int
-K_\sigma(\vect y)\dd \vect y = 1$.  The physical meaning is that we
-can consider the expectation value of the stability of the mollifier
-$K_{\sigma, \vect y}$ instead of the stability of the invariant measure.
-This provides the convenience of using the linear response theory showed
-in the previous section. By Eqn.~\eqref{eqn:lr},
-\begin{align}\nonumber
-  [\mathcal P\circ\Delta \mt_\alpha f_t](\vect y)
-  &=
-  \lim_{\sigma \rightarrow 0}\,
-  \langle
-  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}
-  \rangle_t \\\nonumber
-  &=
-  \lim_{\sigma \rightarrow 0}\,
-  \Big\{
-  \langle
-  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}
-  \rangle_0  -
-  \beta
-  \int_0^t\dd s\,
-  F_e(t-s)
-  \langle
-  j(0)\,
-  \mathbb E_{\vect x}\{
-  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}(\vect X_s)\,
-  \}
-  \rangle_0
-  \Big\} \\ \label{eqn:main}
-  &=
-  \lim_{\sigma \rightarrow 0}\,
-  \Big\{
-  \langle
-  [\Delta \mt_\alpha]^\dagger K_{\sigma, \vect y}
-  \rangle_0  -
-  \beta
-  \int_0^t\dd s\,
-  F_e(t-s)
-  \Big\langle
-  j(0)\,
-  \mathbb E_{\vect x}
-  \big[
-  \mathbb E_{\vect X_s}
-  (K_{\sigma, \vect y}(\vect Y_\alpha))
+For convenience, we denote $f_t(\vect x) = f(\vect x, t)$.
+Notice that $\mt_\tau f_t(\vect x) = e^{\tau \fwg_t^{2\beta}} f_t(\vect x)$
+is the solution of
+\begin{align}
+  \frac{\partial}{\partial \tau} f_t(\vect x, \tau)
   -
-  K_{\sigma, \vect y}(\vect X_s)
+  \fwg^{2\beta}(t)  f_t(\vect x, \tau)
+  =0
+\end{align}
+with inital condition $f_t(\vect x, \tau = 0) = f_t(\vect x)$. We do the same
+expansion as before, and then
+matching different orders of $\varepsilon$ gives:
+\begin{align}
+  &\bigg[
+  \frac{\partial}{\partial \tau}
+  - \fwg_0^{2\beta}
+  \bigg]
+  f_{t,0}(\vect x, \tau)
+  = 0 \\
+  &\bigg[
+  \frac{\partial}{\partial \tau}
+  - \fwg_0^{2\beta}
+  \bigg]
+  f_{t,1}(\vect x, \tau)
+  =
+  \fwg_1(t) f_{t,0}(\vect x, \tau)
+\end{align}
+Formally solving these equations with
+inital conditions $f_{t,0}(\vect x, 0) = f_t(\vect x) = f(\vect x, t)$
+and  $f_{t,1}(\vect x, 0) = 0$ 
+gives
+\begin{align}\label{eqn:f0-1}
+  f_{t,0}(\vect x, \tau)
+  =&\,
+  e^{\tau\fwg^{2\beta}_0}f_{t,0}(\vect x, 0) \\\label{eqn:f1-1}
+  f_{t,1}(\vect x, \tau)
+  =&\,
+  \int_0^\tau\dd \eta\,
+  e^{(\tau-\eta)\fwg^{2\beta}_0}\circ
+  \fwg_1(t) f_{t,0}(\vect x,\eta)
+  =
+  \int_0^\tau\dd \eta\,
+  e^{(\tau-\eta)\fwg^{2\beta}_0}\circ
+  \fwg_1(t)\circ
+  e^{\eta\fwg^{2\beta}_0}f_{t,0}(\vect x, 0) 
+\end{align}
+By inserting the linear order approximated solution~\eqref{eqn:solv-orig-linear}
+in to the above equations, we have:
+\begin{align}\nonumber
+  \mt_\tau f_t(\vect x)=
+  f_{t}(\vect x, \tau)
+  =&\,
+  e^{\tau\fwg^{2\beta}_0} f_{\inv}^\beta(\vect x) -
+  \beta
+  \int_0^t\dd s\,
+  F_e(s)\,
+  e^{\tau\fwg^{2\beta}_0} \circ
+  e^{(t-s)\fwg^\beta_0}
+  \big[
+  j(\vect x)
+  f_{\inv}^\beta(\vect x)
   \big]
-  \Big\rangle_0
-  \Big\}
+  \\\label{eqn:solve-tau-linear}
+  &\,+ \varepsilon
+  \int_0^\tau\dd \eta\,
+  e^{(\tau-\eta)\fwg^{2\beta}_0}\circ
+  \fwg_1(t)\circ
+  e^{\eta\fwg^{2\beta}_0}f_{\inv}^\beta(\vect x)  + \mo(\varepsilon^2)
 \end{align}
-with initial conditions:
-\begin{align}
-  \vect X_0 = \vect x; \quad \vect Y_0 = \vect X_s.
+By inserting~\eqref{eqn:solv-orig-linear} and~\eqref{eqn:solve-tau-linear}
+into~\eqref{eqn:core-identify}, we have, up to the first order
+approximation,
+\begin{align}\nonumber
+  [\mathcal P\circ\Delta\mt_\tau f](\vect y, t)
+  \approx
+  \lim_{\sigma \rightarrow 0}
+  \bigg\{
+    &\,
+    \int \dd \vect x\,
+    \big(e^{\tau\fwg_0^{2\beta}}-\mi\big)
+    f_{\inv}^\beta(\vect x)\,
+    K_{\sigma,\vect y}(\vect x)\\\nonumber
+    &
+    - \int_0^t\dd s\,
+    F_e(s)
+    \int\dd \vect x\,
+    \big(e^{\tau\fwg^{2\beta}_0} - \mi\big)\circ
+    e^{(t-s)\fwg^\beta_0}
+    \big[
+    j(\vect x)
+    f_{\inv}^\beta(\vect x)
+    \big]\, K_{\sigma,\vect y}(\vect x) \\\nonumber
+    &
+    +
+    \varepsilon
+    \int_0^\tau\dd \eta
+    \int\dd \vect x\,
+    e^{(\tau-\eta)\fwg^{2\beta}_0}\circ
+    \fwg_1(t)\circ
+    e^{\eta\fwg^{2\beta}_0}f_{\inv}^\beta(\vect x)\,K_{\sigma,\vect y}(\vect x)
+    \bigg\}     \\\nonumber
+  \approx
+  \lim_{\sigma \rightarrow 0}
+  \bigg\{
+  &\,
+    \Big\langle
+    \mathbb E_{\vect x}[ K_{\sigma,\vect y}(\vect X^{2\beta}_\tau) ]
+    - K_{\sigma,\vect y}(\vect x)
+    \Big\rangle\\\nonumber
+    &
+    - \int_0^t\dd s\,
+    F_e(s)
+    \Big\langle
+    j(\vect x)\,
+    \mathbb E_{\vect x}\big\{
+    \mathbb E_{\vect X_{t-s}^\beta}[
+    K_{\sigma,\vect y}(\vect X_\tau^{2\beta})
+    ]
+    -
+    K_{\sigma,\vect y}(\vect X_{t-s}^\beta)
+    \big\}
+    \Big\rangle\\\label{eqn:core-identify-approx-1}
+    &
+    +
+    \varepsilon
+    \int_0^\tau\dd \eta
+    \int\dd \vect x\,
+    e^{(\tau-\eta)\fwg^{2\beta}_0}\circ
+    \fwg_1(t)\circ
+    e^{\eta\fwg^{2\beta}_0}f_{\inv}^\beta(\vect x)\,K_{\sigma,\vect y}(\vect x)
+    \bigg\}     
 \end{align}
-Therefore, the core set at time $t$ is defined by
+Unfortunately the last term on the r.h.s. of~\eqref{eqn:core-identify-approx-1}
+is not easy to calculate. We will deal with it with
+the path integral method introduced later.
+
+
+
+
+\subsection{Path integral}
+The path integral is very useful to develop the non-equilibrium version of
+linear response theory. 
+Comparing with the idea of ensemble, which is a collection of state points
+in the configuration space, the path integral consider the ``ensemble'' of
+trajectories.
+(In the following, the develop of formula are formal. The strict mathematical
+theory is still unclear for me.)
+First, we take the standard 1-dimensional Wiener process for example.
+Consider the time interval $[0,T]$, the probability density of one trajectory
+is given by
 \begin{align}
-  \widetilde C_\alpha^t =
+  p[W_t] = \frac 1Z e^{-I[W_t]}
+\end{align}
+where $I$ is the action functional of Wiener process given by
+\begin{align}
+  I[W_t] = \int_0^T\frac12 \dot{W}_t^2\dd t
+\end{align}
+the partition function $Z$ is
+\begin{align}
+  Z = \int  e^{-I[W_t]} \prod_{0\leq t\leq T}\dd W_t
+\end{align}
+Consider the following two stochastic processes:
+\begin{align}\label{eqn:st-orig}
+  \dd \vect X_t &= \vect b(\vect X_t, t) \dd t + \bsigma(\vect X_t, t)\,\dd\vect W_t \\\label{eqn:st-pert}
+  \dd \vect Y_t &= \vect b(\vect Y_t, t) \dd t + \vect c(\vect Y_t, t) \dd t + \bsigma(\vect Y_t, t)\,\dd\vect W_t
+\end{align}
+Where $\vect W_t$ is the standard Wiener process. Obviously
+\eqref{eqn:st-pert} is the perturbed version of
+\eqref{eqn:st-orig}. It has been shown that, starting from the same
+measure saying $\mu$ (which is not necessarily equilibrium or
+stationary), the ratio of trajectory probability density between the perturbed
+and unperturbed process is~\cite{li2010lecture} (\recheck{I think here
+  the incompressibility of phase space should be assumed. Otherwise the
+  ratio should be more complicated.})
+\begin{align}\label{eqn:girsanov}
+  \frac{\dd\mathcal P_{\vect Y}}{\dd\mathcal P_{\vect X}}
+  =
+  \exp
   \Big\{
-  \vect y
-  \,\Big\vert\,
-  [\mathcal P\circ\Delta \mt_\alpha f_t](\vect y) > 0
+  -\frac12 \int_0^T\vert\bsigma^{-1}\cdot\vect c(\vect X_t,t)\vert^2\,\dd t
+  +\int_0^T[\dot{\vect X}_t - \vect b(\vect X_t,t)]^T
+  \cdot\bsigma^{-T}\cdot\bsigma^{-1}\cdot\vect c(\vect X_t,t)\,\dd t 
   \Big\}
+\end{align}
+where $\mathcal P_{\vect Y}$ and $\mathcal P_{\vect Y}$ are measures
+of the trajectories generated by \eqref{eqn:st-pert} and
+\eqref{eqn:st-orig}, respectively.  This result (Girsanov formula?) is
+(formally) precise without any approximation.
+
+
+To be more general, we study the two perturbed Langevin dynamics
+(i.e. Eqn.~\eqref{eqn:langevin-1} and \eqref{eqn:langevin-2}) with
+different perturbations that are given by $F_e^1(t)$ and $F_e^2(t)$,
+respectively. 
+By writing Eqn.~\eqref{eqn:langevin-1} and \eqref{eqn:langevin-2} as
+\begin{align}
+  \frac{\dd }{\dd t}
+  \left[
+    \begin{array}{l}
+      \vect q\\
+      \vect p
+    \end{array}
+  \right]
+  =
+  \left[
+    \begin{array}{l}
+      \nabla_{\vect p}\mh\\
+      -\nabla_{\vect q}\mh - \gamma\vect p + F_e\vect D
+    \end{array}
+  \right]
+  \dd t
+  +
+  \left[
+    \begin{array}{cc}
+      \epsilon \vect I & 0\\
+      0 & \sigma\vect I
+    \end{array}
+  \right]
+  \cdot
+  \left[
+    \begin{array}{l}
+      \dd\vect W_t\\
+      \dd\vect W_t
+    \end{array}
+  \right]
+\end{align}
+Using Girsanov's formula, to the leading order of $\Delta F_e = F_e^2 - F_e^1$,
+we have
+\begin{align}\label{eqn:girsanov-1}
+  \frac{\dd\mathcal P^2[\vect X_t]}{\dd\mathcal P^1[\vect X_t]}
+  &=
+  \exp
+  \Big\{
+  \frac 1 {\sigma^2}
+  \int_0^t
+  [\dot{\vect p}_s +
+  \gamma\vect p_s +
+  \nabla_{\vect q}\mh(\vect q_s,\vect p_s)
+  - F_e^1(s) \vect D(\vect q_s,\vect p_s)
+  ]\cdot
+  \vect D(\vect q_s,\vect p_s)
+  \Delta F_e(s)\,
+  \dd s
+  + \mathcal O(\Delta F_e^2)
+  \Big\} 
 \end{align}
 
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.35\textwidth]{figs/fig-pot.eps}
-  \caption{The potential with and without perturbation.}
-  \label{fig:tmp1}
-\end{figure}
+
+
+
+\subsection{Linear response theory of the core set identification,
+  revisited by the path integral method}
+For some observable $O[\vect X_\eta]$, which is a functional of the
+stochastic process $\vect X_\eta$,
+the trajectory ensemble average yields:
+\begin{align}
+  \mo(t)
+  =
+  \int \dd \mu_t(\vect x)
+  \int_{\mc\{\vect x,0;\tau\}}
+  O[\vect X_\eta]\,
+  \dd \mathcal P^{2\beta}_t[\vect X_\eta],
+\end{align}
+where $\mu_t(\vect x)$
+is the measure of the initial position, and obviously, we have
+$\dd \mu_t(\vect x) = f_t(\vect x)\,\dd \vect x$.
+The trajectory $\vect X_\eta \in {\mc\{\vect x,0;\tau\}}$, where
+${\mc\{\vect x,0;\tau\}}$ denotes the set of all continuous but not
+differentiable trajectories starting at $\vect x$ at artificial
+time 0, and ending
+at artificial time $\tau$.
+$\mathcal P^{2\beta}_t$ denotes the measure of trajectories
+developped under temperature $1/2\beta$
+at real time $t$.
+Since the perturbation is a function of time, this
+measure also depends on time. The reference artificial dynamics is chosen
+at $t=0$.
+In this case, \eqref{eqn:girsanov-1} rewrites:
+\begin{align}\nonumber
+  \frac{\dd \mathcal P^{2\beta}_t[\vect X_\eta]}
+  {\dd \mathcal P^{2\beta}_0[\vect X_\eta]}\,
+  &=
+  \exp
+  \Big\{
+  \frac 1 {\sigma^2}
+  \int_0^\tau
+  [\dot{\vect p}_\eta +
+  \gamma\vect p_\eta +
+  \nabla_{\vect q}\mh(\vect q_\eta,\vect p_\eta)
+  ]\cdot
+  \vect D(\vect q_\eta,\vect p_\eta)
+  F_e(t)\,
+  \dd \eta
+  + \mathcal O(\varepsilon^2)
+  \Big\}\\
+  &=
+  1+
+  F_e(t)\,
+  \frac 1 {\sigma^2}
+  \int_0^\tau
+  [\dot{\vect p}_\eta +
+  \gamma\vect p_\eta +
+  \nabla_{\vect q}\mh(\vect q_\eta,\vect p_\eta)
+  ]\cdot
+  \vect D(\vect q_\eta,\vect p_\eta)\,
+  \dd \eta
+  + \mathcal O(\varepsilon^2)  
+\end{align}
+Notice that $F_e(t)\sim \mo(\varepsilon)$.
+For convenience, we denote
+\begin{align}
+  G[\vect X_\eta] =
+    \frac 1 {\sigma^2}
+  \int_0^\tau
+  [\dot{\vect p}_\eta +
+  \gamma\vect p_\eta +
+  \nabla_{\vect q}\mh(\vect q_\eta,\vect p_\eta)
+  ]\cdot
+  \vect D(\vect q_\eta,\vect p_\eta)\,
+  \dd \eta
+\end{align}
+Therefore, we have
+\begin{align}\nonumber
+  \mo(t)
+  =&\,
+  \int \dd \vect x
+  f(\vect x, t)
+  \int_{\mc\{\vect x,0;\tau\}}
+  O[\vect X_\eta]\,
+  \frac{\dd \mathcal P^{2\beta}_t[\vect X_\eta]}
+  {\dd \mathcal P^{2\beta}_0[\vect X_\eta]}\,
+  \dd \mathcal P^{2\beta}_0[\vect X_\eta]  \\\nonumber
+  =&\,
+  \int \dd \vect x
+  \big[
+  f_{0}(\vect x, t)
+  + \varepsilon f_{1}(\vect x, t)
+  + \mo(\varepsilon^2)
+  \big]
+  \int_{\mc\{\vect x,0;\tau\}}
+  O[\vect X_\eta]\,
+  \big[
+  1 
+  + F_e(t) G[\vect X_\eta]
+  + \mo(\varepsilon^2)
+  \big]
+  \dd \mathcal P^{2\beta}_0[\vect X_\eta]
+  \\\nonumber
+  =&\,
+  \int \dd \vect x
+  f_{0}(\vect x, t)
+  \int_{\mc\{\vect x,0;\tau\}}
+  O[\vect X_\eta]\,
+  \dd \mathcal P^{2\beta}_0[\vect X_\eta]
+  +
+  \varepsilon
+  \int \dd \vect x\,
+  f_{1}(\vect x, t)
+  \int_{\mc\{\vect x,0;\tau\}}
+  O[\vect X_\eta]\,
+  \dd \mathcal P^{2\beta}_0[\vect X_\eta]\\\label{eqn:solve-tau-linear-2-0}
+  &+
+  F_e(t)
+  \int \dd \vect x\,
+  f_{0}(\vect x, t)
+  \int_{\mc\{\vect x,0;\tau\}}
+  O[\vect X_\eta]\,
+  G[\vect X_\eta]\,
+  \dd \mathcal P^{2\beta}_0[\vect X_\eta]
+  + \mo(\varepsilon^2) 
+\end{align}
+In the case of core set identification,
+\begin{align}\nonumber
+  [\mathcal P\circ \mt_\tau] f(\vect y,t)
+  =&\,
+  \int\dd \vect x\,
+  \mt_\tau f(\vect x,t) K_{\sigma,\vect y}(\vect x)\\\nonumber
+  =&\,
+  \int\dd \vect x\,
+  e^{\tau\fwg_t^{2\beta}} f(\vect x,t) \,K_{\sigma,\vect y}(\vect x)\\\nonumber
+  =&\,
+  \int\dd \vect x\,
+  f(\vect x,t) \,e^{\tau\bwg_t^{2\beta}}K_{\sigma,\vect y}(\vect x)  \\\nonumber
+  =&\,
+  \int\dd \vect x\,
+  f(\vect x,t) \,\mathbb E_{\vect x}
+  \big[
+  K_{\sigma,\vect y}(\vect X^{2\beta}_{t,\tau})
+  \big]  
+  \\
+  =&\,
+  \int\dd \vect x\,
+  f(\vect x,t) 
+  \int_{\mc\{\vect x,0;\tau\}} K_{\sigma,\vect y}(\vect X_\eta)\,
+  \dd\mathcal P^{2\beta}_t[\vect X_\eta]
+\end{align}
+So the observable $O[\vect X_\eta]$
+is:
+\begin{align}
+  O[\vect X_\eta] = 
+  K_{\sigma,\vect y}(\vect X_\tau),
+  % -
+  % K_{\sigma,\vect y}(\vect x)
+\end{align}
+which is the end point of the artificial
+trajectory measured by $K_{\sigma,\vect y}$.
+Inserting everything we known in~\eqref{eqn:solve-tau-linear-2-0},
+and notice $G[\vect X_\eta] = 0$ when $\tau = 0$,
+\begin{align}\nonumber
+  [\mathcal P\circ\Delta\mt_\tau f](\vect y, t)
+  =
+  \lim_{\sigma \rightarrow 0}
+  \big\{
+  &\,
+  [\mathcal P\circ\mt_\tau f - \mathcal P\circ\mt_0 f](\vect y, t)
+  \big\}\\\nonumber
+  \approx
+  \lim_{\sigma \rightarrow 0}
+  \bigg\{
+  &\,
+  \int \dd \vect x\,
+  f_\inv^\beta(\vect x)
+  \int_{\mc\{\vect x,0;\tau\}}
+  [K_{\sigma,\vect y}(\vect X_\tau)
+  -K_{\sigma,\vect y}(\vect x)]  \,
+  \dd \mathcal P^{2\beta}_0[\vect X_\eta]\\\nonumber
+  &\,-
+  \beta
+  \int_0^t\dd s\, F_e(s)
+  \int \dd \vect x\,
+  e^{(t-s)\fwg_0^\beta}
+  \big[
+  j(\vect x)
+  f_\inv^\beta(\vect x)
+  \big]
+  \int_{\mc\{\vect x,0;\tau\}}
+  [K_{\sigma,\vect y}(\vect X_\tau)
+  -K_{\sigma,\vect y}(\vect x)]  \,
+  \dd \mathcal P^{2\beta}_0[\vect X_\eta]\\\nonumber
+  &\,+
+  F_e(t)
+  \int \dd \vect x\,
+  f_\inv^\beta(\vect x)
+  \int_{\mc\{\vect x,0;\tau\}}
+  K_{\sigma,\vect y}(\vect X_\tau)
+  % \Big\{
+  % \int_0^\tau\dd \eta\,
+  % [\dot{\vect p}_\eta + \gamma\vect p_\eta + \nabla_{\vect q}\mh(\vect X_\eta)]
+  % \cdot\vect D(\vect X_\eta)
+  % \Big\}\,
+  \,G[\vect X_\eta]\,
+  \dd \mathcal P^{2\beta}_0[\vect X_\eta]
+  \bigg\}\\\nonumber
+  \approx
+  \lim_{\sigma \rightarrow 0}
+  \bigg\{
+  &\,
+  \Big\langle
+  \mathbb E_{\vect x}[K_{\sigma,\vect y}(\vect X_\tau^{2\beta})]
+  -
+  K_{\sigma,\vect y}(\vect x)
+  \Big\rangle\\\nonumber
+  &\,
+  - \beta
+  \int_0^t\dd s\, F_e(s)
+  \Big\langle
+  j(\vect x)
+  \mathbb E_{\vect x} \big\{
+  \mathbb E_{\vect X^\beta_{t-s}}\big[
+  K_{\sigma, \vect y}(\vect X^{2\beta}_\tau)
+  \big]
+  -
+  K_{\sigma, y}(\vect X^\beta_{t-s})
+  \big\}
+  \Big\rangle\\\label{eqn:core-identify-approx-2}
+  &\,+
+  F_e(t)
+  \int \dd \vect x\,
+  f_\inv^\beta(\vect x)
+  \int_{\mc\{\vect x,0;\tau\}}
+  K_{\sigma,\vect y}(\vect X_\tau)
+  \,G[\vect X_\eta]\,
+  \dd \mathcal P^{2\beta}_0[\vect X_\eta]
+  \bigg\}
+\end{align}
+Comparing~\eqref{eqn:core-identify-approx-2}
+with~\eqref{eqn:core-identify-approx-1}, the first
+two terms on the r.h.s. are identical. 
+The last term is now computable.
+
+
+
+
 
 
 \subsection{Numerical test}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.4\textwidth]{figs/fig-pot.eps}
+  \caption{The potential with and without perturbation.}
+  \label{fig:tmp1}
+\end{figure}
 
 We test the idea by a one-dimensional model system: one particle in a
 double-well potential. For convenience, we let the mass of the
@@ -484,57 +1022,59 @@ that is nearly as stable as the right well.
 \end{figure}
 
 
+
+
 \section{Non-equilibrium linear response}
 
-\subsection{Path integral}
-The path integral is very useful to develop the non-equilibrium version of
-linear response theory. 
-Comparing with the idea of ensemble, which is a collection of state points
-in the configuration space, the path integral consider the ``ensemble'' of
-trajectories.
-(In the following, the develop of formula are formal. The strict mathematical
-theory is still unclear for me.)
-First, we take the standard 1-dimensional Wiener process for example.
-Consider the time interval $[0,T]$, the probability density of one trajectory
-is given by
-\begin{align}
-  p[W_t] = \frac 1Z e^{-I[W_t]}
-\end{align}
-where $I$ is the action functional of Wiener process given by
-\begin{align}
-  I[W_t] = \int_0^T\frac12 \dot{W}_t^2\dd t
-\end{align}
-the partition function $Z$ is
-\begin{align}
-  Z = \int  e^{-I[W_t]} \prod_{0\leq t\leq T}\dd W_t
-\end{align}
-Consider the following two stochastic processes:
-\begin{align}\label{eqn:st-orig}
-  \dd \vect X_t &= \vect b(\vect X_t, t) \dd t + \bsigma(\vect X_t, t)\,\dd\vect W_t \\\label{eqn:st-pert}
-  \dd \vect Y_t &= \vect b(\vect Y_t, t) \dd t + \vect c(\vect Y_t, t) \dd t + \bsigma(\vect Y_t, t)\,\dd\vect W_t
-\end{align}
-Where $\vect W_t$ is the standard Wiener process. Obviously
-\eqref{eqn:st-pert} is the perturbed version of
-\eqref{eqn:st-orig}. It has been shown that, starting from the same
-measure saying $\mu$ (which is not necessarily equilibrium or
-stationary), the ratio of trajectory probability density between the perturbed
-and unperturbed process is~\cite{li2010lecture} (\recheck{I think here
-  the incompressibility of phase space should be assumed. Otherwise the
-  ratio should be more complicated.})
-\begin{align}\label{eqn:girsanov}
-  \frac{\dd\mathcal P_{\vect Y}}{\dd\mathcal P_{\vect X}}
-  =
-  \exp
-  \Big\{
-  -\frac12 \int_0^T\vert\bsigma^{-1}\cdot\vect c(\vect X_t,t)\vert^2\,\dd t
-  +\int_0^T[\dot{\vect X}_t - \vect b(\vect X_t,t)]^T
-  \cdot\bsigma^{-T}\cdot\bsigma^{-1}\cdot\vect c(\vect X_t,t)\,\dd t 
-  \Big\}
-\end{align}
-where $\mathcal P_{\vect Y}$ and $\mathcal P_{\vect Y}$ are measures
-of the trajectories generated by \eqref{eqn:st-pert} and
-\eqref{eqn:st-orig}, respectively.  This result (Girsanov formula?) is
-(formally) precise without any approximation.
+% \subsection{Path integral}
+% The path integral is very useful to develop the non-equilibrium version of
+% linear response theory. 
+% Comparing with the idea of ensemble, which is a collection of state points
+% in the configuration space, the path integral consider the ``ensemble'' of
+% trajectories.
+% (In the following, the develop of formula are formal. The strict mathematical
+% theory is still unclear for me.)
+% First, we take the standard 1-dimensional Wiener process for example.
+% Consider the time interval $[0,T]$, the probability density of one trajectory
+% is given by
+% \begin{align}
+%   p[W_t] = \frac 1Z e^{-I[W_t]}
+% \end{align}
+% where $I$ is the action functional of Wiener process given by
+% \begin{align}
+%   I[W_t] = \int_0^T\frac12 \dot{W}_t^2\dd t
+% \end{align}
+% the partition function $Z$ is
+% \begin{align}
+%   Z = \int  e^{-I[W_t]} \prod_{0\leq t\leq T}\dd W_t
+% \end{align}
+% Consider the following two stochastic processes:
+% \begin{align}\label{eqn:st-orig}
+%   \dd \vect X_t &= \vect b(\vect X_t, t) \dd t + \bsigma(\vect X_t, t)\,\dd\vect W_t \\\label{eqn:st-pert}
+%   \dd \vect Y_t &= \vect b(\vect Y_t, t) \dd t + \vect c(\vect Y_t, t) \dd t + \bsigma(\vect Y_t, t)\,\dd\vect W_t
+% \end{align}
+% Where $\vect W_t$ is the standard Wiener process. Obviously
+% \eqref{eqn:st-pert} is the perturbed version of
+% \eqref{eqn:st-orig}. It has been shown that, starting from the same
+% measure saying $\mu$ (which is not necessarily equilibrium or
+% stationary), the ratio of trajectory probability density between the perturbed
+% and unperturbed process is~\cite{li2010lecture} (\recheck{I think here
+%   the incompressibility of phase space should be assumed. Otherwise the
+%   ratio should be more complicated.})
+% \begin{align}\label{eqn:girsanov}
+%   \frac{\dd\mathcal P_{\vect Y}}{\dd\mathcal P_{\vect X}}
+%   =
+%   \exp
+%   \Big\{
+%   -\frac12 \int_0^T\vert\bsigma^{-1}\cdot\vect c(\vect X_t,t)\vert^2\,\dd t
+%   +\int_0^T[\dot{\vect X}_t - \vect b(\vect X_t,t)]^T
+%   \cdot\bsigma^{-T}\cdot\bsigma^{-1}\cdot\vect c(\vect X_t,t)\,\dd t 
+%   \Big\}
+% \end{align}
+% where $\mathcal P_{\vect Y}$ and $\mathcal P_{\vect Y}$ are measures
+% of the trajectories generated by \eqref{eqn:st-pert} and
+% \eqref{eqn:st-orig}, respectively.  This result (Girsanov formula?) is
+% (formally) precise without any approximation.
 
 
 \subsection{Non-equilibrium perturbation with linear approximation}
@@ -735,6 +1275,7 @@ then \eqref{eqn:noneq-pert-2} changes to
   \big\rangle_\mu^1      
 \end{align}
 
+
 \subsection{Remarks and possibilities}
 \bluec{
 \begin{itemize}
@@ -779,6 +1320,14 @@ then \eqref{eqn:noneq-pert-2} changes to
 \item Extension to nonlinear response?
 \end{itemize}
 }
+
+
+
+
+
+
+
+
 
 \section*{References}
 \bibliography{ref}{}
