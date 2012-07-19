@@ -201,6 +201,8 @@ int main(int argc, char * argv[])
   distQuench.average();
   dist.substract (distQuench);
   qc.average();
+  qc.getDist().print_x ("quenchCorr.x.out");
+  qc.getDist().print_xv ("quenchCorr.xv.out");
   
   vector<vector<vector<double > > > timeNew;
   tc.calIndicator (dist.values,
