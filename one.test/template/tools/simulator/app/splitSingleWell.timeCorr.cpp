@@ -183,10 +183,10 @@ int main(int argc, char * argv[])
     if (countBranch == int(branchNumFeq)){
       countBranch = 0;
       dist.deposite (xx);
-      // branching
       Dofs quenchXX (xx);
+      // branching
       int countQuench = 0;
-      for (double ttQuench = 0.; ttQuench <= quenchTime+0.5*dt; ttQuench += dt, countQuench ++){
+      for (double ttQuench = 0.; ttQuench < quenchTime-0.5*dt; ttQuench += dt, countQuench ++){
 	dofs[countQuench] = quenchXX;
 	quenchInte.step(quenchXX, 0.);
 	// quenchInte.step(quenchXX, warmTime + 1.0);
