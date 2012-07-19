@@ -208,14 +208,18 @@ int main(int argc, char * argv[])
   for (double tt = 0; tt < noneqTime + 0.5 * noneqCheckFeq; tt += noneqCheckFeq){
     unsigned ii = (tt + 0.5 * noneqCheckFeq) / noneqCheckFeq;
     dist.values = timeNew[ii];
-    double Fet = pert.Fe(tt);
-    dist.add (Fet, qc.getDist());
     int timeI = int(tt + 0.005);
     int timeF = int(100 * (tt + 0.005 - timeI));
     char name[2048];
     sprintf (name, "indicator.linear.x.%05d.%02d.out", timeI, timeF);
     dist.print_x (name);
     sprintf (name, "indicator.linear.vx.%05d.%02d.out", timeI, timeF);
+    dist.print_xv (name);
+    double Fet = pert.Fe(tt);
+    dist.add (Fet, qc.getDist());
+    sprintf (name, "indicator.linear.corr.x.%05d.%02d.out", timeI, timeF);
+    dist.print_x (name);
+    sprintf (name, "indicator.linear.corr.vx.%05d.%02d.out", timeI, timeF);
     dist.print_xv (name);
   }
   
