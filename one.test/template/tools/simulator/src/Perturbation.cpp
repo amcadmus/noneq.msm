@@ -97,6 +97,9 @@ operator () (const Dofs & dofs,
 {
   (*this) (dofs, pvalue);
   pvalue.vv[0] *= Fe(time);
+  // for (unsigned dd = 0; dd < NUMDOFS; ++dd){
+  //   pvalue.vv[dd] *= Fe(time);
+  // }
 }
 
 

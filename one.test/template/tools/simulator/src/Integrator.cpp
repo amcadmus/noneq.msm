@@ -28,9 +28,11 @@ step (Dofs & dofs,
   // printf ("%f\n", fvalue[0]);
   Dofs oldDofs(dofs);
   for (unsigned dd = 0; dd < NUMDOFS; ++dd){
+    double rand = RandomGenerator_MT19937::gaussian();
     dofs.xx[dd] = oldDofs.xx[dd] + dt * oldDofs.vv[dd] + dt * pvalue.xx[dd];
     dofs.vv[dd] = oldDofs.vv[dd] + dt * fvalue[dd] - dt * gamma * oldDofs.vv[dd] + dt * pvalue.vv[dd]
-	+ sqrtdt * sigma * RandomGenerator_MT19937::gaussian();
+	+ sqrtdt * sigma * rand;
+    storedw.vv[dd] = rand;
     if (! (dofs.xx[dd] >= -10 && dofs.xx[dd] <= 10. && dofs.vv[dd]>= -20. && dofs.vv[dd] <= 20.)  ){
       fprintf (stderr, "dd: %d   old: %f %f    new: %f %f\n",
     	       dd,
@@ -72,6 +74,10 @@ reinit (const double & g,
   sigma = sqrt(2. * kT * gamma);
   pert = p;
   force = f;
+  for (unsigned dd = 0; dd < NUMDOFS; ++dd){
+    storedw.xx[dd] = 0.;
+    // storedw.vv[dd] = 0.;
+  }
 }
 
 

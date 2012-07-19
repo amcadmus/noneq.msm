@@ -43,6 +43,8 @@ public:
   void print_x  (FILE * fp) const;
   void print_xv (FILE * fp) const;
   void substract (const Distribution_1d & d);
+  void add (const double & scalor,
+	    const Distribution_1d & d);
 }
     ;
 
