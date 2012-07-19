@@ -19,6 +19,7 @@
 #include <boost/program_options.hpp>
 #include "RandomGenerator.h"
 #include "TimeCorrelation.h"
+#include "QuenchCorr.h"
 
 namespace po = boost::program_options;
 
@@ -143,7 +144,7 @@ int main(int argc, char * argv[])
 	     &inte,
 	     &quenchInte,
 	     (quenchTime + .5*dt) / dt,
-	     warmTime + 1.0,
+	     0.,
 	     &flux);
   if (!vm.count("load-corr")){
     tc.calCorr (xx, nst*dt);
@@ -164,7 +165,11 @@ int main(int argc, char * argv[])
   // Distribution_1d distQuench (-2, 2, 50, -8, 8, 50);
   Distribution_1d dist       (x0, x1, nx, v0, v1, nv);
   Distribution_1d distQuench (x0, x1, nx, v0, v1, nv);
-
+  QuenchCorr qc (x0, x1, nx, v0, v1, nv, quenchInte, pert);
+  std::vector<Dofs > dofs, dws;
+  dofs.resize ((quenchTime+0.5*dt)/dt);
+  dws .resize ((quenchTime+0.5*dt)/dt);
+  
   for (double ii = 0.; ii < nst+0.1; ii += 1.){
     inte.step (xx, 0.);
     count ++;
@@ -180,16 +185,21 @@ int main(int argc, char * argv[])
       dist.deposite (xx);
       Dofs quenchXX (xx);
       // branching
-      for (double ttQuench = 0.; ttQuench <= quenchTime+0.5*dt; ttQuench += dt){
+      int countQuench = 0;
+      for (double ttQuench = 0.; ttQuench < quenchTime-0.5*dt; ttQuench += dt, countQuench ++){
+	dofs[countQuench] = quenchXX;
 	quenchInte.step(quenchXX, 0.);
 	// quenchInte.step(quenchXX, warmTime + 1.0);
+	dws [countQuench] = inte.getDw ();
       }
       distQuench.deposite (quenchXX);
+      qc.deposit (quenchXX, dofs, dws);
     }
   }
   dist.average();
   distQuench.average();
   dist.substract (distQuench);
+  qc.average();
   
   vector<vector<vector<double > > > timeNew;
   tc.calIndicator (dist.values,
@@ -197,6 +207,8 @@ int main(int argc, char * argv[])
   for (double tt = 0; tt < noneqTime + 0.5 * noneqCheckFeq; tt += noneqCheckFeq){
     unsigned ii = (tt + 0.5 * noneqCheckFeq) / noneqCheckFeq;
     dist.values = timeNew[ii];
+    double Fet = pert.Fe(tt);
+    dist.add (Fet, qc.getDist());
     int timeI = int(tt + 0.005);
     int timeF = int(100 * (tt + 0.005 - timeI));
     char name[2048];
