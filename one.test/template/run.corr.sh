@@ -28,7 +28,7 @@ if echo $load_saved_corr | grep yes &> /dev/null; then
     if test -f $saved_corr_dir/$saved_corr_name; then
 	echo "# existing saved corr $saved_corr_dir/$saved_corr_name, load it"
 	command="`pwd`/tools/simulator/$project_name.timeCorr \
---dt $dt --nst $nst -p 100000 --gamma $gamma --temperature $temperature \
+--dt $dt --nst $nst -p 1000000 --gamma $gamma --temperature $temperature \
 $command_line_param_print \
 --branch-feq $branch_feq \
 --noneq-check-feq $noneq_check_feq --noneq-time $noneq_time \
@@ -47,7 +47,7 @@ else
     saved_corr_name=$project_name.$save_corr_param_note.save.corr.step$print_corr_step.time$print_corr_time.equiT$print_equi_time.grid$print_x0.$print_x1.$print_nx.$print_v0.$print_v1.$print_nv
     echo "# save corr to $saved_corr_dir/$saved_corr_name"
     command="`pwd`/tools/simulator/$project_name.timeCorr \
---dt $dt --nst $nst -p 100000 --gamma $gamma --temperature $temperature \
+--dt $dt --nst $nst -p 1000000 --gamma $gamma --temperature $temperature \
 $command_line_param_print \
 --branch-feq $branch_feq \
 --noneq-check-feq $noneq_check_feq --noneq-time $noneq_time \
