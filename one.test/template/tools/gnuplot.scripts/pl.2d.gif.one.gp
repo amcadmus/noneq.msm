@@ -13,9 +13,9 @@ set pm3d implicit at b
 set palette rgbformulae 22,13,-31
 set size ratio 0.90
 
-set cbrange [-0.1:0.02]
+set cbrange [-0.04:0.1]
 set format cb "%.2f"
 
 set term gif
-set out 'fig-2d-linear-150.gif'
-spl 'indicator.linear.vx.00150.00.out' not
+set out 'fig-2d-linear-00000.00.gif'
+spl 'indicator.linear.vx.00000.00.out' u 1:2:(-$3) not

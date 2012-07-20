@@ -19,7 +19,7 @@ set palette rgbformulae 22,13,-31
 set size ratio 1.0
 
 # set yrange [-8:8]
-set cbrange [-0.1:0.02]
+set cbrange [-0.04:0.1]
 set format cb "%.2f"
 
 #set size 1.4,1.0
@@ -34,42 +34,42 @@ set origin 0.0,0.45
 unset xlabel
 set title 't = 0 ps'
 # set title 'linear resp., t=00000 ps' font "tt,16"
-spl 'indicator.vx.00000.00.out' not
+spl 'indicator.vx.00000.00.out' u 1:2:(-$3) not
 
 set origin 0.0, 0.0
 unset title
 set xlabel "q [nm]" 
 #set title 'direct, t=00000 ps' font "tt,16"
-spl 'indicator.linear.vx.00000.00.out' not
+spl 'indicator.linear.vx.00000.00.out' u 1:2:(-$3) not
 
 unset ylabel
 
 
 set origin 0.25, 0.45
 unset xlabel
-set title 't = 30 ps'
-spl 'indicator.vx.00030.00.out' not
+set title 't = 10 ps'
+spl 'indicator.vx.00010.00.out' u 1:2:(-$3) not
 
 set origin 0.5, 0.45
-set title 't = 60 ps'
-spl 'indicator.vx.00060.00.out' not
+set title 't = 15 ps'
+spl 'indicator.vx.00015.00.out' u 1:2:(-$3) not
 
 set origin 0.75, 0.45
-set title 't = 100 ps'
-spl 'indicator.vx.00100.00.out' not
+set title 't = 20 ps'
+spl 'indicator.vx.00020.00.out' u 1:2:(-$3) not
 
 
 unset title
 set xlabel "q [nm]"
 
 set origin 0.25, 0.0
-spl 'indicator.linear.vx.00030.00.out' not
+spl 'indicator.linear.corr.vx.00010.00.out' u 1:2:(-$3) not
 
 set origin 0.5, 0.0
-spl 'indicator.linear.vx.00060.00.out' not
+spl 'indicator.linear.corr.vx.00015.00.out' u 1:2:(-$3) not
 
 set origin 0.75, 0.0
-spl 'indicator.linear.vx.00100.00.out' not
+spl 'indicator.linear.corr.vx.00020.00.out' u 1:2:(-$3) not
 
 
 
