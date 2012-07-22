@@ -937,28 +937,30 @@ The last term is now computable.
 
 
 
-\subsection{Numerical test}
+\subsection{Numerical tests}
+
+\subsubsection{The tilting double-well potential}
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.4\textwidth]{figs/fig-pot.eps}
-  \caption{The potential with and without perturbation.}
+  \includegraphics[width=0.4\textwidth]{figs/fig-tilt-pot.eps}
+  \caption{The double-well potential with tilting perturbation.}
   \label{fig:tmp1}
 \end{figure}
 
-We test the idea by a one-dimensional model system: one particle in a
-double-well potential. For convenience, we let the mass of the
-particle to be 1 \textsf{amu}. The Hamiltonian of the system is given
-by:
+We test the idea firstly by a one-dimensional model system: one particle in a
+tilting double-well potential. For convenience, we let the mass of the
+particle to be 1 \textsf{amu}. The unperturbed
+Hamiltonian of the system is given by:
 \begin{align}
   \mh (\vect p, \vect q) = \frac 12 \vect p^2 + U(\vect q) 
 \end{align}
-with
+with potential
 \begin{align}
   U(\vect q) = \frac12 k (\vect q^2 - a^2)^2
 \end{align}
-Here $k = 8$ $\textsf{kJ} / (\textsf{mol nm}^4)$, and $ a = 1 \textsf{nm}$.
-Notice at room temperature $300 \textsf{K}$, $k_BT = 2.48$ \textsf{kJ/mol}.
+Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^4)$, and $ a = 1\ \textsf{nm}$.
+Notice at room temperature $300\ \textsf{K}$, $k_BT = 2.48$~\textsf{kJ/mol}.
 See the red line in Fig.~\ref{fig:tmp1}.
 %$\textsf{kJ} / (\textsf{mol nm}^4)}$
 The perturbation is given by
@@ -966,7 +968,7 @@ The perturbation is given by
   \vect C(\vect p, \vect q) = 0; \qquad
   \vect D(\vect p, \vect q) = -\nabla_{\vect q} V(\vect q) = 1
 \end{align}
-Here $V(\vect q) = -\vect q$, which effectively tilt the original
+Here $V(\vect q) = -\vect q$ is  effectively tilt the original
 potential $U(\vect q)$. The strength of the perturbation $F_e(t)$ is given
 by the following function:
 \begin{align}
@@ -976,36 +978,40 @@ by the following function:
     F_e^{\textrm{max}} & t \geq t_c
   \end{cases}
 \end{align}
-$t_c = 100$ \textsf{ps} so that the perturbation increases slow
+$t_c = 20$~\textsf{ps} so that the perturbation increases slow
 enough: the typical decaying time scale of the correlation function
-in~\eqref{eqn:main} is roughly 3 \textsf{ps}.  We choose $\mt_\alpha$
-to be the propagator of the Langevin dynamics at temperature $150$
-\textsf{K} with $\alpha = 1$ \textsf{ps}.  Since the dynamics is in
-1-d, the projection is identity.  We consider the stability of the
-distribution $f_t$ at time $t$: $-\Delta\mt_\alpha f_t$. The smaller
+in~\eqref{eqn:core-identify-approx-2} is roughly 3~\textsf{ps}.
+We choose $\tau = 1$~\textsf{ps}.
+% We choose $\mt_\alpha$
+% to be the propagator of the Langevin dynamics at temperature $150$
+% \textsf{K} with $\alpha = 1$ \textsf{ps}.
+Since the dynamics is in
+1-d, the projection $\mathcal P$ is identity.  We consider the stability of the
+distribution $f(\vect x, t)$ at time $t$: $\Delta\mt_\tau f(\vect x, t)$.
+The larger
 this value, the more stable the core sets are.
 
 See Fig. \ref{fig:tmp2} and \ref{fig:tmp3} for numerical result.  Both
 the direct non-equilibrium simulation and the linear response
-approximation are presented. Time slices $t = 0$, 30, 60 and 100
+approximation are presented. Time slices $t = 0$, 10, 15 and 20
 \textsf{ps} are shown.  When the perturbation is small,
 i.e. $F_e^{\textrm{max}} = 2$, the direct non-equilibrium simulation
-and the linear response results consistent very well. As the
+and the linear response results are accurately consistent. As the
 perturbation grows stronger, the left well becomes less stable, while
 the right well becomes more stable.  When the perturbation is big,
-i.e. $F_e^{\textrm{max}} = 6$, the linear response results are no
-longer precise. When $t\geq 60$ \textsf{ps}, the left well basically
-disappears, however, the linear response calculation present a well
-that is nearly as stable as the right well.
+i.e. $F_e^{\textrm{max}} = 4$, the linear response results are no
+longer precise. When $t\geq 10$ \textsf{ps}, the left well basically
+disappears, however, the linear response calculation presents
+artifical occilation at the right well.
 
 \begin{figure}
   \centering
   \includegraphics[width=0.95\textwidth]
-  {figs/warm100.str2.0.nst1e09.smallgrid/fig-2d.eps}
-  \caption{The stability of distribution $f_t$ under perturbation of
+  {figs/tilt.warm020.str2.0.nst1e09.smallgrid/fig-2d.eps}
+  \caption{The plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
     $F_e^{\textrm{max}} = 2$.
     Upper row: the direct non-equilibrium simulation. Lower row: the
-    results of linear response formula~\eqref{eqn:main}.
+    results of linear response formula~\eqref{eqn:core-identify-approx-2}.
   }
   \label{fig:tmp2}
 \end{figure}
@@ -1013,14 +1019,67 @@ that is nearly as stable as the right well.
 \begin{figure}
   \centering
   \includegraphics[width=0.95\textwidth]
-  {figs/warm100.str6.0.nst1e09.smallgrid/fig-2d.eps}
-  \caption{The stability of distribution $f_t$ under perturbation of
-    $F_e^{\textrm{max}} = 6$.  Upper row: the direct non-equilibrium
+  {figs/tilt.warm020.str4.0.nst1e09.smallgrid/fig-2d.eps}
+  \caption{The plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+    $F_e^{\textrm{max}} = 4$.  Upper row: the direct non-equilibrium
     simulation. Lower row: the results of linear response
-    formula~\eqref{eqn:main}.  }
+    formula~\eqref{eqn:core-identify-approx-2}.  }
   \label{fig:tmp3}
 \end{figure}
 
+
+\subsubsection{Splitting single-well potential}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.4\textwidth]{figs/fig-split-pot.eps}
+  \caption{The single-well potential with splitting perturbation.}
+  \label{fig:tmp4}
+\end{figure}
+
+In this splitting single-well potential example, the unperturbed
+potential is simply the harmonic potential given by:
+\begin{align}
+  U(\vect q) = \frac12\,k\,\vect q^2 
+\end{align}
+Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^2)$.
+Notice at room temperature $300\ \textsf{K}$, $k_BT = 2.48$~\textsf{kJ/mol}.
+See the red line in Fig.~\ref{fig:tmp4}.
+%$\textsf{kJ} / (\textsf{mol nm}^4)}$
+The perturbation is again given by
+\begin{align}
+  \vect C(\vect p, \vect q) = 0; \qquad
+  \vect D(\vect p, \vect q) = -\nabla_{\vect q} V(\vect q) 
+\end{align}
+where $V(\vect q)$ is a Gaussian type potential:
+\begin{align}
+  V(\vect q) = \frac{1}{\sqrt{2\pi \sigma^2}}
+  \exp\Big\{-\frac{\vect q^2}{2\sigma^2}\Big\}
+\end{align}
+we use $\sigma = 0.16$~\textsf{nm}. Please see Fig~\ref{fig:tmp4}.
+For the results, please see Fig.~\ref{fig:tmp5} -- Fig.~\ref{fig:tmp6}.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]
+  {figs/split.warm020.str1.0.nst1e09.smallgrid.more/fig-2d.eps}
+  \caption{The plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+    $F_e^{\textrm{max}} = 1.0$.
+    Upper row: the direct non-equilibrium simulation. Lower row: the
+    results of linear response formula~\eqref{eqn:core-identify-approx-2}.
+  }
+  \label{fig:tmp5}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]
+  {figs/split.warm020.str2.0.nst1e09.smallgrid.more/fig-2d.eps}
+  \caption{The plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+    $F_e^{\textrm{max}} = 2.0$.  Upper row: the direct non-equilibrium
+    simulation. Lower row: the results of linear response
+    formula~\eqref{eqn:core-identify-approx-2}.  }
+  \label{fig:tmp6}
+\end{figure}
 
 
 
