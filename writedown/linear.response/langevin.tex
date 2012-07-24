@@ -27,6 +27,7 @@
 \newcommand{\mo}{\mathcal O}
 \newcommand{\mi}{\mathcal I}
 \newcommand{\mc}{\mathcal C}
+\newcommand{\proj}{\mathit\Pi}
 \newcommand{\fwg}{{\mathcal A}}
 \newcommand{\bwg}{{\mathcal B}}
 \newcommand{\bsigma}{\boldsymbol\sigma}
@@ -351,7 +352,7 @@ where $  \langle
 dissipative flux $j$.
 
 
-\subsection{The core set as an observation of the system}
+\subsection{The linear response theory for the core set identification}
 
 The core set plays a very important role in the MSM theory. One way to
 identify core set is to consider the ``stability'' of the invariant
@@ -378,7 +379,7 @@ $\vect y = \vect y(\vect x)$, with $\vect y \in \Omega \subset \mathbb
 R^M,\ M\ll 3N$. We call $\Omega$ the observation space.  The projected
 invariant measure on the observation space is therefore
 \begin{align}
-  \mathcal P f (\vect y, t)
+  \proj f (\vect y, t)
   =
   \int
   \dd \vect x\,
@@ -390,7 +391,7 @@ The core set on the observation space is
   \widetilde
   C_\tau(t) = \big\{
   \vect y \,\vert\,
-  \mathcal P\mt_\tau f(\vect y, t) > \mathcal P f(\vect y, t)
+  \proj\mt_\tau f(\vect y, t) > \proj f(\vect y, t)
   \big\}
 \end{align}
 % with $\widetilde \mt_\alpha$ defined by
@@ -407,10 +408,10 @@ The core set on the observation space is
 % \end{align}
 For convenience, we define $\Delta \mt_\tau =
 \mt_\tau - \mathcal I$, where $\mathcal I$ is the
-identity. If $[\mathcal P\circ\Delta \mt_\tau f](\vect y, t) > 0$, then
+identity. If $[\proj\circ\Delta \mt_\tau f](\vect y, t) > 0$, then
 $\vect y$ is in the core set $\widetilde C_\tau(t) $.
 \begin{align}\nonumber
-  [\mathcal P\circ\Delta \mt_\tau f](\vect y, t)
+  [\proj\circ\Delta \mt_\tau f](\vect y, t)
   &=
   \int
   \dd \vect x\,
@@ -514,7 +515,7 @@ By inserting~\eqref{eqn:solv-orig-linear} and~\eqref{eqn:solve-tau-linear}
 into~\eqref{eqn:core-identify}, we have, up to the first order
 approximation,
 \begin{align}\nonumber
-  [\mathcal P\circ\Delta\mt_\tau f](\vect y, t)
+  [\proj\circ\Delta\mt_\tau f](\vect y, t)
   \approx
   \lim_{\sigma \rightarrow 0}
   \bigg\{
@@ -637,11 +638,10 @@ different perturbations that are given by $F_e^1(t)$ and $F_e^2(t)$,
 respectively. 
 By writing Eqn.~\eqref{eqn:langevin-1} and \eqref{eqn:langevin-2} as
 \begin{align}
-  \frac{\dd }{\dd t}
   \left[
     \begin{array}{l}
-      \vect q\\
-      \vect p
+      \dd\vect q\\
+      \dd\vect p
     \end{array}
   \right]
   =
@@ -692,8 +692,8 @@ we have
 
 
 
-\subsection{Linear response theory of the core set identification,
-  revisited by the path integral method}
+\subsection{The linear response theory for the core set identification,
+  revisited by the path integral}
 For some observable $O[\vect X_\eta]$, which is a functional of the
 stochastic process $\vect X_\eta$,
 the trajectory ensemble average yields:
@@ -753,7 +753,7 @@ In this case, \eqref{eqn:girsanov-1} rewrites:
 Notice that $F_e(t)\sim \mo(\varepsilon)$.
 For convenience, we denote
 \begin{align}
-  G[\vect X_\eta] =
+  G[\vect X_\eta] &=
     \frac 1 {\sigma^2}
   \int_0^\tau
   [\dot{\vect p}_\eta +
@@ -761,8 +761,13 @@ For convenience, we denote
   \nabla_{\vect q}\mh(\vect q_\eta,\vect p_\eta)
   ]\cdot
   \vect D(\vect q_\eta,\vect p_\eta)\,
-  \dd \eta
+  \dd \eta =
+  \frac1\sigma\int_0^\tau
+  \vect D(\vect q_\eta,\vect p_\eta)
+  \cdot\dd \vect W_\eta
 \end{align}
+where $\vect W_\eta$ is the Wiener process that generates
+$\vect X_\eta$.
 Therefore, we have
 \begin{align}\nonumber
   \mo(t)
@@ -815,7 +820,7 @@ Therefore, we have
 \end{align}
 In the case of core set identification,
 \begin{align}\nonumber
-  [\mathcal P\circ \mt_\tau] f(\vect y,t)
+  [\proj\circ \mt_\tau] f(\vect y,t)
   =&\,
   \int\dd \vect x\,
   \mt_\tau f(\vect x,t) K_{\sigma,\vect y}(\vect x)\\\nonumber
@@ -835,7 +840,7 @@ In the case of core set identification,
   =&\,
   \int\dd \vect x\,
   f(\vect x,t) 
-  \int_{\mc\{\vect x,0;\tau\}} K_{\sigma,\vect y}(\vect X_\eta)\,
+  \int_{\mc\{\vect x,0;\tau\}} K_{\sigma,\vect y}(\vect X_\tau)\,
   \dd\mathcal P^{2\beta}_t[\vect X_\eta]
 \end{align}
 So the observable $O[\vect X_\eta]$
@@ -851,12 +856,12 @@ trajectory measured by $K_{\sigma,\vect y}$.
 Inserting everything we known in~\eqref{eqn:solve-tau-linear-2-0},
 and notice $G[\vect X_\eta] = 0$ when $\tau = 0$,
 \begin{align}\nonumber
-  [\mathcal P\circ\Delta\mt_\tau f](\vect y, t)
+  [\proj\circ\Delta\mt_\tau f](\vect y, t)
   =
   \lim_{\sigma \rightarrow 0}
   \big\{
   &\,
-  [\mathcal P\circ\mt_\tau f - \mathcal P\circ\mt_0 f](\vect y, t)
+  [\proj\circ\mt_\tau f - \proj\circ\mt_0 f](\vect y, t)
   \big\}\\\nonumber
   \approx
   \lim_{\sigma \rightarrow 0}
