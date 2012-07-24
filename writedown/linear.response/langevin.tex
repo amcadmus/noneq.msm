@@ -938,13 +938,146 @@ two terms on the r.h.s. are identical.
 The last term is now computable.
 
 
+\subsection{General response theory for core set identification}
 
+Here, we assume that the system undergoes a series of perturbations,
+which are denoted by $F^0_e(t),\ F^1_e(t),\ \cdots,\ F^i_e(t),\ \cdots$.
+Here, $F^0_e(t) = 0$.
+The measure for the trajectory space
+$\mc\{\vect x, 0; t\}$
+is given by
+$\mathcal P_0^\beta[\vect X_s],\ \mathcal P_1^\beta[\vect X_s],\ \cdots,\
+\mathcal P_i^\beta[\vect X_s], \cdots$, respectively.
+The measure for the quenching trajectory are denoted by
+$\mathcal P_{0,t}^{2\beta}[\vect X_\eta],\
+\mathcal P_{1,t}^{2\beta}[\vect X_\eta],\ \cdots,\
+\mathcal P_{i,t}^{2\beta}[\vect X_\eta], \cdots$, respectively.
+The notation $t$ on the subscript means the trajectory is branched from
+the main trajectory at time $t$.
+Now the phase space distribution $f_i(\vect x, t)$ for the
+$i$-th perturbation can be studied in terms
+of path integral:
+\begin{align}
+  f_i(\vect x, t) =
+  \int\dd\vect u\,
+  f_i(\vect u, 0)
+  \int_{\mc\{\vect u,0; \vect x,t\}}
+  \dd\mathcal P_i^\beta[\vect X_s]
+\end{align}
+Applied by operator $\mt_\tau$, we have
+\begin{align}\nonumber
+  \mt_\tau f_i(\vect x, t)
+  =&\,
+  \int\dd\vect u f_i(\vect u, t)
+  \int_{\mc\{\vect u,0; \vect x,\tau\}}
+  \dd\mathcal P_{i,t}^{2\beta}[\vect X_\eta]\\
+  =&\,
+  \int\dd\vect v\,
+  f_i(\vect v, 0)
+  \int\dd\vect u
+  \int_{\mc\{\vect v,0; \vect u,t\}}
+  \dd\mathcal P_i^\beta[\vect X_s]  
+  \int_{\mc\{\vect u,0; \vect x,\tau\}}
+  \dd\mathcal P_{i,t}^{2\beta}[\vect X_\eta]
+\end{align}
+For the core set identification,
+\begin{align}
+  [\proj\circ\mt_\tau f](\vect y, t)
+  &=
+  \int\dd\vect v\,
+  f_i(\vect v, 0)
+  \int\dd\vect u
+  \int_{\mc\{\vect v,0; \vect u,t\}}
+  \dd\mathcal P_i^\beta[\vect X_s]  
+  \int_{\mc\{\vect u,0; \tau\}}
+  K_{\sigma,\vect y}(\vect X_\tau)\,
+  \dd\mathcal P_{i,t}^{2\beta}[\vect X_\eta]  \\
+  [\proj\circ\mt_0 f](\vect y, t)
+  &=
+  \int\dd\vect v\,
+  f_i(\vect v, 0)
+  \int_{\mc\{\vect v,0; t\}}
+  K_{\sigma,\vect y}(\vect X_t)\,
+  \dd\mathcal P_i^\beta[\vect X_s]  
+  % \int_{\mc\{\vect u,0; \tau\}}
+  % K_{\sigma,\vect y}(\vect X_\tau)\,
+  % \dd\mathcal P_{i,t}^{2\beta}[\vect X_\eta]  
+\end{align}
+Here we assume that the system always starts from invariant measure,
+i.e. $f_i(\vect x, 0) = f_{\inv}^\beta(\vect x)$, and that we have a
+good sampling of the $(i-1)$-th perturbation, then
+\begin{align}
+  [\proj\circ\mt_\tau f](\vect y, t)
+  &=
+  \int\dd\vect v\,
+  f_\inv^\beta(\vect v)
+  \int\dd\vect u
+  \int_{\mc\{\vect v,0; \vect u,t\}}
+  \dd\mathcal P_{i-1}^\beta[\vect X_s]  
+  \int_{\mc\{\vect u,0; \tau\}}
+  \dd\mathcal P_{i-1,t}^{2\beta}[\vect X_\eta]\cdot
+  K_{\sigma,\vect y}(\vect X_\tau)\,
+  \frac
+  {\dd\mathcal P_{i}^\beta[\vect X_s]}
+  {\dd\mathcal P_{i-1}^\beta[\vect X_s]}
+  \frac
+  {\dd\mathcal P_{i,t}^{2\beta}[\vect X_\eta]}
+  {\dd\mathcal P_{i-1,t}^{2\beta}[\vect X_\eta]}
+  \\
+  [\proj\circ\mt_0 f](\vect y, t)
+  &=
+  \int\dd\vect v\,
+  f_{\inv}^\beta(\vect v)
+  \int_{\mc\{\vect v,0; t\}}
+  \dd\mathcal P_{i-1}^\beta[\vect X_s]
+  \cdot
+  K_{\sigma,\vect y}(\vect X_t)\,
+  \frac
+  {\dd\mathcal P_{i}^\beta[\vect X_s]}
+  {\dd\mathcal P_{i-1}^\beta[\vect X_s]}  
+  % \int_{\mc\{\vect u,0; \tau\}}
+  % K_{\sigma,\vect y}(\vect X_\tau)\,
+  % \dd\mathcal P_{i,t}^{2\beta}[\vect X_\eta]  
+\end{align}
+Here
+\begin{align}\label{eqn:exact-ratio-1}
+  \frac
+  {\dd\mathcal P_{i}^\beta[\vect X_s]}
+  {\dd\mathcal P_{i-1}^\beta[\vect X_s]}  
+  =&\,
+  \exp
+  \bigg\{
+  \Delta F_e^{i-1}(s)\,
+  \frac{1}\sigma\int_0^t
+  \vect D(\vect q_s,\vect p_s)\cdot\dd\vect W_s
+  -
+  [\Delta F_e^{i-1}(s)]^2\,
+  \frac 1{2\sigma}\int_0^t
+  \vect D^2(\vect q_s,\vect p_s)\,\dd s
+  \bigg\}\\\label{eqn:exact-ratio-2}
+  \frac
+  {\dd\mathcal P_{i,t}^{2\beta}[\vect X_\eta]}
+  {\dd\mathcal P_{i-1,t}^{2\beta}[\vect X_\eta]}
+  =&\,
+  \exp
+  \bigg\{
+  \Delta F_e^{i-1}(t)\,
+  \frac{1}\sigma\int_0^\tau
+  \vect D(\vect q_\eta,\vect p_\eta)\cdot\dd\vect W_\eta
+  -
+  [\Delta F_e^{i-1}(t)]^2\,
+  \frac 1{2\sigma}\int_0^\tau
+  \vect D^2(\vect q_\eta,\vect p_\eta)\,\dd \eta
+  \bigg\}
+\end{align}
+where $\Delta F_e^{i-1}(t) = F_e^{i}(t) - F_e^{i-1}(t) $.
+If the trajectory at perturbation $ F_e^{i-1}(t) $ is well sampled, then
+\eqref{eqn:exact-ratio-1} and \eqref{eqn:exact-ratio-2} can be measured
+without linear approximation.
 
+\section{Numerical tests}
 
-
-\subsection{Numerical tests}
-
-\subsubsection{The tilting double-well potential}
+\subsection{The tilting double-well potential}
 
 \begin{figure}
   \centering
@@ -1033,7 +1166,7 @@ artifical occilation at the right well.
 \end{figure}
 
 
-\subsubsection{Splitting single-well potential}
+\subsection{Splitting single-well potential}
 
 \begin{figure}
   \centering
