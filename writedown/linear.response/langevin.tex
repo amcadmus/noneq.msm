@@ -938,7 +938,8 @@ two terms on the r.h.s. are identical.
 The last term is now computable.
 
 
-\subsection{General response theory for core set identification}
+
+\subsection{Higher orders response theory for core set identification}
 
 Here, we assume that the system undergoes a series of perturbations,
 which are denoted by $F^0_e(t),\ F^1_e(t),\ \cdots,\ F^i_e(t),\ \cdots$.
@@ -1006,7 +1007,7 @@ For the core set identification,
 Here we assume that the system always starts from invariant measure,
 i.e. $f_i(\vect x, 0) = f_{\inv}^\beta(\vect x)$, and that we have a
 good sampling of the $(i-1)$-th perturbation, then
-\begin{align}
+\begin{align}\label{eqn:pert-exact-1}
   [\proj\circ\mt_\tau f](\vect y, t)
   &=
   \int\dd\vect v\,
@@ -1023,7 +1024,7 @@ good sampling of the $(i-1)$-th perturbation, then
   \frac
   {\dd\mathcal P_{i,t}^{2\beta}[\vect X_\eta]}
   {\dd\mathcal P_{i-1,t}^{2\beta}[\vect X_\eta]}
-  \\
+  \\\label{eqn:pert-exact-2}
   [\proj\circ\mt_0 f](\vect y, t)
   &=
   \int\dd\vect v\,
@@ -1070,6 +1071,124 @@ where $\Delta F_e^{i-1}(t) = F_e^{i}(t) - F_e^{i-1}(t) $.
 If the trajectory at perturbation $ F_e^{i-1}(t) $ is well sampled, then
 \eqref{eqn:exact-ratio-1} and \eqref{eqn:exact-ratio-2} can be measured
 without linear approximation.
+This is the exact result, from where we can develop
+the response (also non-linear) theroy.
+Before doing so, we should assume the perturbation can be expanded,
+and well approximated in a finite dimensional space:
+\begin{align}
+  F^i_e(t)
+  =
+  \sum_{j = 1}^\infty
+  s^i_j M_j(t)
+\end{align}
+with this expansion, we have
+\begin{align}\label{eqn:exact-ratio-11}
+  \frac
+  {\dd\mathcal P_{i}^\beta[\vect X_s]}
+  {\dd\mathcal P_{i-1}^\beta[\vect X_s]}  
+  =&\,
+  \exp
+  \bigg\{
+  \sum_{j=1}^\infty
+  \Delta s_j^{i-1}G_j[\vect X_s]
+  -
+  \frac12 \sum_{j,k=1}^\infty
+  \Delta s_j^{i-1} \Delta s_k^{i-1}H_{jk}[\vect X_s]
+  \bigg\}\\\label{eqn:exact-ratio-21}
+  \frac
+  {\dd\mathcal P_{i,t}^{2\beta}[\vect X_\eta]}
+  {\dd\mathcal P_{i-1,t}^{2\beta}[\vect X_\eta]}
+  =&\,
+  \exp
+  \bigg\{
+  \Delta F_e^{i-1}(t)\,
+  G_0[\vect X_\eta]
+  -
+  \frac12[\Delta F_e^{i-1}(t)]^2
+  H_{00}[\vect X_\eta]
+  \bigg\}
+\end{align}
+where
+\begin{align}\label{eqn:Gj}
+  G_j[\vect X_s]
+  =&\,
+  \frac 1\sigma
+  \int_0^t
+  M_j(s)\,\vect D(\vect X_s)\cdot\dd\vect W_s\\\label{eqn:Hjk}
+  H_{jk}[\vect X_s]
+  =&\,
+  \frac 1{\sigma}
+  \int_0^t
+  M_j(s)\,M_k(s)\,\vect D^2(\vect X_s)\cdot\dd s
+\end{align}
+and 
+\begin{align}\label{eqn:G0}
+  G_0[\vect X_\eta]
+  =&\,
+  \frac 1\sigma
+  \int_0^\tau
+  M_j(\eta)\,\vect D(\vect X_\eta)\cdot\dd\vect W_\eta\\\label{eqn:H00}
+  H_{00}[\vect X_\eta]
+  =&\,
+  \frac 1{\sigma}
+  \int_0^\tau
+  M_j(\eta)\,M_k(\eta)\,\vect D^2(\vect X_\eta)\cdot\dd \eta
+\end{align}
+Notice that Eqn.~\eqref{eqn:Gj}--\eqref{eqn:H00} are perturbation
+independent, therefore can be measured with the dynamics $i-1$.
+Expanding \eqref{eqn:exact-ratio-11} and \eqref{eqn:exact-ratio-21}
+up to $\mathcal O(\varepsilon^3)$ yields
+\begin{align}\label{eqn:expan-ratio-1}
+  \frac
+  {\dd\mathcal P_{i}^\beta[\vect X_s]}
+  {\dd\mathcal P_{i-1}^\beta[\vect X_s]}
+  =&\,
+  1
+  +
+  \sum_{j=1}^\infty
+  \Delta s_j^{i-1}G_j[\vect X_s]
+  -
+  \frac12
+  \sum_{j,k=1}^\infty
+  \Delta s_j^{i-1} \Delta s_k^{i-1}H_{jk}[\vect X_s]
+  +
+  \frac12  
+  \sum_{j,k=1}^\infty
+  \Delta s_j^{i-1}\Delta s_k^{i-1}G_j[\vect X_s]G_k[\vect X_s]
+  +
+  \mathcal O(\varepsilon^3)
+  \\\label{eqn:expan-ratio-2}
+  \frac
+  {\dd\mathcal P_{i,t}^{2\beta}[\vect X_\eta]}
+  {\dd\mathcal P_{i-1,t}^{2\beta}[\vect X_\eta]}
+  =&\,
+  1 +
+  \Delta F_e^{i-1}(t)\,
+  G_0[\vect X_\eta]
+  -
+  \frac12[\Delta F_e^{i-1}(t)]^2
+  H_{00}[\vect X_\eta]
+  +
+  \frac12[\Delta F_e^{i-1}(t)]^2
+  \big\{
+  G_0[\vect X_\eta]
+  \big\}^2
+  +
+  \mathcal O(\varepsilon^3)
+\end{align}
+Therefore, by the expansion formula \eqref{eqn:expan-ratio-1} and
+\eqref{eqn:expan-ratio-2}, the response theory for the
+\eqref{eqn:pert-exact-1} and \eqref{eqn:pert-exact-2} can be
+established.
+
+
+
+
+
+
+
+
+
 
 \section{Numerical tests}
 
