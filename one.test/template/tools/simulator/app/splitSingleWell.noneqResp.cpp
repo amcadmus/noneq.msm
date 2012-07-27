@@ -96,8 +96,8 @@ int main(int argc, char * argv[])
   std::cout << "# sigma: " << sigma << " [nm]" << std::endl;
   // std::cout << "# barrier: " << 0.5 * kk * aa*aa*aa*aa << " [kJ/mol]" << std::endl;
   std::cout << "# gamma: " << gamma << " [ps^-1]" << std::endl;
-  std::cout << "# pert st0: " << pertSt0 << " [kJ/(mol nm)]" << std::endl;
-  std::cout << "# pert st1: " << pertSt1 << " [kJ/(mol nm)]" << std::endl;
+  std::cout << "# pert st0 (reference)   : " << pertSt0 << " [kJ/(mol nm)]" << std::endl;
+  std::cout << "# pert st1 (perturbation): " << pertSt1 << " [kJ/(mol nm)]" << std::endl;
   std::cout << "# warm time: " << warmTime << " [ps]" << std::endl;
   std::cout << "# quench T: " << quenchTemperture << " [K]" << std::endl;
   std::cout << "# quench kT: " << quenchkT << " [kJ/mol]" << std::endl;

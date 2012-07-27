@@ -5,6 +5,7 @@ noneq_time=150.0
 corr_step=0.01
 corr_time=10.0
 warm_time=100.0
+refe_strength=0.0
 pert_strength=1.0
 project_name=splitSingleWell
 #project_name=tiltDoubleWell
