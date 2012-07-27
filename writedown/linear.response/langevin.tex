@@ -1127,12 +1127,12 @@ and
   =&\,
   \frac 1\sigma
   \int_0^\tau
-  M_j(\eta)\,\vect D(\vect X_\eta)\cdot\dd\vect W_\eta\\\label{eqn:H00}
+  \vect D(\vect X_\eta)\cdot\dd\vect W_\eta\\\label{eqn:H00}
   H_{00}[\vect X_\eta]
   =&\,
   \frac 1{\sigma}
   \int_0^\tau
-  M_j(\eta)\,M_k(\eta)\,\vect D^2(\vect X_\eta)\cdot\dd \eta
+  \vect D^2(\vect X_\eta)\cdot\dd \eta
 \end{align}
 Notice that Eqn.~\eqref{eqn:Gj}--\eqref{eqn:H00} are perturbation
 independent, therefore can be measured with the dynamics $i-1$.
@@ -1180,7 +1180,115 @@ Therefore, by the expansion formula \eqref{eqn:expan-ratio-1} and
 \eqref{eqn:expan-ratio-2}, the response theory for the
 \eqref{eqn:pert-exact-1} and \eqref{eqn:pert-exact-2} can be
 established.
-
+For convenience, we denote
+\begin{align}
+  \big\langle
+  O[\vect X_s]\tilde O[\vect X_\eta]
+  \big\rangle_{0,t,\tau}^{i-1}
+  =&\,
+  \int\dd\vect v\,
+  f_\inv^\beta(\vect v)
+  \int\dd\vect u
+  \int_{\mc\{\vect v, 0; \vect u, t\}}
+  \dd\mathcal P^\beta_{i-1}[\vect X_s]
+  \,
+  O[\vect X_s]
+  \int_{\mc\{\vect u, 0; \tau\}}
+  \dd\mathcal P^{2\beta}_{i-1,t}[\vect X_\eta]
+  \,
+  \tilde O[\vect X_\eta]
+  \\
+  \big\langle
+  O[\vect X_s]
+  \big\rangle_{0,t,\tau}^{i-1}
+  = &\,
+  \int\dd\vect v\,
+  f_\inv^\beta(\vect v)
+  \int_{\mc\{\vect v, 0; t\}}
+  \dd\mathcal P^\beta_{i-1}[\vect X_s]
+  \,
+  O[\vect X_s]  
+\end{align}
+Then the approximated \eqref{eqn:pert-exact-1} is
+\begin{align}\nonumber
+  [\proj\circ\mt_\tau f](\vect y, t)
+  =&\,
+  \big\langle
+  K_{\sigma,\vect y}(\vect X_\tau)
+  \big\rangle_{0,t,\tau}^{i-1}
+  \\ \nonumber
+  &\, +
+  \Delta F_e^{i-1}(t) 
+  \big\langle
+  K_{\sigma,\vect y}(\vect X_\tau)\,
+  G_0[\vect X_\eta]
+  \big\rangle_{0,t,\tau}^{i-1}
+  +
+  \sum_{j=1}^\infty
+  \Delta s_j^{i-1}
+  \big\langle
+  K_{\sigma,\vect y}(\vect X_\tau)\,
+  G_j[\vect X_s]
+  \big\rangle_{0,t,\tau}^{i-1}
+  \\\nonumber
+  &\, 
+  -
+  \frac12[\Delta F_e^{i-1}(t)]^2
+  \big\langle
+  K_{\sigma,\vect y}(\vect X_\tau)\,
+  H_{00}[\vect X_\eta]
+  \big\rangle_{0,t,\tau}^{i-1}
+  -
+  \frac 12
+  \sum_{j,k=1}^\infty
+  \Delta s_j^{i-1}\Delta s_k^{i-1}
+  \big\langle
+  K_{\sigma,\vect y}(\vect X_\tau)\,
+  H_{jk}[\vect X_s]
+  \big\rangle_{0,t,\tau}^{i-1}
+  \\\label{eqn:pert-approx-1}
+  &\,+
+  \sum_{j=1}^\infty
+  \Delta F_e^{i-1}(t) \Delta s_j^{i-1}
+  \big\langle
+  K_{\sigma,\vect y}(\vect X_\tau)\,
+  G_0[\vect X_\eta]\,
+  G_j[\vect X_s]
+  \big\rangle_{0,t,\tau}^{i-1}
+\end{align}
+The first line on the r.h.s. of \eqref{eqn:pert-approx-1}
+is the zeroth order approximation,  the second line is the
+first order approximation, and the last two lines are the
+second order approximation.
+And the approximated \eqref{eqn:pert-exact-2} is
+\begin{align}
+  \nonumber
+  [\proj\circ\mt_0 f](\vect y, t)
+  =&\,
+  \big\langle
+  K_{\sigma,\vect y}(\vect X_t)
+  \big\rangle_{0,t}^{i-1}
+  \\ \nonumber
+  &\,+
+  \sum_{j=1}^\infty
+  \Delta s_j^{i-1}
+  \big\langle
+  K_{\sigma,\vect y}(\vect X_t)\,
+  G_j[\vect X_s]
+  \big\rangle_{0,t}^{i-1}
+  \\\label{eqn:pert-approx-2}
+  &\,
+  -
+  \frac 12
+  \sum_{j,k=1}^\infty
+  \Delta s_j^{i-1}\Delta s_k^{i-1}
+  \big\langle
+  K_{\sigma,\vect y}(\vect X_t)\,
+  H_{jk}[\vect X_s]
+  \big\rangle_{0,t}^{i-1}  
+\end{align}
+The first, second and third line on the r.h.s. of \eqref{eqn:pert-approx-2}
+are the zeroth order, first order and second order approximations, respectively.
 
 
 

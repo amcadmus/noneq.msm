@@ -3,13 +3,21 @@
 
 #include "Defines.h"
 #include "Force.h"
+#include <vector>
+
+using namespace std;
 
 class Perturbation 
 {
 public:
+  virtual double Fe (const double & time) const = 0;
+  virtual int numMode () const;
+  virtual void FeMode     (const double & time,
+			   vector<double > & modes) const;
+  virtual void FeModePref (vector<double > & pref ) const;
+public:
   virtual void operator () (const Dofs & dofs,
   			    Dofs & pvalue) const = 0;
-  virtual double Fe (const double & time) const = 0;
   virtual void operator () (const Dofs & dofs,
 			    const double & time,
 			    Dofs & pvalue) const = 0;
@@ -37,9 +45,15 @@ class PertConstTilt : public Perturbation
 public:
   PertConstTilt (const double & s,
 		 const double warmTime = 0.);
+public:
+  virtual double Fe (const double & time) const;
+  virtual int numMode () const;
+  virtual void FeMode (const double & time,
+		       vector<double > & modes) const;
+  virtual void FeModePref (vector<double > & pref ) const;
+public:
   virtual void operator () (const Dofs & dofs,
   			    Dofs & pvalue) const;
-  virtual double Fe (const double & time) const;
   virtual void operator () (const Dofs & dofs,
 			    const double & time,
 			    Dofs & pvalue) const;
@@ -61,9 +75,15 @@ public:
 		const double m = 0.,
 		const double sig = 1.,
 		const double warmTime = 0.);
+public:
+  virtual double Fe (const double & time) const;
+  virtual int numMode () const;
+  virtual void FeMode (const double & time,
+		       vector<double > & modes) const;
+  virtual void FeModePref (vector<double > & pref ) const;
+public:
   virtual void operator () (const Dofs & dofs,
   			    Dofs & pvalue) const;
-  virtual double Fe (const double & time) const;
   virtual void operator () (const Dofs & dofs,
 			    const double & time,
 			    Dofs & pvalue) const;

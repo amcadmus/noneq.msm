@@ -19,6 +19,27 @@ operator () (const Dofs & dof) const
   return tmp;
 }
 
+int Perturbation::
+numMode () const
+{
+  return 1;
+}
+
+void Perturbation::
+FeMode (const double & time,
+	vector<double > & modes) const
+{
+  modes.resize(1);
+  modes[0] = Fe(time);
+}
+
+void Perturbation::
+FeModePref (vector<double > & perf) const
+{
+  perf.resize(1);
+  perf[0] = 1;
+}
+
 
 PertConstTilt::
 PertConstTilt (const double & s,
@@ -53,6 +74,31 @@ Fe (const double & time) const
   return tmp;
 }
 
+int PertConstTilt::
+numMode () const
+{
+  return 1;
+}
+
+void PertConstTilt::
+FeMode (const double & time,
+	vector<double > & modes) const
+{
+  modes.resize(1);
+  modes[0] = 1.;
+  if (warmTime > 0.0 && time < warmTime){
+    modes[0] *= time / warmTime;
+  }
+}
+
+void PertConstTilt::
+FeModePref (vector<double > & pref ) const
+{
+  pref.resize(1);
+  pref[0] = strength;
+}
+
+
 
 PertGaussian::
 PertGaussian (const double s,
@@ -74,6 +120,31 @@ Fe (const double & time) const
   }
   return tmp;
 }
+
+int PertGaussian::
+numMode () const
+{
+  return 1;
+}
+
+void PertGaussian::
+FeMode (const double & time,
+	vector<double > & modes) const
+{
+  modes.resize(1);
+  modes[0] = 1.;
+  if (warmTime > 0.0 && time < warmTime){
+    modes[0] *= time / warmTime;
+  }
+}
+
+void PertGaussian::
+FeModePref (vector<double > & pref ) const
+{
+  pref.resize(1);
+  pref[0] = strength;
+}
+
 
 void PertGaussian::
 operator () (const Dofs & dofs,
