@@ -96,8 +96,6 @@ newTraj ()
 
   countNoneq = 0;
   countNoneqSeg = 0;
-
-  newQuenchTraj ();
 }
 
 void NoneqResponseInfo::
@@ -118,6 +116,8 @@ depositMainTraj (const Dofs & oldx,
   // if (countNoneq - countNoneqSeg * checkNumFeq == 0){
   if (countNoneq == 0){
     order0[0].deposite (oldx);
+    countNoneq ++;
+    return;
   }
     
   double nowTime = countNoneq * dt;
@@ -140,7 +140,10 @@ depositMainTraj (const Dofs & oldx,
   }
 
   countNoneq ++;
-  if (countNoneq - countNoneqSeg * checkNumFeq == 0){
+  // std::cout << "noneq count is " << countNoneq
+  // 	    << "  countNoneqSeg is " << countNoneqSeg 
+  // 	    << std::endl;
+  if (countNoneq == (countNoneqSeg + 1) * checkNumFeq){
     countNoneqSeg ++;
     if (countNoneqSeg >= numCheck){
       std::cerr << "# the non eq traj is too long, problematic!" << std::endl;
@@ -153,7 +156,6 @@ depositMainTraj (const Dofs & oldx,
 	order2[countNoneqSeg][jj][kk].deposite (newx, Hjk[jj][kk]);
       }
     }
-    newQuenchTraj ();
   }
 }
 
@@ -178,6 +180,7 @@ depositQuenchTraj (const Dofs & oldx,
   H00 += tmp1 * dt / sigma;
 
   countQuench ++;
+  // std::cout << "quench count is " << countQuench << std::endl;
   if (countQuench == quenchNumStep){
     quench_order0[countNoneqSeg].deposite (newx);
     if (countNoneqSeg != 0){

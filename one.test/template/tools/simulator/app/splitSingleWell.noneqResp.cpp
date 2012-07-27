@@ -171,9 +171,6 @@ int main(int argc, char * argv[])
   
   int count = 0;
   int countBranch = 0;
-  double ttNoneq;
-  double ttQuench;
-  unsigned iiCheck = 0;
   double time = 0;
 
   NoneqResponseInfo resInfo;
@@ -194,33 +191,43 @@ int main(int argc, char * argv[])
       countBranch = 0;
       Dofs branchXX (xx);
       Dofs branchXX_old (xx);
-      iiCheck = 0;
       resInfo.newTraj ();
-      // branching
-      int countNoneqCheck = noneqCheckNumFeq;
-      for (ttNoneq = 0.; ttNoneq < noneqTime-0.5*dt; ttNoneq += dt){
-	// printf ("%f %d %d\n", ttNoneq, countNoneqCheck, noneqCheckNumFeq);
- 	if (countNoneqCheck == int(noneqCheckNumFeq)){
-	  // printf ("check non eq at time %f \n", ttNoneq);
-	  countNoneqCheck = 0;
-	  // dists[iiCheck].deposite (branchXX);
-	  // quenching
-	  Dofs quenchXX (branchXX);
-	  Dofs quenchXX_old (branchXX);
-	  for (ttQuench = 0.; ttQuench < quenchTime-0.5*dt; ttQuench += dt){
-	    quenchXX_old = quenchXX;
-	    quenchInte.step(quenchXX, ttNoneq);
-	    Dofs quenchDw = quenchInte.getDw();
-	    resInfo.depositQuenchTraj (quenchXX_old, quenchXX, quenchSigma, quenchDw);
-	  }
-	  // distsQuench[iiCheck].deposite (quenchXX);
-	  iiCheck ++;
+      // at time 0, quench any way
+      {
+	// quenching
+	resInfo.newQuenchTraj ();
+	Dofs quenchXX (branchXX);
+	Dofs quenchXX_old (branchXX);
+	for (double ttQuench = 0.; ttQuench < quenchTime-0.5*dt; ttQuench += dt){
+	  quenchXX_old = quenchXX;
+	  quenchInte.step(quenchXX, 0.);
+	  Dofs quenchDw = quenchInte.getDw();
+	  resInfo.depositQuenchTraj (quenchXX_old, quenchXX, quenchSigma, quenchDw);
 	}
+      }      
+      int countNoneqCheck = 0;
+      // branching
+      for (double ttNoneq = 0.; ttNoneq < noneqTime-0.5*dt; ttNoneq += dt){
+	// printf ("%f %d %d\n", ttNoneq, countNoneqCheck, noneqCheckNumFeq);
 	branchXX_old = branchXX;
 	noneqInte.step (branchXX, ttNoneq);
 	Dofs dw = noneqInte.getDw ();
 	resInfo.depositMainTraj (branchXX_old, branchXX, inteSigma, dw);
 	countNoneqCheck ++;
+ 	if (countNoneqCheck == int(noneqCheckNumFeq)){
+	  // printf ("check non eq at time %f \n", ttNoneq);
+	  resInfo.newQuenchTraj ();
+	  countNoneqCheck = 0;
+	  // quenching
+	  Dofs quenchXX (branchXX);
+	  Dofs quenchXX_old (branchXX);
+	  for (double ttQuench = 0.; ttQuench < quenchTime-0.5*dt; ttQuench += dt){
+	    quenchXX_old = quenchXX;
+	    quenchInte.step(quenchXX, ttNoneq);
+	    Dofs quenchDw = quenchInte.getDw();
+	    resInfo.depositQuenchTraj (quenchXX_old, quenchXX, quenchSigma, quenchDw);
+	  }
+	}
       }
     }
   }

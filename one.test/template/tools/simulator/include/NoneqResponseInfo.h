@@ -44,7 +44,6 @@ class NoneqResponseInfo
   double					G0;		// 1
   double					H00;		// 1
 
-  void newQuenchTraj ();
 public:
   NoneqResponseInfo ();
   // ~NoneqResponseInfo ();
@@ -61,6 +60,7 @@ public:
 	       const double & quenchTime,
 	       const Perturbation & pert);
   void newTraj ();
+  void newQuenchTraj ();
   void depositMainTraj (const Dofs & oldx,
 			const Dofs & newx,
 			const double & sigma,
