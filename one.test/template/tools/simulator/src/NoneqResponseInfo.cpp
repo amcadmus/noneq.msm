@@ -135,7 +135,7 @@ depositMainTraj (const Dofs & oldx,
   for (int jj = 0; jj < numMode; ++jj){
     Gj[jj] += 1./sigma * modes[jj] * tmp0;
     for (int kk = 0; kk < numMode; ++kk){
-      Hjk[jj][kk] += 1./sigma * modes[jj] * modes[kk] * tmp1 * dt;
+      Hjk[jj][kk] += 1./(sigma*sigma) * modes[jj] * modes[kk] * tmp1 * dt;
     }
   }
 
@@ -177,7 +177,7 @@ depositQuenchTraj (const Dofs & oldx,
     tmp1 += pvalue.vv[dd] * pvalue.vv[dd];
   }
   G0 += tmp0 / sigma;
-  H00 += tmp1 * dt / sigma;
+  H00 += tmp1 * dt / (sigma * sigma);
 
   countQuench ++;
   // std::cout << "quench count is " << countQuench << std::endl;
