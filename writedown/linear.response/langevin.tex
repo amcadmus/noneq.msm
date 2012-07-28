@@ -1051,7 +1051,7 @@ Here
   \frac{1}\sigma\int_0^t
   \Delta F_e^{i-1}(s)\,\vect D(\vect q_s,\vect p_s)\cdot\dd\vect W_s
   -
-  \frac 1{2\sigma}\int_0^t
+  \frac 1{2\sigma^2}\int_0^t
   [\Delta F_e^{i-1}(s)]^2\,\vect D^2(\vect q_s,\vect p_s)\,\dd s
   \bigg\}\\\label{eqn:exact-ratio-2}
   \frac
@@ -1063,7 +1063,7 @@ Here
   \frac{1}\sigma\int_0^\tau
   \Delta F_e^{i-1}(t)\,\vect D(\vect q_\eta,\vect p_\eta)\cdot\dd\vect W_\eta
   -
-  \frac 1{2\sigma}\int_0^\tau
+  \frac 1{2\sigma^2}\int_0^\tau
   [\Delta F_e^{i-1}(t)]^2\,\vect D^2(\vect q_\eta,\vect p_\eta)\,\dd \eta
   \bigg\}
 \end{align}
@@ -1117,7 +1117,7 @@ where
   M_j(s)\,\vect D(\vect X_s)\cdot\dd\vect W_s\\\label{eqn:Hjk}
   H_{jk}[\vect X_s]
   =&\,
-  \frac 1{\sigma}
+  \frac 1{\sigma^2}
   \int_0^t
   M_j(s)\,M_k(s)\,\vect D^2(\vect X_s)\cdot\dd s
 \end{align}
@@ -1130,7 +1130,7 @@ and
   \vect D(\vect X_\eta)\cdot\dd\vect W_\eta\\\label{eqn:H00}
   H_{00}[\vect X_\eta]
   =&\,
-  \frac 1{\sigma}
+  \frac 1{\sigma^2}
   \int_0^\tau
   \vect D^2(\vect X_\eta)\cdot\dd \eta
 \end{align}
@@ -1147,14 +1147,17 @@ up to $\mathcal O(\varepsilon^3)$ yields
   +
   \sum_{j=1}^\infty
   \Delta s_j^{i-1}G_j[\vect X_s]
-  -
-  \frac12
-  \sum_{j,k=1}^\infty
-  \Delta s_j^{i-1} \Delta s_k^{i-1}H_{jk}[\vect X_s]
+  % -
+  % \frac12
+  % \sum_{j,k=1}^\infty
+  % \Delta s_j^{i-1} \Delta s_k^{i-1}H_{jk}[\vect X_s]
   +
   \frac12  
   \sum_{j,k=1}^\infty
-  \Delta s_j^{i-1}\Delta s_k^{i-1}G_j[\vect X_s]G_k[\vect X_s]
+  \Delta s_j^{i-1}\Delta s_k^{i-1}
+  \big\{
+  G_j[\vect X_s]G_k[\vect X_s] - H_{jk}[\vect X_s]
+  \big\}
   +
   \mathcal O(\varepsilon^3)
   \\\label{eqn:expan-ratio-2}
@@ -1165,14 +1168,14 @@ up to $\mathcal O(\varepsilon^3)$ yields
   1 +
   \Delta F_e^{i-1}(t)\,
   G_0[\vect X_\eta]
-  -
-  \frac12[\Delta F_e^{i-1}(t)]^2
-  H_{00}[\vect X_\eta]
+  % -
+  % \frac12[\Delta F_e^{i-1}(t)]^2
+  % H_{00}[\vect X_\eta]
   +
   \frac12[\Delta F_e^{i-1}(t)]^2
   \big\{
-  G_0[\vect X_\eta]
-  \big\}^2
+  G^2_0[\vect X_\eta] - H_{00}[\vect X_\eta]
+  \big\}
   +
   \mathcal O(\varepsilon^3)
 \end{align}
@@ -1232,20 +1235,42 @@ Then the approximated \eqref{eqn:pert-exact-1} is
   \big\rangle_{0,t,\tau}^{i-1}
   \\\nonumber
   &\, 
-  -
+  +
   \frac12[\Delta F_e^{i-1}(t)]^2
   \big\langle
   K_{\sigma,\vect y}(\vect X_\tau)\,
+  \big\{
+  G^2_0[\vect X_s] - 
   H_{00}[\vect X_\eta]
+  \big\}
   \big\rangle_{0,t,\tau}^{i-1}
-  -
+  % +
+  % \frac12[\Delta F_e^{i-1}(t)]^2
+  % \big\langle
+  % K_{\sigma,\vect y}(\vect X_\tau)\,
+  % \big\{G_{0}[\vect X_\eta]\big\}^2
+  % \big\rangle_{0,t,\tau}^{i-1}
+  \\\nonumber
+  &\,
+  +
   \frac 12
   \sum_{j,k=1}^\infty
   \Delta s_j^{i-1}\Delta s_k^{i-1}
   \big\langle
   K_{\sigma,\vect y}(\vect X_\tau)\,
+  \big\{
+  G_j[\vect X_s] G_k[\vect X_s] - 
   H_{jk}[\vect X_s]
+  \big\}
   \big\rangle_{0,t,\tau}^{i-1}
+  % +
+  % \frac 12
+  % \sum_{j,k=1}^\infty
+  % \Delta s_j^{i-1}\Delta s_k^{i-1}
+  % \big\langle
+  % K_{\sigma,\vect y}(\vect X_\tau)\,
+  % G_{j}[\vect X_s] G_k[\vect X_s]
+  % \big\rangle_{0,t,\tau}^{i-1}
   \\\label{eqn:pert-approx-1}
   &\,+
   \sum_{j=1}^\infty
@@ -1278,13 +1303,16 @@ And the approximated \eqref{eqn:pert-exact-2} is
   \big\rangle_{0,t}^{i-1}
   \\\label{eqn:pert-approx-2}
   &\,
-  -
+  +
   \frac 12
   \sum_{j,k=1}^\infty
   \Delta s_j^{i-1}\Delta s_k^{i-1}
   \big\langle
   K_{\sigma,\vect y}(\vect X_t)\,
+  \big\{
+  G_j[\vect X_s] G_k[\vect X_s] -
   H_{jk}[\vect X_s]
+  \big\}
   \big\rangle_{0,t}^{i-1}  
 \end{align}
 The first, second and third line on the r.h.s. of \eqref{eqn:pert-approx-2}

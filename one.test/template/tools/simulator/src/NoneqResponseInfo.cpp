@@ -153,7 +153,7 @@ depositMainTraj (const Dofs & oldx,
     for (int jj = 0; jj < numMode; ++jj){
       order1[countNoneqSeg][jj].deposite (newx, Gj[jj]);
       for (int kk = 0; kk < numMode; ++kk){
-	order2[countNoneqSeg][jj][kk].deposite (newx, Hjk[jj][kk]);
+	order2[countNoneqSeg][jj][kk].deposite (newx, Gj[jj] * Gj[kk] - Hjk[jj][kk]);
       }
     }
   }
@@ -185,12 +185,12 @@ depositQuenchTraj (const Dofs & oldx,
     quench_order0[countNoneqSeg].deposite (newx);
     if (countNoneqSeg != 0){
       quench_order1_term1[countNoneqSeg].deposite (newx, G0);
-      quench_order2_term1[countNoneqSeg].deposite (newx, H00);
+      quench_order2_term1[countNoneqSeg].deposite (newx, G0*G0 - H00);
       for (int jj = 0; jj < numMode; ++jj){
 	quench_order1_term2[countNoneqSeg][jj].deposite (newx, Gj[jj]);
 	quench_order2_term3[countNoneqSeg][jj].deposite (newx, G0 * Gj[jj]);
 	for (int kk = 0; kk < numMode; ++kk){
-	quench_order2_term2[countNoneqSeg][jj][kk].deposite (newx, Gj[jj] * Gj[kk]);
+	quench_order2_term2[countNoneqSeg][jj][kk].deposite (newx, Gj[jj] * Gj[kk] - Hjk[jj][kk]);
 	}
       }
     }
@@ -260,7 +260,7 @@ calculate (const double & time,
   // order 2
   for (int jj = 0; jj < numMode; ++jj){
     for (int kk = 0; kk < numMode; ++kk){
-      dist.add (-0.5 * pref1[jj] * pref1[kk], order2[index][jj][kk]);
+      dist.add (0.5 * pref1[jj] * pref1[kk], order2[index][jj][kk]);
     }
   }
 
@@ -273,11 +273,11 @@ calculate (const double & time,
     quench_dist.add (pref1[jj], quench_order1_term2[index][jj]);
   }
   // order 2
-  quench_dist.add (-0.5 * Fe1 * Fe1, quench_order2_term1[index]);
+  quench_dist.add (0.5 * Fe1 * Fe1, quench_order2_term1[index]);
   for (int jj = 0; jj < numMode; ++jj){
     quench_dist.add (Fe1 * pref1[jj], quench_order2_term3[index][jj]);
     for (int kk = 0; kk < numMode; ++kk){
-      quench_dist.add (-0.5 * pref1[jj] * pref1[kk], quench_order2_term2[index][jj][kk]);
+      quench_dist.add (0.5 * pref1[jj] * pref1[kk], quench_order2_term2[index][jj][kk]);
     }
   }  
 }
