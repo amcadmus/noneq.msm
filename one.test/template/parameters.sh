@@ -13,6 +13,8 @@ project_name=splitSingleWell
 load_saved_corr=no
 saved_corr_dir=~/study/noneq.msm/one.test/saved.corr
 saved_corr_nst=1e9
+load_saved_resp=no
+saved_resp_dir=~/study/noneq.msm/one.test/saved.corr
 
 gamma=1.0
 temperature=300.0
