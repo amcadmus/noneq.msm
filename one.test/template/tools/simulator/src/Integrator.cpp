@@ -31,18 +31,18 @@ step (Dofs & dofs,
   Dofs oldDofs(dofs);
   for (unsigned dd = 0; dd < NUMDOFS; ++dd){
     // double rand = RandomGenerator_MT19937::gaussian();
-    double rand = gsl_ran_gaussian (rg, 1.);
+    double rand = gsl_ran_gaussian_ziggurat (rg, 1.);
     dofs.xx[dd] = oldDofs.xx[dd] + dt * oldDofs.vv[dd] + dt * pvalue.xx[dd];
     dofs.vv[dd] = oldDofs.vv[dd] + dt * fvalue[dd] - dt * gamma * oldDofs.vv[dd] + dt * pvalue.vv[dd]
 	+ sqrtdt * sigma * rand;
     storedw.vv[dd] = rand * sqrtdt;
-    if (! (dofs.xx[dd] >= -10 && dofs.xx[dd] <= 10. && dofs.vv[dd]>= -20. && dofs.vv[dd] <= 20.)  ){
-      fprintf (stderr, "dd: %d   old: %f %f    new: %f %f\n",
-    	       dd,
-    	       oldDofs.xx[dd], oldDofs.vv[dd],
-    	       dofs.xx[dd], dofs.vv[dd]);
-      exit (1);
-    }
+    // if (! (dofs.xx[dd] >= -10 && dofs.xx[dd] <= 10. && dofs.vv[dd]>= -20. && dofs.vv[dd] <= 20.)  ){
+    //   fprintf (stderr, "dd: %d   old: %f %f    new: %f %f\n",
+    // 	       dd,
+    // 	       oldDofs.xx[dd], oldDofs.vv[dd],
+    // 	       dofs.xx[dd], dofs.vv[dd]);
+    //   exit (1);
+    // }
   }
 }
 

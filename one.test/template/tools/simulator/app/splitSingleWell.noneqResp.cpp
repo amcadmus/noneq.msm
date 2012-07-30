@@ -53,7 +53,8 @@ int main(int argc, char * argv[])
   
   unsigned long seed;
 
-  Stopwatch sw_eq, sw_noneq, sw_quench, sw_total;
+  // Stopwatch sw_eq, sw_noneq, sw_quench;
+  Stopwatch sw_total;
   
   po::options_description desc ("Allow options");
   desc.add_options()
@@ -190,9 +191,9 @@ int main(int argc, char * argv[])
   sw_total.start();
   if (!vm.count("load-corr")){
     for (double ii = 0.; ii < nst+0.1; ii += 1.){
-      sw_eq.start();
+      // sw_eq.start();
       inte.step (xx, 0.);
-      sw_eq.stop();
+      // sw_eq.stop();
       count ++;
       countBranch ++;
       time += dt;
@@ -214,9 +215,9 @@ int main(int argc, char * argv[])
 	  Dofs quenchXX_old (branchXX);
 	  for (double ttQuench = 0.; ttQuench < quenchTime-0.5*dt; ttQuench += dt){
 	    quenchXX_old = quenchXX;
-	    sw_quench.start();
+	    // sw_quench.start();
 	    quenchInte.step(quenchXX, 0.);
-	    sw_quench.stop();
+	    // sw_quench.stop();
 	    Dofs quenchDw = quenchInte.getDw();
 	    resInfo.depositQuenchTraj (quenchXX_old, quenchXX, quenchSigma, quenchDw);
 	  }
@@ -226,9 +227,9 @@ int main(int argc, char * argv[])
 	for (double ttNoneq = 0.; ttNoneq < noneqTime-0.5*dt; ttNoneq += dt){
 	  // printf ("%f %d %d\n", ttNoneq, countNoneqCheck, noneqCheckNumFeq);
 	  branchXX_old = branchXX;
-	  sw_noneq.start();
+	  // sw_noneq.start();
 	  noneqInte.step (branchXX, ttNoneq);
-	  sw_noneq.stop();
+	  // sw_noneq.stop();
 	  Dofs dw = noneqInte.getDw ();
 	  resInfo.depositMainTraj (branchXX_old, branchXX, inteSigma, dw);
 	  countNoneqCheck ++;
@@ -241,9 +242,9 @@ int main(int argc, char * argv[])
 	    Dofs quenchXX_old (branchXX);
 	    for (double ttQuench = 0.; ttQuench < quenchTime-0.5*dt; ttQuench += dt){
 	      quenchXX_old = quenchXX;
-	      sw_quench.start();
+	      // sw_quench.start();
 	      quenchInte.step(quenchXX, ttNoneq);
-	      sw_quench.stop();
+	      // sw_quench.stop();
 	      Dofs quenchDw = quenchInte.getDw();
 	      resInfo.depositQuenchTraj (quenchXX_old, quenchXX, quenchSigma, quenchDw);
 	    }
@@ -276,22 +277,22 @@ int main(int argc, char * argv[])
   sw_total.stop();
 
   cout << "time static: user, real, sys" << endl;
-  cout << "eq inte:       "
-       << sw_eq.user() << " "
-       << sw_eq.real() << " "
-       << sw_eq.system() << endl;
-  cout << "noneq inte:    "
-       << sw_noneq.user() << " "
-       << sw_noneq.real() << " "
-       << sw_noneq.system() << endl;
-  cout << "quench inte:   "
-       << sw_quench.user() << " "
-       << sw_quench.real() << " "
-       << sw_quench.system() << endl;
-  cout << "total inte:    "
-       << sw_eq.user() + sw_noneq.user() + sw_quench.user() << " "
-       << sw_eq.real() + sw_noneq.real() + sw_quench.real() << " "
-       << sw_eq.system() + sw_noneq.system() + sw_quench.system() << endl;
+  // cout << "eq inte:       "
+  //      << sw_eq.user() << " "
+  //      << sw_eq.real() << " "
+  //      << sw_eq.system() << endl;
+  // cout << "noneq inte:    "
+  //      << sw_noneq.user() << " "
+  //      << sw_noneq.real() << " "
+  //      << sw_noneq.system() << endl;
+  // cout << "quench inte:   "
+  //      << sw_quench.user() << " "
+  //      << sw_quench.real() << " "
+  //      << sw_quench.system() << endl;
+  // cout << "total inte:    "
+  //      << sw_eq.user() + sw_noneq.user() + sw_quench.user() << " "
+  //      << sw_eq.real() + sw_noneq.real() + sw_quench.real() << " "
+  //      << sw_eq.system() + sw_noneq.system() + sw_quench.system() << endl;
   cout << "total:    "
        << sw_total.user() << " "
        << sw_total.real() << " "
