@@ -422,7 +422,8 @@ void NoneqResponseInfo::
 calculate (const double & time,
 	   const Perturbation & pert1,
 	   Distribution_1d & dist,
-	   Distribution_1d & quench_dist)
+	   Distribution_1d & quench_dist,
+	   const int order)
 {
   int index = int((time + noneqCheckFeq * 0.5) / noneqCheckFeq);
   if (index > numCheck){
@@ -444,36 +445,48 @@ calculate (const double & time,
   }
   Fe1 -= Fe0;
 
-  // order 0
   dist.reinit (x0, x1, nx, v0, v1, nv);
-  dist.add (1., order0[index]);
+  // order 0
+  if (order >= 0){
+    dist.add (1., order0[index]);
+  }
   // order 1
-  for (int jj = 0; jj < numMode; ++jj){
-    dist.add (pref1[jj], order1[index][jj]);
+  if (order >= 1){
+    for (int jj = 0; jj < numMode; ++jj){
+      dist.add (pref1[jj], order1[index][jj]);
+    }
   }
   // order 2
-  for (int jj = 0; jj < numMode; ++jj){
-    for (int kk = 0; kk < numMode; ++kk){
-      dist.add (0.5 * pref1[jj] * pref1[kk], order2[index][jj][kk]);
+  if (order >= 2){
+    for (int jj = 0; jj < numMode; ++jj){
+      for (int kk = 0; kk < numMode; ++kk){
+	dist.add (0.5 * pref1[jj] * pref1[kk], order2[index][jj][kk]);
+      }
     }
   }
 
-  // order 0
   quench_dist.reinit (x0, x1, nx, v0, v1, nv);
-  quench_dist.add (1., quench_order0[index]);
+  // order 0
+  if (order >= 0){
+    quench_dist.add (1., quench_order0[index]);
+  }
   // order 1
-  quench_dist.add (Fe1, quench_order1_term1[index]);
-  for (int jj = 0; jj < numMode; ++jj){
-    quench_dist.add (pref1[jj], quench_order1_term2[index][jj]);
+  if (order >= 1){
+    quench_dist.add (Fe1, quench_order1_term1[index]);
+    for (int jj = 0; jj < numMode; ++jj){
+      quench_dist.add (pref1[jj], quench_order1_term2[index][jj]);
+    }
   }
   // order 2
-  quench_dist.add (0.5 * Fe1 * Fe1, quench_order2_term1[index]);
-  for (int jj = 0; jj < numMode; ++jj){
-    quench_dist.add (Fe1 * pref1[jj], quench_order2_term3[index][jj]);
-    for (int kk = 0; kk < numMode; ++kk){
-      quench_dist.add (0.5 * pref1[jj] * pref1[kk], quench_order2_term2[index][jj][kk]);
-    }
-  }  
+  if (order >= 2){
+    quench_dist.add (0.5 * Fe1 * Fe1, quench_order2_term1[index]);
+    for (int jj = 0; jj < numMode; ++jj){
+      quench_dist.add (Fe1 * pref1[jj], quench_order2_term3[index][jj]);
+      for (int kk = 0; kk < numMode; ++kk){
+	quench_dist.add (0.5 * pref1[jj] * pref1[kk], quench_order2_term2[index][jj][kk]);
+      }
+    }  
+  }
 }
 
 

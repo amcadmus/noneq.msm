@@ -46,6 +46,7 @@ int main(int argc, char * argv[])
   unsigned branchNumFeq;
   double x0, x1, v0, v1;
   unsigned nx, nv;
+  int order;
 
   string sfile, lfile;
   
@@ -69,6 +70,7 @@ int main(int argc, char * argv[])
       ("pert-strength0",po::value<double > (&pertSt0)->default_value(0.0), "perturbation strength 0 [kJ/(mol nm)]")
       ("pert-strength1",po::value<double > (&pertSt1)->default_value(1.0), "perturbation strength 1 [kJ/(mol nm)]")
       ("warm-time", po::value<double > (&warmTime)->default_value(100.), "warm up time of perturbation [ps]")
+      ("order", po::value<int > (&order)->default_value(2), "order of response")
       ("save-corr", po::value<string > (&sfile), "save correlation")
       ("load-corr", po::value<string > (&lfile), "load saved correlation")
       ("x-low", po::value<double > (&x0)->default_value (-2.0), "the lower bound of x range considered")

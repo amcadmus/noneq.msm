@@ -74,7 +74,8 @@ public:
   void calculate (const double & time,
 		  const Perturbation & pert1,
 		  Distribution_1d & dist,
-		  Distribution_1d & quench_dist);
+		  Distribution_1d & quench_dist,
+		  const int order = 2);
 public:
   void save (const string & filename) const;
   void load (const string & filename);
