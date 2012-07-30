@@ -234,8 +234,8 @@ int main(int argc, char * argv[])
 	  }
 	}
       }
-      resInfo.average ();
     }
+    resInfo.average ();
     if (vm.count("save-corr")){
       resInfo.save (sfile);
     }
