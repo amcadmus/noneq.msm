@@ -4,6 +4,7 @@
 #include "Defines.h"
 #include "Force.h"
 #include "Perturbation.h"
+#include <gsl/gsl_rng.h>
 
 class Integrator
 {
@@ -21,22 +22,26 @@ class EulerMaruyama : public Integrator
   double sqrtdt;
   double gamma;
   double sigma;
-  mutable Dofs storedw;
   const Perturbation * pert;
   const Force * force;
+  mutable Dofs storedw;
+  mutable gsl_rng * rg;
 public:
   EulerMaruyama ();
   EulerMaruyama (const double & gamma,
 		 const double & kT,
 		 const double & dt,
 		 const Perturbation * p = NULL,
-		 const Force * f = NULL);
+		 const Force * f = NULL,
+		 const unsigned long int seed = 0);
+  ~EulerMaruyama ();
 public:
   void reinit (const double & gamma,
 	       const double & kT,
 	       const double & dt,
 	       const Perturbation * p = NULL,
-	       const Force * f = NULL);
+	       const Force * f = NULL,
+	       const unsigned long int seed = 0);
   virtual double getDt    () const {return dt;}
   virtual double getSigma () const {return sigma;}
   virtual void step (Dofs & dofs,

@@ -128,14 +128,17 @@ int main(int argc, char * argv[])
   
   EulerMaruyama inte (gamma, kT, dt,
 		      NULL,
-		      dynamic_cast<Force *> (&dw));
+		      dynamic_cast<Force *> (&dw),
+		      seed);
   EulerMaruyama quenchInte (gamma, quenchkT, dt,
 			    // NULL,
 			    dynamic_cast<Perturbation *> (&pert),
-			    dynamic_cast<Force *> (&dw));
+			    dynamic_cast<Force *> (&dw),
+			    seed+1);
   EulerMaruyama noneqInte (gamma, kT, dt,
 			   dynamic_cast<Perturbation *> (&pert),
-			   dynamic_cast<Force *> (&dw));
+			   dynamic_cast<Force *> (&dw),
+			   seed+2);
 
   double inteSigma = noneqInte.getSigma();
   double quenchSigma = quenchInte.getSigma();

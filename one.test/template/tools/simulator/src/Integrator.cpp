@@ -1,6 +1,8 @@
 #include "Integrator.h"
 #include "RandomGenerator.h"
 
+#include <gsl/gsl_randist.h>
+
 void EulerMaruyama::
 step (Dofs & dofs,
       const double time) const
@@ -28,7 +30,8 @@ step (Dofs & dofs,
   // printf ("%f\n", fvalue[0]);
   Dofs oldDofs(dofs);
   for (unsigned dd = 0; dd < NUMDOFS; ++dd){
-    double rand = RandomGenerator_MT19937::gaussian();
+    // double rand = RandomGenerator_MT19937::gaussian();
+    double rand = gsl_ran_gaussian (rg, 1.);
     dofs.xx[dd] = oldDofs.xx[dd] + dt * oldDofs.vv[dd] + dt * pvalue.xx[dd];
     dofs.vv[dd] = oldDofs.vv[dd] + dt * fvalue[dd] - dt * gamma * oldDofs.vv[dd] + dt * pvalue.vv[dd]
 	+ sqrtdt * sigma * rand;
@@ -47,7 +50,7 @@ step (Dofs & dofs,
 EulerMaruyama::
 EulerMaruyama ()
     : dt(0.), sqrtdt(0.), gamma(0.), sigma(0.),
-      pert(NULL), force(NULL)
+      pert(NULL), force(NULL), rg (NULL)
 {
 }
 
@@ -56,9 +59,20 @@ EulerMaruyama (const double & gamma,
 	       const double & kT,
 	       const double & d,
 	       const Perturbation * p,
-	       const Force * f)
+	       const Force * f,
+	       const unsigned long int seed)
+    : rg (NULL)
 {
-  reinit (gamma, kT, d, p, f);
+  reinit (gamma, kT, d, p, f, seed);
+}
+
+EulerMaruyama::
+~EulerMaruyama ()
+{
+  if (rg != NULL){
+    gsl_rng_free (rg);
+    rg = NULL;
+  }    
 }
 
 void EulerMaruyama::
@@ -66,7 +80,8 @@ reinit (const double & g,
 	const double & kT,
 	const double & d,
 	const Perturbation * p,
-	const Force * f)
+	const Force * f,
+	const unsigned long int seed)
 {
   dt = d;
   sqrtdt = sqrt(dt);
@@ -78,6 +93,13 @@ reinit (const double & g,
     storedw.xx[dd] = 0.;
     // storedw.vv[dd] = 0.;
   }
+
+  if (rg != NULL){
+    gsl_rng_free (rg);
+    rg = NULL;
+  }
+  rg = gsl_rng_alloc (gsl_rng_mt19937);
+  gsl_rng_set (rg, seed);
 }
 
 
