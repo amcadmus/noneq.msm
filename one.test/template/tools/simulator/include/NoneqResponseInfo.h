@@ -75,6 +75,9 @@ public:
 		  const Perturbation & pert1,
 		  Distribution_1d & dist,
 		  Distribution_1d & quench_dist);
+public:
+  void save (const string & filename) const;
+  void load (const string & filename);
 }
     ;
 

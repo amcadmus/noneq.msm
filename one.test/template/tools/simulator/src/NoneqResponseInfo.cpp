@@ -82,6 +82,200 @@ reinit (const double & x0_,
 
 
 void NoneqResponseInfo::
+save (const string & filename) const
+{
+  FILE * fp = fopen (filename.c_str(), "w");
+
+  size_t rv;
+  rv = fwrite (&x0, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+  rv = fwrite (&x1, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+  rv = fwrite (&v0, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+  rv = fwrite (&v1, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+  rv = fwrite (&nx, sizeof(unsigned), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+  rv = fwrite (&nv, sizeof(unsigned), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+
+  rv = fwrite (&noneqTime, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+  rv = fwrite (&noneqCheckFeq, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+  rv = fwrite (&quenchTime, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+
+  rv = fwrite (&numMode, sizeof(int), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+
+  
+  for (int tt = 0; tt < numCheck; ++tt){
+    order0[tt]				.save (fp);
+    quench_order0[tt]			.save (fp);
+    quench_order1_term1[tt]		.save (fp);
+    quench_order2_term1[tt]		.save (fp);
+    for (int jj = 0; jj < numMode; ++jj){
+      order1[tt][jj]			.save (fp);
+      quench_order1_term2[tt][jj]	.save (fp);
+      quench_order2_term3[tt][jj]	.save (fp);
+      for (int kk = 0; kk < numMode; ++kk){
+	order2[tt][jj][kk]		.save (fp);
+	quench_order2_term2[tt][jj][kk] .save (fp);
+      }
+    }
+  }  
+
+  fclose (fp);
+}
+
+
+void NoneqResponseInfo::
+load (const string & filename)
+{
+  FILE * fp = fopen (filename.c_str(), "r");
+
+  size_t rv;
+  rv = fread (&x0, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&x1, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&v0, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&v1, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&nx, sizeof(unsigned), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&nv, sizeof(unsigned), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+
+  rv = fread (&noneqTime, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&noneqCheckFeq, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&quenchTime, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  numCheck = int((noneqTime + 0.5 * noneqCheckFeq) / noneqCheckFeq) + 1;
+  checkNumFeq = int((noneqCheckFeq + 0.5 * dt) / dt);
+  quenchNumStep = int((quenchTime + 0.5 * dt) / dt);
+
+  rv = fread (&numMode, sizeof(int), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  if (numMode != ppert->numMode()){
+    cerr << "inconsistent perturbation with saved!" << endl;
+    exit (1);
+  }
+  
+  order0.resize(numCheck);
+  order1.resize(numCheck);
+  order2.resize(numCheck);
+
+  quench_order0.resize(numCheck);
+  quench_order1_term1.resize(numCheck);
+  quench_order1_term2.resize(numCheck);
+  quench_order2_term1.resize(numCheck);
+  quench_order2_term2.resize(numCheck);
+  quench_order2_term3.resize(numCheck);
+
+  for (int jj = 0; jj < numCheck; ++jj){
+    order1[jj].resize (numMode);
+    order2[jj].resize (numMode);
+    quench_order1_term2[jj].resize (numMode);
+    quench_order2_term2[jj].resize (numMode);
+    quench_order2_term3[jj].resize (numMode);
+    for (int kk = 0; kk < numMode; ++kk){
+      order2[jj][kk].resize (numMode);
+      quench_order2_term2[jj][kk].resize (numMode);
+    }
+  }  
+  
+  for (int tt = 0; tt < numCheck; ++tt){
+    order0[tt]				.load (fp);
+    quench_order0[tt]			.load (fp);
+    quench_order1_term1[tt]		.load (fp);
+    quench_order2_term1[tt]		.load (fp);
+    for (int jj = 0; jj < numMode; ++jj){
+      order1[tt][jj]			.load (fp);
+      quench_order1_term2[tt][jj]	.load (fp);
+      quench_order2_term3[tt][jj]	.load (fp);
+      for (int kk = 0; kk < numMode; ++kk){
+	order2[tt][jj][kk]		.load (fp);
+	quench_order2_term2[tt][jj][kk] .load (fp);
+      }
+    }
+  }  
+
+  newTraj ();
+  fclose (fp);
+}
+
+
+
+
+
+
+void NoneqResponseInfo::
 newTraj ()
 {
   Gj.resize (numMode);

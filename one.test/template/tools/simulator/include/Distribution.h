@@ -46,6 +46,9 @@ public:
   void add (const double & scalor,
 	    const Distribution_1d & d);
   double getNframe () const {return nframe;}
+public:
+  void save (FILE * fp) const;
+  void load (FILE * fp);
 }
     ;
 

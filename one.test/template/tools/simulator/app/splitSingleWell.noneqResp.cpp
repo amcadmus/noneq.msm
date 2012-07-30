@@ -46,7 +46,9 @@ int main(int argc, char * argv[])
   unsigned branchNumFeq;
   double x0, x1, v0, v1;
   unsigned nx, nv;
-      
+
+  string sfile, lfile;
+  
   unsigned long seed;
   
   po::options_description desc ("Allow options");
@@ -67,6 +69,8 @@ int main(int argc, char * argv[])
       ("pert-strength0",po::value<double > (&pertSt0)->default_value(0.0), "perturbation strength 0 [kJ/(mol nm)]")
       ("pert-strength1",po::value<double > (&pertSt1)->default_value(1.0), "perturbation strength 1 [kJ/(mol nm)]")
       ("warm-time", po::value<double > (&warmTime)->default_value(100.), "warm up time of perturbation [ps]")
+      ("save-corr", po::value<string > (&sfile), "save correlation")
+      ("load-corr", po::value<string > (&lfile), "load saved correlation")
       ("x-low", po::value<double > (&x0)->default_value (-2.0), "the lower bound of x range considered")
       ("x-up",  po::value<double > (&x1)->default_value ( 2.0), "the upper bound of x range considered")
       ("v-low", po::value<double > (&v0)->default_value (-8.0), "the lower bound of v range considered")
@@ -137,8 +141,7 @@ int main(int argc, char * argv[])
   xx.xx[0] = 0.;
   xx.vv[0] = 0.;
 
-  unsigned numNoneqCheck = noneqTime / noneqCheckFeq;
-  numNoneqCheck ++;
+  unsigned numNoneqCheck = int((noneqTime + 0.5 * noneqCheckFeq) / noneqCheckFeq) + 1;
   Distribution_1d dist;
   Distribution_1d distQuench;
   vector<double > checkTimes(numNoneqCheck);
@@ -175,87 +178,72 @@ int main(int argc, char * argv[])
 
   NoneqResponseInfo resInfo;
   resInfo.reinit (x0, x1, nx, v0, v1, nv, dt, noneqTime, noneqCheckFeq, quenchTime, pert);
-  // resInfo.newTraj ();
 
-  for (double ii = 0.; ii < nst+0.1; ii += 1.){
-    inte.step (xx, 0.);
-    count ++;
-    countBranch ++;
-    time += dt;
-    if (int(nstprint) == count){
-      count = 0;
-      printf ("%f %f %f\n", time, xx.xx[0], xx.vv[0]);
-      fflush (stdout);
-    }
-    if (countBranch == int(branchNumFeq)){
-      countBranch = 0;
-      Dofs branchXX (xx);
-      Dofs branchXX_old (xx);
-      resInfo.newTraj ();
-      // at time 0, quench any way
-      {
-	// quenching
-	resInfo.newQuenchTraj ();
-	Dofs quenchXX (branchXX);
-	Dofs quenchXX_old (branchXX);
-	for (double ttQuench = 0.; ttQuench < quenchTime-0.5*dt; ttQuench += dt){
-	  quenchXX_old = quenchXX;
-	  quenchInte.step(quenchXX, 0.);
-	  Dofs quenchDw = quenchInte.getDw();
-	  resInfo.depositQuenchTraj (quenchXX_old, quenchXX, quenchSigma, quenchDw);
-	}
-      }      
-      int countNoneqCheck = 0;
-      // branching
-      for (double ttNoneq = 0.; ttNoneq < noneqTime-0.5*dt; ttNoneq += dt){
-	// printf ("%f %d %d\n", ttNoneq, countNoneqCheck, noneqCheckNumFeq);
-	branchXX_old = branchXX;
-	noneqInte.step (branchXX, ttNoneq);
-	Dofs dw = noneqInte.getDw ();
-	resInfo.depositMainTraj (branchXX_old, branchXX, inteSigma, dw);
-	countNoneqCheck ++;
- 	if (countNoneqCheck == int(noneqCheckNumFeq)){
-	  // printf ("check non eq at time %f \n", ttNoneq);
-	  resInfo.newQuenchTraj ();
-	  countNoneqCheck = 0;
+  
+  if (!vm.count("load-corr")){
+    for (double ii = 0.; ii < nst+0.1; ii += 1.){
+      inte.step (xx, 0.);
+      count ++;
+      countBranch ++;
+      time += dt;
+      if (int(nstprint) == count){
+	count = 0;
+	printf ("%f %f %f\n", time, xx.xx[0], xx.vv[0]);
+	fflush (stdout);
+      }
+      if (countBranch == int(branchNumFeq)){
+	countBranch = 0;
+	Dofs branchXX (xx);
+	Dofs branchXX_old (xx);
+	resInfo.newTraj ();
+	// at time 0, quench any way
+	{
 	  // quenching
+	  resInfo.newQuenchTraj ();
 	  Dofs quenchXX (branchXX);
 	  Dofs quenchXX_old (branchXX);
 	  for (double ttQuench = 0.; ttQuench < quenchTime-0.5*dt; ttQuench += dt){
 	    quenchXX_old = quenchXX;
-	    quenchInte.step(quenchXX, ttNoneq);
+	    quenchInte.step(quenchXX, 0.);
 	    Dofs quenchDw = quenchInte.getDw();
 	    resInfo.depositQuenchTraj (quenchXX_old, quenchXX, quenchSigma, quenchDw);
 	  }
+	}      
+	int countNoneqCheck = 0;
+	// branching
+	for (double ttNoneq = 0.; ttNoneq < noneqTime-0.5*dt; ttNoneq += dt){
+	  // printf ("%f %d %d\n", ttNoneq, countNoneqCheck, noneqCheckNumFeq);
+	  branchXX_old = branchXX;
+	  noneqInte.step (branchXX, ttNoneq);
+	  Dofs dw = noneqInte.getDw ();
+	  resInfo.depositMainTraj (branchXX_old, branchXX, inteSigma, dw);
+	  countNoneqCheck ++;
+	  if (countNoneqCheck == int(noneqCheckNumFeq)){
+	    // printf ("check non eq at time %f \n", ttNoneq);
+	    resInfo.newQuenchTraj ();
+	    countNoneqCheck = 0;
+	    // quenching
+	    Dofs quenchXX (branchXX);
+	    Dofs quenchXX_old (branchXX);
+	    for (double ttQuench = 0.; ttQuench < quenchTime-0.5*dt; ttQuench += dt){
+	      quenchXX_old = quenchXX;
+	      quenchInte.step(quenchXX, ttNoneq);
+	      Dofs quenchDw = quenchInte.getDw();
+	      resInfo.depositQuenchTraj (quenchXX_old, quenchXX, quenchSigma, quenchDw);
+	    }
+	  }
 	}
       }
+      resInfo.average ();
+    }
+    if (vm.count("save-corr")){
+      resInfo.save (sfile);
     }
   }
-  
-  // for (double ii = 0.; ii < nst; ii += 1.){
-  //   inte.step (xx, 0.);
-  //   time += dt;
-  //   count ++;
-  //   countBranch ++;
-  //   if (int(nstprint) == count){
-  //     count = 0;
-  //     printf ("%f %f %f\n", time, xx.xx[0], xx.vv[0]);
-  //     dist.deposite (xx);
-  //   }
-  //   if (int(branchFeq) == countBranch){
-  //     // std::cout << "start branch" << std::endl;
-  //     countBranch = 0;
-  //     Dofs branchPosi (xx);
-  //     for (double branchTime = 0; branchTime <= branchLength; branchTime += dt){
-  // 	branchInte.step (branchPosi, 0.);
-  // 	// printf ("%f %f %f\n", branchTime, branchPosi.xx[0], branchPosi.vv[0]);
-  //     }
-  //     branchDist.deposite (branchPosi);
-  //   }  
-  // }
+  else {
+    resInfo.load (lfile);
+  }  
 
-
-  resInfo.average ();
 
   for (unsigned ii = 0; ii < numNoneqCheck; ++ii){
     double nowTime = ii * noneqCheckFeq;

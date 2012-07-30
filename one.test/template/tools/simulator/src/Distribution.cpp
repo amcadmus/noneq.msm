@@ -200,5 +200,107 @@ add (const double & scalor,
     }
   }
 }
-  
+
+
+void Distribution_1d::
+save (FILE * fp) const
+{
+  size_t rv;
+  rv = fwrite (&x0, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+  rv = fwrite (&x1, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+  rv = fwrite (&v0, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+  rv = fwrite (&v1, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+  rv = fwrite (&nx, sizeof(unsigned), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+  rv = fwrite (&nv, sizeof(unsigned), 1, fp);
+  if (rv != 1){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+
+  double * buff = (double *) malloc (sizeof(double) * nx * nv);
+  for (unsigned ii = 0; ii < nx; ++ii) {
+    for (unsigned jj = 0; jj < nv; ++jj) {
+      buff[ii*nv +jj] = values[ii][jj];
+    }
+  }
+  rv = fwrite (buff, sizeof(double), nx*nv, fp);
+  if (rv != nx*nv){
+    cerr << "error writing corr file " << endl;
+    exit(1);
+  }
+
+  free (buff);
+}
+
+
+void Distribution_1d::
+load (FILE * fp)
+{
+  size_t rv;
+  rv = fread (&x0, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&x1, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&v0, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&v1, sizeof(double), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&nx, sizeof(unsigned), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  rv = fread (&nv, sizeof(unsigned), 1, fp);
+  if (rv != 1){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  reinit (x0, x1, nx, v0, v1, nv);
+
+  double * buff = (double *) malloc (sizeof(double) * nx * nv);
+  rv = fread (buff, sizeof(double), nx*nv, fp);
+  if (rv != nx*nv){
+    cerr << "error reading corr file " << endl;
+    exit(1);
+  }
+  for (unsigned ii = 0; ii < nx; ++ii) {
+    for (unsigned jj = 0; jj < nv; ++jj) {
+      values[ii][jj] = buff[ii*nv +jj];
+    }
+  }
+  free (buff);
+}
+
 
