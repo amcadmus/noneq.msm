@@ -249,7 +249,7 @@ int main(int argc, char * argv[])
 
   for (unsigned ii = 0; ii < numNoneqCheck; ++ii){
     double nowTime = ii * noneqCheckFeq;
-    resInfo.calculate (nowTime, pert1, dist, distQuench);
+    resInfo.calculate (nowTime, pert1, dist, distQuench, order);
     dist.print_x  (xFileNames[ii]);
     dist.print_xv (xvFileNames[ii]);
     distQuench.print_x  (xQuenchFileNames[ii]);
