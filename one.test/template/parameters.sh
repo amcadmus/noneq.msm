@@ -7,6 +7,7 @@ corr_time=10.0
 warm_time=100.0
 refe_strength=0.0
 pert_strength=1.0
+resp_order=2
 project_name=splitSingleWell
 #project_name=tiltDoubleWell
 

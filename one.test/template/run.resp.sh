@@ -40,6 +40,7 @@ $command_line_param_print \
 --load-corr $saved_resp_dir/$saved_resp_name \
 --x-low $x0 --x-up $x1 --v-low $v0 --v-up $v1 --x-grid $nx --v-grid $nv \
 --warm-time $warm_time --seed $seed \
+--order $resp_order \
 --pert-strength0 $refe_strength --pert-strength1 $pert_strength"
     else
 	echo "# no saved resp $saved_resp_dir/$saved_resp_name, exit"
@@ -57,6 +58,7 @@ $command_line_param_print \
 --save-corr $saved_resp_dir/$saved_resp_name \
 --x-low $x0 --x-up $x1 --v-low $v0 --v-up $v1 --x-grid $nx --v-grid $nv \
 --warm-time $warm_time --seed $seed \
+--order $resp_order \
 --pert-strength0 $refe_strength --pert-strength1 $pert_strength"
 fi
 
