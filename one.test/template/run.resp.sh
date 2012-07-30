@@ -48,13 +48,12 @@ $command_line_param_print \
 else
     saved_resp_name=$project_name.$save_corr_param_note.save.resp.refStr$print_refStr.step$print_noneq_step.time$print_noneq_time.quench$print_quench_time.equiT$print_equi_time.grid$print_x0.$print_x1.$print_nx.$print_v0.$print_v1.$print_nv
     echo "# save corr to $saved_corr_dir/$saved_corr_name"
-    command="`pwd`/tools/simulator/$project_name.timeCorr \
+    command="`pwd`/tools/simulator/$project_name.noneqResp \
 --dt $dt --nst $nst -p 1000000 --gamma $gamma --temperature $temperature \
 $command_line_param_print \
 --branch-feq $branch_feq \
 --noneq-check-feq $noneq_check_feq --noneq-time $noneq_time \
 --quench-temperature $quench_temperature --quench-time $quench_time \
---corr-time $corr_time --corr-step $corr_step \
 --save-corr $saved_corr_dir/$saved_corr_name \
 --x-low $x0 --x-up $x1 --v-low $v0 --v-up $v1 --x-grid $nx --v-grid $nv \
 --warm-time $warm_time --seed $seed \
