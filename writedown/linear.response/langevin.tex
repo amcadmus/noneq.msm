@@ -1337,6 +1337,42 @@ are the zeroth order, first order and second order approximations, respectively.
   \label{fig:tmp1}
 \end{figure}
 
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]
+  {figs/fig-tilt-str2-2d-more.eps}
+  \caption{The plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+    $F_e^{\textrm{max}} = 2$.
+    The 1st row: the direct non-equilibrium
+    simulation. The 2nd row: the results of linear response
+    formula~\eqref{eqn:core-identify-approx-2}.
+    The 3rd row: the results of response
+    formula~\eqref{eqn:pert-approx-1} and \eqref{eqn:pert-approx-2}.
+    The order is 2, the reference state is $F_e^{\textrm{max}} = 0$, i.e.
+    the equilibrium state.
+  }
+  \label{fig:tmp2}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]
+  {figs/fig-tilt-str4-2d-more.eps}
+  \caption{The plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+    $F_e^{\textrm{max}} = 4$.  The 1st row: the direct non-equilibrium
+    simulation. The 2nd row: the results of linear response
+    formula~\eqref{eqn:core-identify-approx-2}.
+    The 3rd row: the results of response
+    formula~\eqref{eqn:pert-approx-1} and \eqref{eqn:pert-approx-2}.
+    The order is 2, the reference state is $F_e^{\textrm{max}} = 0$, i.e.
+    the equilibrium state.
+    The 4th row: the results of response
+    formula~\eqref{eqn:pert-approx-1} and \eqref{eqn:pert-approx-2}.
+    The order is 1, the reference state is $F_e^{\textrm{max}} = 2$.
+  }
+  \label{fig:tmp3}
+\end{figure}
+
 We test the idea firstly by a one-dimensional model system: one particle in a
 tilting double-well potential. For convenience, we let the mass of the
 particle to be 1 \textsf{amu}. The unperturbed
@@ -1381,40 +1417,30 @@ The larger
 this value, the more stable the core sets are.
 
 See Fig. \ref{fig:tmp2} and \ref{fig:tmp3} for numerical result.  Both
-the direct non-equilibrium simulation and the linear response
-approximation are presented. Time slices $t = 0$, 10, 15 and 20
+the direct non-equilibrium simulation and the response
+approximations are presented. Time slices $t = 0$, 10, 15 and 20
 \textsf{ps} are shown.  When the perturbation is small,
 i.e. $F_e^{\textrm{max}} = 2$, the direct non-equilibrium simulation
-and the linear response results are accurately consistent. As the
+and the linear response results are accurately consistent.
+The 2nd order response formula~\eqref{eqn:pert-approx-1} and
+\eqref{eqn:pert-approx-2} are even better, but the numerical error
+is bigger.
+As the
 perturbation grows stronger, the left well becomes less stable, while
 the right well becomes more stable.  When the perturbation is big,
-i.e. $F_e^{\textrm{max}} = 4$, the linear response results are no
-longer precise. When $t\geq 10$ \textsf{ps}, the left well basically
+i.e. $F_e^{\textrm{max}} = 4$, the linear response result is no
+longer precise.
+When $t\geq 20$ \textsf{ps}, the left well basically
 disappears, however, the linear response calculation presents
 artifical occilation at the right well.
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.95\textwidth]
-  {figs/tilt.warm020.str2.0.nst1e09.smallgrid/fig-2d.eps}
-  \caption{The plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
-    $F_e^{\textrm{max}} = 2$.
-    Upper row: the direct non-equilibrium simulation. Lower row: the
-    results of linear response formula~\eqref{eqn:core-identify-approx-2}.
-  }
-  \label{fig:tmp2}
-\end{figure}
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.95\textwidth]
-  {figs/tilt.warm020.str4.0.nst1e09.smallgrid/fig-2d.eps}
-  \caption{The plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
-    $F_e^{\textrm{max}} = 4$.  Upper row: the direct non-equilibrium
-    simulation. Lower row: the results of linear response
-    formula~\eqref{eqn:core-identify-approx-2}.  }
-  \label{fig:tmp3}
-\end{figure}
+The 2nd order response also has artifical effect, and the numerical
+uncertainty is high.
+The 4th rwo of Fig.~\ref{fig:tmp3} presents the 1st order result of the
+response formula~\eqref{eqn:pert-approx-1} and
+\eqref{eqn:pert-approx-2}, with
+respect to the reference state $F_e^{\textrm{max}} = 2$. The result
+is impressively improved compared with the linear response with respect to the
+equilibrium state.
 
 
 \subsection{Splitting single-well potential}
@@ -1426,27 +1452,6 @@ artifical occilation at the right well.
   \label{fig:tmp4}
 \end{figure}
 
-In this splitting single-well potential example, the unperturbed
-potential is simply the harmonic potential given by:
-\begin{align}
-  U(\vect q) = \frac12\,k\,\vect q^2 
-\end{align}
-Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^2)$.
-Notice at room temperature $300\ \textsf{K}$, $k_BT = 2.48$~\textsf{kJ/mol}.
-See the red line in Fig.~\ref{fig:tmp4}.
-%$\textsf{kJ} / (\textsf{mol nm}^4)}$
-The perturbation is again given by
-\begin{align}
-  \vect C(\vect p, \vect q) = 0; \qquad
-  \vect D(\vect p, \vect q) = -\nabla_{\vect q} V(\vect q) 
-\end{align}
-where $V(\vect q)$ is a Gaussian type potential:
-\begin{align}
-  V(\vect q) = \frac{1}{\sqrt{2\pi \sigma^2}}
-  \exp\Big\{-\frac{\vect q^2}{2\sigma^2}\Big\}
-\end{align}
-we use $\sigma = 0.16$~\textsf{nm}. Please see Fig~\ref{fig:tmp4}.
-For the results, please see Fig.~\ref{fig:tmp5} -- Fig.~\ref{fig:tmp6}.
 \begin{figure}
   \centering
   \includegraphics[width=0.95\textwidth]
@@ -1469,6 +1474,29 @@ For the results, please see Fig.~\ref{fig:tmp5} -- Fig.~\ref{fig:tmp6}.
     formula~\eqref{eqn:core-identify-approx-2}.  }
   \label{fig:tmp6}
 \end{figure}
+
+
+In this splitting single-well potential example, the unperturbed
+potential is simply the harmonic potential given by:
+\begin{align}
+  U(\vect q) = \frac12\,k\,\vect q^2 
+\end{align}
+Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^2)$.
+Notice at room temperature $300\ \textsf{K}$, $k_BT = 2.48$~\textsf{kJ/mol}.
+See the red line in Fig.~\ref{fig:tmp4}.
+%$\textsf{kJ} / (\textsf{mol nm}^4)}$
+The perturbation is again given by
+\begin{align}
+  \vect C(\vect p, \vect q) = 0; \qquad
+  \vect D(\vect p, \vect q) = -\nabla_{\vect q} V(\vect q) 
+\end{align}
+where $V(\vect q)$ is a Gaussian type potential:
+\begin{align}
+  V(\vect q) = \frac{1}{\sqrt{2\pi \sigma^2}}
+  \exp\Big\{-\frac{\vect q^2}{2\sigma^2}\Big\}
+\end{align}
+we use $\sigma = 0.16$~\textsf{nm}. Please see Fig~\ref{fig:tmp4}.
+For the results, please see Fig.~\ref{fig:tmp5} -- Fig.~\ref{fig:tmp6}.
 
 
 
