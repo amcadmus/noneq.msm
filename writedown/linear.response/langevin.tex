@@ -1319,6 +1319,380 @@ The first, second and third line on the r.h.s. of \eqref{eqn:pert-approx-2}
 are the zeroth order, first order and second order approximations, respectively.
 
 
+\section{On the accuracy of the response fomula}
+
+An important issue is how far can we trust the response theory.
+To investigate this issue, we should firstly look at the
+most important step: the trajectory measure reweighting,
+i.e. Eqn.~\eqref{eqn:exact-ratio-1} and \eqref{eqn:exact-ratio-2}.
+These formula are strict, however, the statistical error
+may be increased do to the measure reweighting, according to
+similar measure reweighting methods widely used in equilibrium sampling.
+We find it more convenient to start from the nonequilibrium steady
+state (NESS), then we extend it to more general, but short-time
+auto-correlated dynamics.
+
+
+\subsection{Starting from NESS sampling}
+
+For the NESS system, it is possible to define a time-independent
+measure of the configuration space, namely $p_0(\vect x)$, where
+the subscript ``0'' denotes the reference state. We want to measure
+the propties in the perturbed state, ``1'', where the NESS
+probability distribtion is denoted by $p_1(\vect x)$. Assume we have
+a sampling sequence $\vect x_1, \vect x_2, \cdots, \vect x_M$, which
+are independent, and are subject to the reference probability distribtion
+$p_0(\vect x)$. Any  observation $O$ of the perturbed system can be
+estimated by
+\begin{align}
+  \bar O_M = \frac 1M\sum_{i=0}^{M-1} O(\vect x_i) R(\vect x_i)
+\end{align}
+where $R(\vect x)$ is the ration between the two probability distributions:
+\begin{align}
+  R(\vect x) = \frac{p_1(\vect x)}{p_0(\vect x)}
+\end{align}
+$\bar O_M$ is an unbiased estimator for $\langle O\rangle_1$
+($\langle \cdot\rangle_1$ denotes the expectation value in the perturbed
+system), because
+\begin{align}
+  \langle \bar O_M\rangle_0
+  = \frac 1M\sum_{i=0}^{M-1}
+  \int\dd \vect x\, p_0(\vect x_i)\,O(\vect x_i) R(\vect x_i)
+  = \int \dd \vect x\,p_0(\vect x)\,O(\vect x)
+  \,\frac{p_1(\vect x)}{p_0(\vect x)}
+  = \langle O\rangle_1
+\end{align}
+The statistical uncertainty is defined by the variance:
+\begin{align}
+  \textrm{Var}_0(\bar O_M)
+  = \big\langle
+  [\bar O_M^2 - \langle \bar O_M\rangle_0]^2
+  \big\rangle_0
+  = \langle\bar O_M^2\rangle_0 -
+  \langle\bar O_M\rangle_0^2 
+\end{align}
+It can be calculated that (only some basic algibra are needed):
+\begin{align}
+  \textrm{Var}_0(\bar O_M)
+  =
+  \langle O^2\cdot R\rangle_1 - \langle O\rangle_1^2
+\end{align}
+Comparing this variance with that of a direct sampling in the perturbed system,
+the difference would be
+\begin{align}
+  \Delta\textrm{Var}_0(\bar O_M)
+  =
+  \langle O^2\cdot (R-1)\,\rangle_1
+\end{align}
+This means that the reweighted sampling can be more precise if the
+observable $O$ is more significant in the region where $p_0 > p_1$, or
+less precise if $O$ is more significant in the region where $p_0 <
+p_1$.  This is obvious, and be observed in the equilibrium sampling
+methods (for example, the umbrella sampling).  In our case, the
+observable is nothing but the mollifier $K_{\sigma, \vect y}(\vect
+x)$, which is the smoothified version of the delta function,
+so we can somehow think
+$\langle K_{\sigma, \vect y}(\vect x)\rangle_0
+\approx p_0(\vect y)$ and
+$\langle K_{\sigma, \vect y}(\vect x)\rangle_1
+\approx p_1(\vect y)$.  This
+means the average of the mollifier is always calculated with a worse
+precision when $\langle K_{\sigma, \vect y}(\vect x)\rangle_1 >
+\langle K_{\sigma, \vect y}(\vect x)\rangle_0$. Please note that we
+are always more interested in the region where $\langle K_{\sigma,
+  \vect y}(\vect x)\rangle_1 > \langle K_{\sigma, \vect y}(\vect
+x)\rangle_0$, so the sad news is that we will always end up with
+a worse preciseion compared with the direct sampling of perturbed
+system.
+To have a resonable approximation, it is required that
+the unperturbed distribution $p_0(\vect x)$ should always be
+overlapping with the perturbed version in the region where $p_1(\vect
+x)$, or $\langle K_{\sigma, \vect y}(\vect x)\rangle_1$ is relavant.
+
+
+\subsection{The accuracy of the reweighted trajectory sampling}
+
+We want to understand what is the precision of the
+reweighted trajectory sampling, namely:
+\begin{align}\label{eqn:traj-ob}
+  \Delta \mo (t) =
+  \int \dd \vect v\, f(\vect v, 0)
+  \int_{\mc\{\vect v, 0; t\}}
+  \dd \mathcal P_{i-1}^\beta[\vect X_s]\,
+  O(\vect X_t)
+  \Bigg[
+  \frac{\dd \mathcal P^\beta_i[\vect X_s]}
+  {\dd \mathcal P^\beta_{i-1}[\vect X_s]}
+  -1
+  \Bigg]
+\end{align}
+The leading order of the trajectory order reweighting is
+\begin{align}\label{eqn:leading-rew}
+  \frac{\dd \mathcal P^\beta_i[\vect X_s]}
+  {\dd \mathcal P^\beta_{i-1}[\vect X_s]}
+  -1
+  =
+  \frac1\sigma\int_0^t M(s)\,
+  \vect D(\vect X_s)\cdot \dd\vect W_t
+\end{align}
+Notice the observable $O$ only depends on the end point
+of the trajectory. Therefore, we can use this properties to derive the
+estimate of the path integral.
+Let a series of descrete point along the trajectory:
+$(\vect X_{t_1}, t_1), (\vect X_{t_2}, t_2), \cdots, (\vect X_{t_N}, t_N)$,
+with $t_0 = 0,\ t_N = t$. For convenience, we denote
+$\vect x_k = \vect X_{t_k}$. The descretization of the path integral
+\eqref{eqn:traj-ob} is 
+\begin{align}
+  \Delta\mo (t) =
+  \int\dd \vect x_0\, f(\vect x_0, 0)
+  \int \dd \vect x_N
+  \int
+  \prod_{k=0}^{N-1}
+  \dd \vect x_k\,
+  p(\vect x_{k+1},t_{k+1} | \vect x_{k},t_{k})\,
+  O(\vect x_N)\,
+  \frac1\sigma\,
+  \Big[
+  \sum_{m=0}^{N-1}
+  M(t_m) \vect D(\vect x_m) (\vect W_{m+1} - \vect W_{m})
+  \Big]
+\end{align}
+By using the Chapman-Kolmogorov property, we have
+\begin{align}\nonumber
+  \Delta\mo (t) = &\,
+  \frac1\sigma
+  \sum_{m=0}^{N-1}
+  \int \dd \vect x_0\,
+  \dd \vect x_m\,
+  \dd \vect x_{m+1}\,
+  \dd \vect x_N\,
+  p(\vect x_N,t_N | \vect x_{m+1}, t_{m+1})\,
+  p(\vect x_{m+1}, t_{m+1} | \vect x_{m}, t_{m})\,
+  p(\vect x_{m}, t_{m} | \vect x_{0}, t_{0}) \,
+  f(\vect x_0, t_0)\\
+  &\,
+  M(t_m) \vect D(\vect x_m) (\vect W_{m+1} - \vect W_{m})  
+  O(\vect x_N)
+\end{align}
+Here for simplicity, we assume the dynamics is over-damped (the equations
+are the same for $O$ as under-damped dynamics).
+\begin{align}
+  \dd \vect X_t =
+  \vect b(\vect X_t, t)\,\dd t +
+  \sigma\, \dd \vect W_t
+\end{align}
+the change of variables gives
+\begin{align}
+  \vect W_{m+1} - \vect W_{m}
+  =
+  \vect x_{m+1} - \vect x_{m}
+  -
+  \vect b(\vect x_m, t_m)\,\Delta t_m
+\end{align}
+so
+\begin{align}\nonumber
+  \Delta\mo (t) = &\,
+  \frac1\sigma
+  \sum_{m=0}^{N-1}
+  \int \dd \vect x_0\,
+  \dd \vect x_m\,
+  \dd \vect x_{m+1}\,
+  \dd \vect x_N\,
+  p(\vect x_N,t_N | \vect x_{m+1}, t_{m+1})\,
+  p(\vect x_{m+1}, t_{m+1} | \vect x_{m}, t_{m})\,
+  p(\vect x_{m}, t_{m} | \vect x_{0}, t_{0})\,
+  f(\vect x_0, t_0)
+  \\ \nonumber
+  &\,
+  M(t_m) \vect D(\vect x_m) (\vect x_{m+1} - \vect x_{m})  
+  O(\vect x_N)\\
+  -
+  &\,
+  \frac1\sigma
+  \sum_{m=0}^{N-1}
+  \int \dd \vect x_0\,
+  \dd \vect x_m\,
+  \dd \vect x_N\,
+  p(\vect x_N,t_N | \vect x_{m}, t_{m})\,
+  p(\vect x_{m}, t_{m} | \vect x_{0}, t_{0}) \,
+  f(\vect x_0, t_0)\\
+  &\,
+  M(t_m) \vect D(\vect x_m) \vect b(\vect x_m, t_m)\,\Delta t_m
+  O(\vect x_N)
+\end{align}
+% The last term equals to
+% \begin{align}
+%   \frac1\sigma
+%   \int \dd \tau
+%   M(\tau)
+%   \Big\langle
+%   O(\vect X_t) \vect b(\vect X_\tau,\tau) \vect D(\vect X_\tau)
+%   \Big\rangle
+% \end{align}
+By using the forward Kolmogorov equation, we have
+\begin{align}\nonumber
+  p(\vect x_{m+1},t_{m+1} | \vect x_{m},t_{m} )
+  = &\,
+  p(\vect x_{m+1},t_{m} | \vect x_{m},t_{m} )
+  -
+  \Delta t_m
+  \nabla_{\vect x_{m+1}}
+  \cdot
+  [ \vect b(\vect x_{m+1}, t_m)\,
+  p(\vect x_{m+1},t_{m} | \vect x_{m},t_{m} )\,]\\
+  &\,
+  +
+  \Delta t_m \frac{1} 2\,\sigma^2\,
+  \nabla_{\vect x_{m+1}}^2 p(\vect x_{m+1},t_{m} | \vect x_{m},t_{m} )
+\end{align}
+with initial condition
+\begin{align}
+  p(\vect x_{m+1},t_{m} | \vect x_{m},t_{m} ) =
+  \delta (\vect x_{m+1} - \vect x_{m})
+\end{align}
+so
+\begin{align}\nonumber
+  \int\dd \vect x_{m+1}\,
+  &
+  p(\vect x_N,t_N | \vect x_{m+1}, t_{m+1})\,
+  p(\vect x_{m+1}, t_{m+1} | \vect x_{m}, t_{m})\,
+  (\vect x_{m+1} -\vect x_{m})\\\nonumber
+  =&
+  -
+  \Delta t_m
+  \int \dd \vect x_{m+1}\,
+  p(\vect x_N,t_N | \vect x_{m+1}, t_{m+1})\,
+  (\vect x_{m+1} - \vect x_{m})
+  \nabla_{\vect x_{m+1}}
+  \cdot
+  [ \vect b(\vect x_{m+1}, t_m)\,
+  p(\vect x_{m+1},t_{m} | \vect x_{m},t_{m} )\,]\\\nonumber
+  &
+  +
+  \Delta t_m
+  \int \dd \vect x_{m+1}\,
+  p(\vect x_N,t_N | \vect x_{m+1}, t_{m+1})\,
+  (\vect x_{m+1} - \vect x_{m})
+  \frac{\sigma^2} 2\,
+  \nabla_{\vect x_{m+1}}^2 p(\vect x_{m+1},t_{m} | \vect x_{m},t_{m} ) \\\nonumber
+  =&
+  \Delta t_m
+  \int \dd \vect x_{m+1}\,
+  \vect b(\vect x_{m+1}, t_m)\,
+  \delta (\vect x_{m+1} - \vect x_{m})
+  p(\vect x_N,t_N | \vect x_{m+1}, t_{m+1}) \\\nonumber
+  &+
+  \Delta t_m
+  \int \dd \vect x_{m+1}\,
+  \delta (\vect x_{m+1} - \vect x_{m})
+  \nabla_{\vect x_{m+1}}p(\vect x_N,t_N | \vect x_{m+1}, t_{m+1})\times
+  \frac{\sigma^2} 2 \\
+  =&
+  \Delta t_m
+  \vect b(\vect x_{m}, t_m)\,
+  p(\vect x_N,t_N | \vect x_{m}, t_{m+1}) 
+  +
+  \,\frac{\sigma^2} 2\,\Delta t_m
+  \nabla_{\vect x_{m}}p(\vect x_N,t_N | \vect x_{m}, t_{m+1})
+\end{align}
+By using the backward Kolmogorov equation
+\begin{align}
+  p(\vect x_N,t_N | \vect x_{m}, t_{m+1})
+  = 
+  p(\vect x_N,t_N | \vect x_{m}, t_{m})
+  + \mathcal O(\Delta t_m)
+\end{align}
+So by keeping the leading order of $\Delta t_m$
+\begin{align}\nonumber
+  \int\dd \vect x_{m+1}\,
+  &
+  p(\vect x_N,t_N | \vect x_{m+1}, t_{m+1})\,
+  p(\vect x_{m+1}, t_{m+1} | \vect x_{m}, t_{m})\,
+  (\vect x_{m+1} -\vect x_{m})\\\nonumber
+  =&
+  \Delta t_m
+  \vect b(\vect x_{m}, t_m)\,
+  p(\vect x_N,t_N | \vect x_{m}, t_{m}) 
+  +
+  \,\frac{\sigma^2} 2\,\Delta t_m
+  \nabla_{\vect x_{m}}p(\vect x_N,t_N | \vect x_{m}, t_{m})
+\end{align}
+Therefore, we have
+\begin{align}\label{eqn:error-o-corr}
+  \Delta\mo (t) =
+  \frac\sigma 2
+  % \int \dd\vect x_0 f(\vect x_0,0)
+  \int_0^t \dd\tau M(\tau)
+  \Bigg[
+  \int \dd\vect x_t\, O(\vect x_t)
+  \int \dd\vect x_\tau\,
+  \nabla_{\vect x_{\tau}}p(\vect x_t,t | \vect x_{\tau}, \tau)
+  \cdot
+  \vect D(\vect x_\tau)\,
+  % p(\vect x_\tau,\tau | \vect x_0, 0)
+  f(\vect x_\tau,\tau)
+  \bigg]
+\end{align}
+\redc{
+The term in the bracket is the time correlation between
+the observable and the backward flux of the error force $\vect D$.
+}
+
+\vskip .5cm
+Discussions on Eqn.~\eqref{eqn:error-o-corr}:
+\begin{enumerate}
+\item This equation relate the error force with the error of observable,
+  which would be useful in the error studies.
+\item When the system does not have long-time memory:
+  \begin{align}
+    p(\vect x_t,t | \vect x_{\tau}, \tau) = p(\vect x_t,t ), \qquad
+    \textrm{for}\ t  - \tau > t_c
+  \end{align}
+  Here $t_c$ denotes the length of memory of the system. Then
+  Eqn.~\eqref{eqn:error-o-corr} becomes 
+  \begin{align}
+    \Delta\mo (t) =
+    \frac\sigma 2
+    % \int \dd\vect x_0 f(\vect x_0,0)
+    \int_{t_c}^t \dd\tau M(\tau)
+    \Bigg[
+    \int \dd\vect x_t\, O(\vect x_t)
+    \int \dd\vect x_\tau\,
+    \nabla_{\vect x_{\tau}}p(\vect x_t,t | \vect x_{\tau}, \tau)
+    \cdot
+    \vect D(\vect x_\tau)\,
+    % p(\vect x_\tau,\tau | \vect x_0, 0)
+    f(\vect x_\tau,\tau)
+    \bigg]
+  \end{align}
+  This means we can integrate \eqref{eqn:leading-rew} only from
+  $t_c$ to $t$.
+\item In our case of core set identification,
+  $O(\vect x) = K_{\sigma, \vect y}(\vect x)$, which is nearly a delta function.
+  A good precision of the response theory means 
+  that the trajectory generated by the reference system, should
+  properly sample the correlation between the
+  error force flux at time $\tau$, and the probability
+  density at time $t$.  In other words, we generate trajectories
+  samples the conditional probability $p(\vect x_t,t | \vect x_{\tau}, \tau)$,
+  and a good precision means
+  the backward flux $\nabla_{\vect x_{\tau}}p(\vect x_t,t | \vect x_{\tau}, \tau)
+    \cdot
+    \vect D(\vect x_\tau)$ should be significant on this sampling.
+\end{enumerate}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
