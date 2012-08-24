@@ -1655,7 +1655,7 @@ Discussions on Eqn.~\eqref{eqn:error-o-corr}:
     \Delta\mo (t) =
     \frac\sigma 2
     % \int \dd\vect x_0 f(\vect x_0,0)
-    \int_{t_c}^t \dd\tau M(\tau)
+    \int_{t - t_c}^t \dd\tau M(\tau)
     \Bigg[
     \int \dd\vect x_t\, O(\vect x_t)
     \int \dd\vect x_\tau\,
@@ -1667,7 +1667,7 @@ Discussions on Eqn.~\eqref{eqn:error-o-corr}:
     \bigg]
   \end{align}
   This means we can integrate \eqref{eqn:leading-rew} only from
-  $t_c$ to $t$.
+  $t - t_c$ to $t$.
 \item In our case of core set identification,
   $O(\vect x) = K_{\sigma, \vect y}(\vect x)$, which is nearly a delta function.
   A good precision of the response theory means 
