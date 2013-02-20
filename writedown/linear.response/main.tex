@@ -1889,6 +1889,8 @@ For the results, please see Fig.~\ref{fig:tmp5} -- Fig.~\ref{fig:tmp6}.
 
 
 
+
+
 \section{Non-equilibrium linear response}
 
 % \subsection{Path integral}
@@ -2187,6 +2189,260 @@ then \eqref{eqn:noneq-pert-2} changes to
 }
 
 
+
+
+
+
+
+\newpage
+\section{Numerical results}
+\subsection{Tilting double-well potential}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.4\textwidth]{figs/fig-tilt-pot.eps}
+  \includegraphics[width=0.4\textwidth]{figs/fig-split-pot.eps}
+  \caption{Two testing cases presented by this paper.
+    Left: the double-well potential with tilting perturbation.
+    Right: the single-well potential with splitting perturbation.}
+  \label{fig:new-tmp1}
+\end{figure}
+
+
+We test the idea by a one-dimensional model system: one particle in a
+tilting double-well potential. For convenience, we let the mass of the
+particle to be 1 \textsf{amu}. The unperturbed
+Hamiltonian of the system is given by:
+\begin{align}
+  \mh (\vect p, \vect q) = \frac 12 \vect p^2 + U(\vect q) 
+\end{align}
+with potential
+\begin{align}
+  U(\vect q) = \frac12 k (\vect q^2 - a^2)^2
+\end{align}
+Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^4)$, and $ a = 1\ \textsf{nm}$.
+Notice at room temperature $300\ \textsf{K}$, $k_BT = 2.48$~\textsf{kJ/mol}.
+See the red line in Fig.~\ref{fig:tmp1}.
+%$\textsf{kJ} / (\textsf{mol nm}^4)}$
+The perturbation is given by
+\begin{align}
+  \vect C(\vect p, \vect q) = 0; \qquad
+  \vect D(\vect p, \vect q) = -\nabla_{\vect q} V(\vect q) = 1
+\end{align}
+Here $V(\vect q) = -\vect q$ is  effectively tilting the original
+potential $U(\vect q)$. The strength of the perturbation $F_e(t)$ is given
+by the following function:
+\begin{align}
+  F_e(t) = 
+  \begin{cases}
+    F_e^{\textrm{max}}\times (t / t_c) & t < t_c \\
+    F_e^{\textrm{max}} & t \geq t_c
+  \end{cases}
+\end{align}
+$t_c = 20$~\textsf{ps} so that the perturbation increases slow
+enough: the typical decaying time scale of the correlation function
+in~\eqref{eqn:core-identify-approx-2} is roughly 3~\textsf{ps}.
+We choose $\tau = 1$~\textsf{ps}.
+% We choose $\mt_\alpha$
+% to be the propagator of the Langevin dynamics at temperature $150$
+% \textsf{K} with $\alpha = 1$ \textsf{ps}.
+Since the dynamics is in
+1-d, the projection $\mathcal P$ is identity.  We consider the stability of the
+distribution $f(\vect x, t)$ at time $t$: $\Delta\mt_\tau f(\vect x, t)$.
+The larger
+this value, the more stable the core sets are.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]
+  {figs/fig-tilt-str2-simple.eps}
+  \caption{
+    Tilting double well potential testing case:
+    the plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+    $F_e^{\textrm{max}} = 2.0$.
+    From left to right:
+    (a) $t=0$~\textsf{ps},
+    the brutal force non-equilibirum simulation,
+    (b) $t=20$~\textsf{ps},
+    the brutal force non-equilibirum simulation,
+    (c) $t=20$~\textsf{ps},
+    response formula truncated at order $n=1$,
+    and
+    (d) $t=20$~\textsf{ps},
+    response formula truncated at order $n=2$.
+    The equilibirum state serves as the reference of
+    the response simulations.
+  }
+  \label{fig:new-tmp2}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]
+  {figs/fig-tilt-str4-simple.eps}
+  \caption{
+    Tilting double well potential:
+    the plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+    $F_e^{\textrm{max}} = 4.0$.
+    From left to right:
+    (a) $t=0$~\textsf{ps},
+    the brutal force non-equilibirum simulation,
+    (b) $t=20$~\textsf{ps},
+    the brutal force non-equilibirum simulation,
+    (c) $t=20$~\textsf{ps},
+    response formula with reference process $F_e^{\max} = 0.0$
+    (i.e. equilibirum simulation),
+    and
+    (d) $t=20$~\textsf{ps},
+    response formula with reference process $F_e^{\max} = 2.0$.
+    The response formula are truncated at order $n=1$.
+  }
+  \label{fig:new-tmp3}
+\end{figure}
+
+
+
+The Fig.~\ref{fig:new-tmp2} and \ref{fig:new-tmp3} present
+the application of the response theory to
+calculate core sets of the tilting double-well potential.
+Fig.~\ref{fig:new-tmp2} presents
+the snapshot at $t=20$~\textsf{ps}
+of $\Delta\mt_\tau f(\vect x,t)$ under the maximum perturbation
+strength $F_e^{\max} = 2.0$. Response formula truncated
+at both order $n=1$ and $n=2$ are compared to 
+the brutal force non-equilibirum simulation.
+No obviously difference is shown. The second order response result
+is slightly more precise than the first order one, but the
+statistical error is also larger, which makes the profile noisy.
+This figure tells us that
+(1) the modeling error of the linear response (1st order) is
+negligibly small; (2) the statistical error of numerically measuring the
+linear response is also small.
+Fig.~\ref{fig:new-tmp3} presents the $t=20$~\textsf{ps}
+snapshots of $\Delta\mt_\tau f(\vect x,t)$
+under a larger perturbations $F_e^{\max} = 4.0$.
+The linear reponse using the equilibirum process as the reference
+shows poor accuracy: the left well vanishes in this case,
+while the linear response produces  artifical structures.
+Since the profile is smooth, which indicates
+the statistical error of calculating the linear term is small,
+the deviation comes from the modellng error, namely the contribution
+of higher order response terms.
+By including the second order response term reduces the left
+artifical core set, but also creates artifical finer grained
+structures. The statistical accuracy is also worse than the linear response.
+Plot (d) present the result of the linear response
+formula using reference process $F_e^{\max} = 2.0$, which
+is the process presented in Fig.~\ref{fig:new-tmp2}.
+Much better modelling accuracy is achieved:
+the left artifical core set disappear and the
+statistical accuracy is also satisfactory.
+
+% See Fig. \ref{fig:tmp2} and \ref{fig:tmp3} for numerical result.  Both
+% the direct non-equilibrium simulation and the response
+% approximations are presented. Time slices $t = 0$, 10, 15 and 20
+% \textsf{ps} are shown.  When the perturbation is small,
+% i.e. $F_e^{\textrm{max}} = 2$, the direct non-equilibrium simulation
+% and the linear response results are accurately consistent.
+% The 2nd order response formula~\eqref{eqn:pert-approx-1} and
+% \eqref{eqn:pert-approx-2} are even better, but the numerical error
+% is bigger.
+% As the
+% perturbation grows stronger, the left well becomes less stable, while
+% the right well becomes more stable.  When the perturbation is big,
+% i.e. $F_e^{\textrm{max}} = 4$, the linear response result is no
+% longer precise.
+% When $t\geq 20$ \textsf{ps}, the left well basically
+% disappears, however, the linear response calculation presents
+% artifical occilation at the right well.
+% The 2nd order response also has artifical effect, and the numerical
+% uncertainty is high.
+% The 4th rwo of Fig.~\ref{fig:tmp3} presents the 1st order result of the
+% response formula~\eqref{eqn:pert-approx-1} and
+% \eqref{eqn:pert-approx-2}, with
+% respect to the reference state $F_e^{\textrm{max}} = 2$. The result
+% is impressively improved compared with the linear response with respect to the
+% equilibrium state.
+
+
+
+
+\subsection{Splitting single-well potential}
+
+In this splitting single-well potential example, the unperturbed
+potential is simply the harmonic potential given by:
+\begin{align}
+  U(\vect q) = \frac12\,k\,\vect q^2 
+\end{align}
+Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^2)$.
+Notice at room temperature $300\ \textsf{K}$, $k_BT = 2.48$~\textsf{kJ/mol}.
+See the red line in Fig.~\ref{fig:tmp4}.
+%$\textsf{kJ} / (\textsf{mol nm}^4)}$
+The perturbation is again given by
+\begin{align}
+  \vect C(\vect p, \vect q) = 0; \qquad
+  \vect D(\vect p, \vect q) = -\nabla_{\vect q} V(\vect q) 
+\end{align}
+where $V(\vect q)$ is a Gaussian type potential:
+\begin{align}
+  V(\vect q) = \frac{1}{\sqrt{2\pi \sigma^2}}
+  \exp\Big\{-\frac{\vect q^2}{2\sigma^2}\Big\}
+\end{align}
+we use $\sigma = 0.16$~\textsf{nm}. Please see Fig~\ref{fig:tmp4}.
+For the results, please see Fig.~\ref{fig:tmp5} -- Fig.~\ref{fig:tmp6}.
+
+
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]
+  {figs/fig-split-str1-simple.eps}
+  \caption{
+    Splitting single-well potential testing case:
+    the plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+    $F_e^{\textrm{max}} = 1.0$.
+    From left to right:
+    (a) $t=0$~\textsf{ps},
+    the brutal force non-equilibirum simulation,
+    (b) $t=20$~\textsf{ps},
+    the brutal force non-equilibirum simulation,
+    (c) $t=20$~\textsf{ps},
+    response formula truncated at order $n=1$,
+    and
+    (d) $t=20$~\textsf{ps},
+    response formula truncated at order $n=2$.
+    The equilibirum state serves as the reference of
+    the response simulations.
+  }
+  \label{fig:new-tmp5}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]
+  {figs/fig-split-str2-simple.eps}
+  \caption{
+    splitting single well potential:
+    the plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+    $F_e^{\textrm{max}} = 2.0$.
+    From left to right:
+    (a) $t=0$~\textsf{ps},
+    the brutal force non-equilibirum simulation,
+    (b) $t=20$~\textsf{ps},
+    the brutal force non-equilibirum simulation,
+    (c) $t=20$~\textsf{ps},
+    response formula with reference process $F_e^{\max} = 0.0$
+    (i.e. equilibirum simulation),
+    and
+    (d) $t=20$~\textsf{ps},
+    response formula with reference process $F_e^{\max} = 1.0$.
+    The response formula are truncated at order $n=1$.
+  }
+  \label{fig:new-tmp6}
+\end{figure}
 
 
 

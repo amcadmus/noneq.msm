@@ -33,6 +33,7 @@ xtc-precision            = 1000
 ; select multiple groups. By default all atoms will be written.
 xtc-grps                 = 
 ; Selection of energy groups
+;energygrps               = Backbone
 energygrps               = Protein
 
 ; NEIGHBORSEARCHING PARAMETERS
