@@ -117,7 +117,7 @@ int main(int argc, char * argv[])
       ("ds,s", po::value<double > (&ds)->default_value (1.), "value of ds")
       ("input,f",  po::value<std::string > (&ifile)->default_value ("angle.name"), "the file of file names: angle")
       ("gxs-file,g",  po::value<std::string > (&gfile)->default_value ("gxs.name"), "the file of file names: gxs")
-      ("output,o", po::value<std::string > (&ofile)->default_value ("metastable.out"), "the output of metastable propulation");
+      ("output,o", po::value<std::string > (&ofile)->default_value ("metastable.resp.out"), "the output of metastable propulation");
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);

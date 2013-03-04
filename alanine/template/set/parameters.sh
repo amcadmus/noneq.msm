@@ -32,6 +32,8 @@ pert_taut=1.0			# ps
 pert_noSdRange=1.0		# nm
 pert_barostat=no		# Parrinello-Rahman or no
 pert_taup=2.0			# ps
+pert_resp_corr_range=0.25	# nm
+
 pert_parallel_num_pro=5
 pert_parallel_my_id=0
 
@@ -54,7 +56,7 @@ else if echo $run_method | grep "atom.inhomo.sd2" &> /dev/null; then
     source $gromacs_install_dir/bin/GMXRC.bash
 else if echo $run_method | grep "atom.langevin" &> /dev/null; then
     pert_integrator=sd1
-    gromacs_install_dir=/home/cocktail/wanghan/study/noneq.msm/alanine/locals/gromacs.rev.3/
+    gromacs_install_dir=/home/cocktail/wanghan/study/noneq.msm/alanine/locals/gromacs.rev.4a
     source $gromacs_install_dir/bin/GMXRC.bash
 else
     pert_integrator=md

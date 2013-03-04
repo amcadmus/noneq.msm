@@ -54,6 +54,7 @@ function set_parameters_pert () {
     sed -e "/^nstfout/s/=.*/= 0/g" |\
     sed -e "/^nstenergy/s/=.*/= $pert_energy_feq/g" |\
     sed -e "/^userreal1/s/=.*/= $pert_noSdRange/g" |\
+    sed -e "/^userreal2/s/=.*/= $pert_resp_corr_range/g" |\
     sed -e "/^E-x /s/=.*/= 1 $pert_strength 0.0/g" |\
     sed -e "/^E-xt /s/=.*/= 1 $pert_warm_time 0.0/g" |\
     sed -e "/^ld-seed/s/=.*/= `date +%s`/g" |\
