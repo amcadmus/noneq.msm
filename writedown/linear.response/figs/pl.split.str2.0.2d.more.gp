@@ -56,12 +56,12 @@ unset ylabel
 
 set origin 0.25, 0.69
 unset xlabel
-set title 't = 10 ps'
-spl 'split.warm020.str2.0.nst1e09.smallgrid/indicator.vx.00010.00.out' u 1:2:(-$3) not
+set title 't = 5 ps'
+spl 'split.warm020.str2.0.nst1e09.smallgrid/indicator.vx.00005.00.out' u 1:2:(-$3) not
 
 set origin 0.5, 0.69
-set title 't = 15 ps'
-spl 'split.warm020.str2.0.nst1e09.smallgrid/indicator.vx.00015.00.out' u 1:2:(-$3) not
+set title 't = 10 ps'
+spl 'split.warm020.str2.0.nst1e09.smallgrid/indicator.vx.00010.00.out' u 1:2:(-$3) not
 
 set origin 0.75, 0.69
 set title 't = 20 ps'
@@ -71,20 +71,20 @@ spl 'split.warm020.str2.0.nst1e09.smallgrid/indicator.vx.00020.00.out' u 1:2:(-$
 unset title
 
 set origin 0.25, 0.46
-spl 'split.warm020.str2.0.nst1e09.smallgrid/indicator.linear.corr.vx.00010.00.out' u 1:2:(-$3) not
+spl 'split.warm020.str2.0.nst1e09.smallgrid/indicator.linear.corr.vx.00005.00.out' u 1:2:(-$3) not
 
 set origin 0.5, 0.46
-spl 'split.warm020.str2.0.nst1e09.smallgrid/indicator.linear.corr.vx.00015.00.out' u 1:2:(-$3) not
+spl 'split.warm020.str2.0.nst1e09.smallgrid/indicator.linear.corr.vx.00010.00.out' u 1:2:(-$3) not
 
 set origin 0.75, 0.46
 spl 'split.warm020.str2.0.nst1e09.smallgrid/indicator.linear.corr.vx.00020.00.out' u 1:2:(-$3) not
 
 
 set origin 0.25, 0.23
-spl 'split.warm020.str2.0.nst1e09.ref0.0.resp.order2/indicator.resp.vx.00010.00.out' u 1:2:(-$3) not
+spl 'split.warm020.str2.0.nst1e09.ref0.0.resp.order2/indicator.resp.vx.00005.00.out' u 1:2:(-$3) not
 
 set origin 0.5, 0.23
-spl 'split.warm020.str2.0.nst1e09.ref0.0.resp.order2/indicator.resp.vx.00015.00.out' u 1:2:(-$3) not
+spl 'split.warm020.str2.0.nst1e09.ref0.0.resp.order2/indicator.resp.vx.00010.00.out' u 1:2:(-$3) not
 
 set origin 0.75, 0.23
 spl 'split.warm020.str2.0.nst1e09.ref0.0.resp.order2/indicator.resp.vx.00020.00.out' u 1:2:(-$3) not
@@ -93,10 +93,10 @@ spl 'split.warm020.str2.0.nst1e09.ref0.0.resp.order2/indicator.resp.vx.00020.00.
 set xlabel "q [nm]"
 
 set origin 0.25, 0.0
-spl 'split.warm020.str2.0.nst1e09.ref1.0.resp.order1/indicator.resp.vx.00010.00.out' u 1:2:(-$3) not
+spl 'split.warm020.str2.0.nst1e09.ref1.0.resp.order1/indicator.resp.vx.00005.00.out' u 1:2:(-$3) not
 
 set origin 0.5, 0.0
-spl 'split.warm020.str2.0.nst1e09.ref1.0.resp.order1/indicator.resp.vx.00015.00.out' u 1:2:(-$3) not
+spl 'split.warm020.str2.0.nst1e09.ref1.0.resp.order1/indicator.resp.vx.00010.00.out' u 1:2:(-$3) not
 
 set origin 0.75, 0.0
 spl 'split.warm020.str2.0.nst1e09.ref1.0.resp.order1/indicator.resp.vx.00020.00.out' u 1:2:(-$3) not
