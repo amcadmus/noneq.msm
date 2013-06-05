@@ -423,13 +423,38 @@ one does not need to repeat the calculations of Eq.~\eqref{eqn:neq-response} for
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Optimal Forcing}
 
+Let us remain in the setting of the last section and assume that we are interested in a finite dimensional family of forcings
+\[
+\mathcal{F}=\{F_e(t)=\sum_{k=1}^N a_k \Phi_k(t)\},
+\]
+with explicitly given basis functions $\Phi_k$, $k=1,\ldots,N$.
+We are interested in computing the gradient of the expectation value at time $T$ of the observable $\mathcal{O}$ wrt the coefficient vector $(a_k)_{k=1,\ldots,N}$ in the point $F_e(t)=\sum_{k=1}^N a_k \Phi_k(t)$. From Eq. (\ref{eqn:neq-response}) we get with $\Delta F_e(t)=\Phi_k(t)$:
+\[
+\frac{\partial O(T)}{\partial a_j} = \lim_{\eps\to 0}\frac{1}{\eps}( O_\eps(T) -
+  O_0(T))=\big\langle O[\vect X_s]\cdot G_j[\vect X_s]\big\rangle_{0,T},
+\]
+where $X_t$ and $O_0$ are paths and expectation value wrt. the dynamics \eqref{eqn:langevin-1b}--\eqref{eqn:langevin-2b} with $F_e(t)=\sum_{k=1}^N a_k \Phi_k(t)$ and $\eps=0$, and
+\[
+G_j[\vect X_t]
+  = \frac{1}\sigma\int_0^t
+  \Phi_j(s)\,\vect D(\vect q_s)\cdot\dd\vect W_s. 
+\]
+That is, we can compute all derivatives $\partial O(T)/\partial a_j$ from just one ensemble of paths of $X_t$. 
 
-
-
-
-
+Now we consider the optimization problem
+\[
+O_{max}(T) = \max_{F_e\in \mathcal{F}} O[F_e](T),
+\]
+where $O[F](T)$ is the expectation value of the path observable $\mathcal{O}$ that results from \eqref{eqn:langevin-1b}--\eqref{eqn:langevin-2b} with $F_e=F$ and $\eps=0$.
+With the gradient being computed one can solve the optimization problem by means of gradient descent in coefficient space,
+\[
+a^{(i+1)}=a^{(i)} -\gamma \frac{\partial O(T)}{\partial a}.
+\]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
