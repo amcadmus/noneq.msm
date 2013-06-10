@@ -33,6 +33,7 @@ pert_noSdRange=1.0		# nm
 pert_barostat=no		# Parrinello-Rahman or no
 pert_taup=2.0			# ps
 pert_resp_corr_range=0.25	# nm
+pert_num_branch_traj=5		# number of branching trajs at each frame.
 
 pert_parallel_num_pro=5
 pert_parallel_my_id=0
