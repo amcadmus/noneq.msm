@@ -16,10 +16,11 @@ set ytics 2.0
 set pm3d implicit at b
 #set size ratio 0.88
 set palette rgbformulae 22,13,-31
+# set palette gray negative
 set size ratio 1.0
 
 # set yrange [-8:8]
-set cbrange [-0.04:0.1]
+set cbrange [-0.04:0.10]
 set format cb "%.2f"
 
 #set size 1.4,1.0
