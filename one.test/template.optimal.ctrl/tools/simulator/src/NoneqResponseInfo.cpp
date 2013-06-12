@@ -8,7 +8,8 @@ NoneqResponseInfo ()
 
 
 void NoneqResponseInfo::
-reinit (const double & x0_,
+reinit (const double & beta_,
+	const double & x0_,
 	const double & x1_,
 	const unsigned & nx_,
 	const double & v0_,
@@ -17,9 +18,9 @@ reinit (const double & x0_,
 	const double & dt_,
 	const double & noneqTime_,
 	const double & noneqCheckFeq_,
-	const double & quenchTime_,
 	const Perturbation & pert)
 {
+  beta = beta_;
   x0 = x0_;
   x1 = x1_;
   nx = nx_;
@@ -29,255 +30,45 @@ reinit (const double & x0_,
   dt = dt_;
   noneqTime = noneqTime_;
   noneqCheckFeq = noneqCheckFeq_;
-  quenchTime = quenchTime_;
   ppert = &pert;
 
   numMode = ppert->numMode();  
   numCheck = int((noneqTime + 0.5 * noneqCheckFeq) / noneqCheckFeq) + 1;
   checkNumFeq = int((noneqCheckFeq + 0.5 * dt) / dt);
-  quenchNumStep = int((quenchTime + 0.5 * dt) / dt);
   
   order0.resize(numCheck);
+  order0punish.resize(numCheck);
   order1.resize(numCheck);
   order2.resize(numCheck);
   
-  quench_order0.resize(numCheck);
-  quench_order1_term1.resize(numCheck);
-  quench_order1_term2.resize(numCheck);
-  quench_order2_term1.resize(numCheck);
-  quench_order2_term2.resize(numCheck);
-  quench_order2_term3.resize(numCheck);
-
   for (int jj = 0; jj < numCheck; ++jj){
     order1[jj].resize (numMode);
     order2[jj].resize (numMode);
-    quench_order1_term2[jj].resize (numMode);
-    quench_order2_term2[jj].resize (numMode);
-    quench_order2_term3[jj].resize (numMode);
     for (int kk = 0; kk < numMode; ++kk){
       order2[jj][kk].resize (numMode);
-      quench_order2_term2[jj][kk].resize (numMode);
     }
   }
 
   for (int tt = 0; tt < numCheck; ++tt){
-    order0[tt]				.reinit (x0, x1, nx, v0, v1, nv);
-    quench_order0[tt]			.reinit (x0, x1, nx, v0, v1, nv);
-    quench_order1_term1[tt]		.reinit (x0, x1, nx, v0, v1, nv);
-    quench_order2_term1[tt]		.reinit (x0, x1, nx, v0, v1, nv);
+    order0[tt] = 0.;
+    order0punish[tt] = 0.;
     for (int jj = 0; jj < numMode; ++jj){
-      order1[tt][jj]			.reinit (x0, x1, nx, v0, v1, nv);
-      quench_order1_term2[tt][jj]	.reinit (x0, x1, nx, v0, v1, nv);
-      quench_order2_term3[tt][jj]	.reinit (x0, x1, nx, v0, v1, nv);
+      order1[tt][jj] = 0.;
       for (int kk = 0; kk < numMode; ++kk){
-	order2[tt][jj][kk]		.reinit (x0, x1, nx, v0, v1, nv);
-	quench_order2_term2[tt][jj][kk] .reinit (x0, x1, nx, v0, v1, nv);
+	order2[tt][jj][kk] = 0.;
       }
     }
   }
 
-
+  ntraj = 0;
   newTraj ();
 }
-
-
-void NoneqResponseInfo::
-save (const string & filename) const
-{
-  FILE * fp = fopen (filename.c_str(), "w");
-
-  size_t rv;
-  rv = fwrite (&x0, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-  rv = fwrite (&x1, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-  rv = fwrite (&v0, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-  rv = fwrite (&v1, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-  rv = fwrite (&nx, sizeof(unsigned), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-  rv = fwrite (&nv, sizeof(unsigned), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-
-  rv = fwrite (&noneqTime, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-  rv = fwrite (&noneqCheckFeq, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-  rv = fwrite (&quenchTime, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-
-  rv = fwrite (&numMode, sizeof(int), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-
-  
-  for (int tt = 0; tt < numCheck; ++tt){
-    order0[tt]				.save (fp);
-    quench_order0[tt]			.save (fp);
-    quench_order1_term1[tt]		.save (fp);
-    quench_order2_term1[tt]		.save (fp);
-    for (int jj = 0; jj < numMode; ++jj){
-      order1[tt][jj]			.save (fp);
-      quench_order1_term2[tt][jj]	.save (fp);
-      quench_order2_term3[tt][jj]	.save (fp);
-      for (int kk = 0; kk < numMode; ++kk){
-	order2[tt][jj][kk]		.save (fp);
-	quench_order2_term2[tt][jj][kk] .save (fp);
-      }
-    }
-  }  
-
-  fclose (fp);
-}
-
-
-void NoneqResponseInfo::
-load (const string & filename)
-{
-  FILE * fp = fopen (filename.c_str(), "r");
-
-  size_t rv;
-  rv = fread (&x0, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  rv = fread (&x1, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  rv = fread (&v0, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  rv = fread (&v1, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  rv = fread (&nx, sizeof(unsigned), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  rv = fread (&nv, sizeof(unsigned), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-
-  rv = fread (&noneqTime, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  rv = fread (&noneqCheckFeq, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  rv = fread (&quenchTime, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  numCheck = int((noneqTime + 0.5 * noneqCheckFeq) / noneqCheckFeq) + 1;
-  checkNumFeq = int((noneqCheckFeq + 0.5 * dt) / dt);
-  quenchNumStep = int((quenchTime + 0.5 * dt) / dt);
-
-  rv = fread (&numMode, sizeof(int), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  if (numMode != ppert->numMode()){
-    cerr << "inconsistent perturbation with saved!" << endl;
-    exit (1);
-  }
-  
-  order0.resize(numCheck);
-  order1.resize(numCheck);
-  order2.resize(numCheck);
-
-  quench_order0.resize(numCheck);
-  quench_order1_term1.resize(numCheck);
-  quench_order1_term2.resize(numCheck);
-  quench_order2_term1.resize(numCheck);
-  quench_order2_term2.resize(numCheck);
-  quench_order2_term3.resize(numCheck);
-
-  for (int jj = 0; jj < numCheck; ++jj){
-    order1[jj].resize (numMode);
-    order2[jj].resize (numMode);
-    quench_order1_term2[jj].resize (numMode);
-    quench_order2_term2[jj].resize (numMode);
-    quench_order2_term3[jj].resize (numMode);
-    for (int kk = 0; kk < numMode; ++kk){
-      order2[jj][kk].resize (numMode);
-      quench_order2_term2[jj][kk].resize (numMode);
-    }
-  }  
-  
-  for (int tt = 0; tt < numCheck; ++tt){
-    order0[tt]				.load (fp);
-    quench_order0[tt]			.load (fp);
-    quench_order1_term1[tt]		.load (fp);
-    quench_order2_term1[tt]		.load (fp);
-    for (int jj = 0; jj < numMode; ++jj){
-      order1[tt][jj]			.load (fp);
-      quench_order1_term2[tt][jj]	.load (fp);
-      quench_order2_term3[tt][jj]	.load (fp);
-      for (int kk = 0; kk < numMode; ++kk){
-	order2[tt][jj][kk]		.load (fp);
-	quench_order2_term2[tt][jj][kk] .load (fp);
-      }
-    }
-  }  
-
-  newTraj ();
-  fclose (fp);
-}
-
-
-
-
 
 
 void NoneqResponseInfo::
 newTraj ()
 {
+  punish = 0;
   Gj.resize (numMode);
   Hjk.resize (numMode);
   for (int jj = 0; jj < numMode; ++jj){
@@ -287,17 +78,19 @@ newTraj ()
       Hjk[jj][kk] = 0.;
     }
   }
-
   countNoneq = 0;
   countNoneqSeg = 0;
 }
 
-void NoneqResponseInfo::
-newQuenchTraj ()
+int NoneqResponseInfo::
+inSet (const Dofs & x) 
 {
-  G0 = 0.;
-  H00 = 0.;
-  countQuench = 0;  
+  if (x.xx[0] > (0.5 * (x0 + x1))){
+    return 1;
+  }
+  else {
+    return 0;
+  }
 }
 
 
@@ -307,24 +100,27 @@ depositMainTraj (const Dofs & oldx,
 		 const double & sigma,
 		 const Dofs & dw)
 {
-  // if (countNoneq - countNoneqSeg * checkNumFeq == 0){
-  if (countNoneq == 0){
-    order0[0].deposite (oldx);
-    countNoneq ++;
-    return;
-  }
+  // if (countNoneq == 0){
+  //   order0[0].deposite (oldx);
+  //   countNoneq ++;
+  //   return;
+  // }
     
   double nowTime = countNoneq * dt;
   Dofs pvalue;
   ppert->operator () (oldx, pvalue);
+  Dofs pvalueTime;
+  ppert->operator () (oldx, nowTime, pvalue);
   std::vector<double > modes;
   ppert->FeMode (nowTime, modes);
   
   double tmp0 = 0.;
   double tmp1 = 0.;
+  double tmp2 = 0.;
   for (unsigned dd = 0; dd < NUMDOFS; ++dd){
     tmp0 += pvalue.vv[dd] * dw.vv[dd];
     tmp1 += pvalue.vv[dd] * pvalue.vv[dd];
+    tmp2 += pvalueTime.vv[dd] * pvalueTime.vv[dd];
   }
   for (int jj = 0; jj < numMode; ++jj){
     Gj[jj] += 1./sigma * modes[jj] * tmp0;
@@ -332,162 +128,117 @@ depositMainTraj (const Dofs & oldx,
       Hjk[jj][kk] += 1./(sigma*sigma) * modes[jj] * modes[kk] * tmp1 * dt;
     }
   }
+  punish += beta * 0.5 * tmp2 * dt;
 
   countNoneq ++;
-  // std::cout << "noneq count is " << countNoneq
-  // 	    << "  countNoneqSeg is " << countNoneqSeg 
-  // 	    << std::endl;
+
   if (countNoneq == (countNoneqSeg + 1) * checkNumFeq){
     countNoneqSeg ++;
     if (countNoneqSeg >= numCheck){
       std::cerr << "# the non eq traj is too long, problematic!" << std::endl;
       exit (1);
     }
-    order0[countNoneqSeg].deposite (newx);
+    order0[countNoneqSeg] += (- inSet(newx) + punish);
+    order0punish[countNoneqSeg] += (punish);
     for (int jj = 0; jj < numMode; ++jj){
-      order1[countNoneqSeg][jj].deposite (newx, Gj[jj]);
+      order1[countNoneqSeg][jj] +=  (- inSet(newx) + punish) * Gj[jj];
       for (int kk = 0; kk < numMode; ++kk){
-	order2[countNoneqSeg][jj][kk].deposite (newx, Gj[jj] * Gj[kk] - Hjk[jj][kk]);
+	order2[countNoneqSeg][jj][kk] = (- inSet(newx) + punish) * (Gj[jj] * Gj[kk] - Hjk[jj][kk]);
       }
     }
   }
+
+  ntraj ++;
 }
 
-void NoneqResponseInfo::
-depositQuenchTraj (const Dofs & oldx,
-		   const Dofs & newx,
-		   const double & sigma,
-		   const Dofs & dw)
-{
-  // double nowTime = countQuench * dt;
-  
-  Dofs pvalue;
-  ppert->operator () (oldx, pvalue);
-
-  double tmp0 = 0.;
-  double tmp1 = 0.;
-  for (unsigned dd = 0; dd < NUMDOFS; ++dd){
-    tmp0 += pvalue.vv[dd] * dw.vv[dd];
-    tmp1 += pvalue.vv[dd] * pvalue.vv[dd];
-  }
-  G0 += tmp0 / sigma;
-  H00 += tmp1 * dt / (sigma * sigma);
-
-  countQuench ++;
-  // std::cout << "quench count is " << countQuench << std::endl;
-  if (countQuench == quenchNumStep){
-    quench_order0[countNoneqSeg].deposite (newx);
-    if (countNoneqSeg != 0){
-      quench_order1_term1[countNoneqSeg].deposite (newx, G0);
-      quench_order2_term1[countNoneqSeg].deposite (newx, G0*G0 - H00);
-      for (int jj = 0; jj < numMode; ++jj){
-	quench_order1_term2[countNoneqSeg][jj].deposite (newx, Gj[jj]);
-	quench_order2_term3[countNoneqSeg][jj].deposite (newx, G0 * Gj[jj]);
-	for (int kk = 0; kk < numMode; ++kk){
-	quench_order2_term2[countNoneqSeg][jj][kk].deposite (newx, Gj[jj] * Gj[kk] - Hjk[jj][kk]);
-	}
-      }
-    }
-  }
-}
 
 
 void NoneqResponseInfo::
 average ()
 {
   for (int tt = 0; tt < numCheck; ++tt){
-    order0[tt]				.average ();
-    quench_order0[tt]			.average ();
-    quench_order1_term1[tt]		.average ();
-    quench_order2_term1[tt]		.average ();
+    order0[tt]				/= double(ntraj);
+    order0punish[tt]			/= double(ntraj);
     for (int jj = 0; jj < numMode; ++jj){
-      order1[tt][jj]			.average ();
-      quench_order1_term2[tt][jj]	.average ();
-      quench_order2_term3[tt][jj]	.average ();
+      order1[tt][jj]			/= double(ntraj);
       for (int kk = 0; kk < numMode; ++kk){
-	order2[tt][jj][kk]		.average ();
-	quench_order2_term2[tt][jj][kk] .average ();
+	order2[tt][jj][kk]		/= double(ntraj);
       }
     }
   }
-  // for (unsigned tt = 0; tt < numCheck; ++tt){
-  //   order0[tt]				.average ();
-  //   quench_order0[tt].average ();
-  //   quench_order1_term1[tt].average ();
-  //   quench_order2_term1[tt].average ();
 }
 
 
-void NoneqResponseInfo::
-calculate (const double & time,
-	   const Perturbation & pert1,
-	   Distribution_1d & dist,
-	   Distribution_1d & quench_dist,
-	   const int order)
-{
-  int index = int((time + noneqCheckFeq * 0.5) / noneqCheckFeq);
-  if (index > numCheck){
-    std::cerr << "calculate: time too late!" << std::endl;
-    exit (1);
-  }
-  double nowTime = index * noneqCheckFeq;
+// void NoneqResponseInfo::
+// calculate (const double & time,
+// 	   const Perturbation & pert1,
+// 	   Distribution_1d & dist,
+// 	   Distribution_1d & quench_dist,
+// 	   const int order)
+// {
+//   int index = int((time + noneqCheckFeq * 0.5) / noneqCheckFeq);
+//   if (index > numCheck){
+//     std::cerr << "calculate: time too late!" << std::endl;
+//     exit (1);
+//   }
+//   double nowTime = index * noneqCheckFeq;
 
-  vector<double > pref0, pref1;
-  ppert->FeModePref (pref0);
-  pert1.FeModePref (pref1);
+//   vector<double > pref0, pref1;
+//   ppert->FeModePref (pref0);
+//   pert1.FeModePref (pref1);
 
-  double Fe0, Fe1;
-  Fe0 = ppert->Fe (nowTime);
-  Fe1 = pert1.Fe (nowTime);
+//   double Fe0, Fe1;
+//   Fe0 = ppert->Fe (nowTime);
+//   Fe1 = pert1.Fe (nowTime);
 
-  for (int ii = 0; ii < numMode; ++ii){
-    pref1[ii] -= pref0[ii];
-  }
-  Fe1 -= Fe0;
+//   for (int ii = 0; ii < numMode; ++ii){
+//     pref1[ii] -= pref0[ii];
+//   }
+//   Fe1 -= Fe0;
 
-  dist.reinit (x0, x1, nx, v0, v1, nv);
-  // order 0
-  if (order >= 0){
-    dist.add (1., order0[index]);
-  }
-  // order 1
-  if (order >= 1){
-    for (int jj = 0; jj < numMode; ++jj){
-      dist.add (pref1[jj], order1[index][jj]);
-    }
-  }
-  // order 2
-  if (order >= 2){
-    for (int jj = 0; jj < numMode; ++jj){
-      for (int kk = 0; kk < numMode; ++kk){
-	dist.add (0.5 * pref1[jj] * pref1[kk], order2[index][jj][kk]);
-      }
-    }
-  }
+//   dist.reinit (x0, x1, nx, v0, v1, nv);
+//   // order 0
+//   if (order >= 0){
+//     dist.add (1., order0[index]);
+//   }
+//   // order 1
+//   if (order >= 1){
+//     for (int jj = 0; jj < numMode; ++jj){
+//       dist.add (pref1[jj], order1[index][jj]);
+//     }
+//   }
+//   // order 2
+//   if (order >= 2){
+//     for (int jj = 0; jj < numMode; ++jj){
+//       for (int kk = 0; kk < numMode; ++kk){
+// 	dist.add (0.5 * pref1[jj] * pref1[kk], order2[index][jj][kk]);
+//       }
+//     }
+//   }
 
-  quench_dist.reinit (x0, x1, nx, v0, v1, nv);
-  // order 0
-  if (order >= 0){
-    quench_dist.add (1., quench_order0[index]);
-  }
-  // order 1
-  if (order >= 1){
-    quench_dist.add (Fe1, quench_order1_term1[index]);
-    for (int jj = 0; jj < numMode; ++jj){
-      quench_dist.add (pref1[jj], quench_order1_term2[index][jj]);
-    }
-  }
-  // order 2
-  if (order >= 2){
-    quench_dist.add (0.5 * Fe1 * Fe1, quench_order2_term1[index]);
-    for (int jj = 0; jj < numMode; ++jj){
-      quench_dist.add (Fe1 * pref1[jj], quench_order2_term3[index][jj]);
-      for (int kk = 0; kk < numMode; ++kk){
-	quench_dist.add (0.5 * pref1[jj] * pref1[kk], quench_order2_term2[index][jj][kk]);
-      }
-    }  
-  }
-}
+//   quench_dist.reinit (x0, x1, nx, v0, v1, nv);
+//   // order 0
+//   if (order >= 0){
+//     quench_dist.add (1., quench_order0[index]);
+//   }
+//   // order 1
+//   if (order >= 1){
+//     quench_dist.add (Fe1, quench_order1_term1[index]);
+//     for (int jj = 0; jj < numMode; ++jj){
+//       quench_dist.add (pref1[jj], quench_order1_term2[index][jj]);
+//     }
+//   }
+//   // order 2
+//   if (order >= 2){
+//     quench_dist.add (0.5 * Fe1 * Fe1, quench_order2_term1[index]);
+//     for (int jj = 0; jj < numMode; ++jj){
+//       quench_dist.add (Fe1 * pref1[jj], quench_order2_term3[index][jj]);
+//       for (int kk = 0; kk < numMode; ++kk){
+// 	quench_dist.add (0.5 * pref1[jj] * pref1[kk], quench_order2_term2[index][jj][kk]);
+//       }
+//     }  
+//   }
+// }
 
 
 

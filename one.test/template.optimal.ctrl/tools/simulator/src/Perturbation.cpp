@@ -1,4 +1,5 @@
 #include "Perturbation.h"
+#include <algorithm>
 
 DissipativeFlux::
 DissipativeFlux (const Perturbation * p,
@@ -97,6 +98,75 @@ FeModePref (vector<double > & pref ) const
   pref.resize(1);
   pref[0] = strength;
 }
+
+
+
+
+PertConstTiltTable::
+PertConstTiltTable (const double & s,
+		    const vector<double > & xx,
+		    const vector<double > & vv)
+{
+  reinit (xx, vv);
+}
+
+void PertConstTiltTable::
+reinit (const vector<double > & xx,
+	const vector<double > & vv)
+{
+  Interpolation::piecewiseLinear (xx, vv, pwl);
+}
+
+
+void PertConstTiltTable::
+operator () (const Dofs & dofs,
+	     const double & time,
+	     Dofs & pvalue) const
+{
+  (*this) (dofs, pvalue);
+  pvalue.vv[0] *= Fe(time);
+}
+
+void PertConstTiltTable::
+operator () (const Dofs & dofs,
+	     Dofs & pvalue) const
+{
+  pvalue.vv[0] = 1.0;
+}
+
+double PertConstTiltTable::
+Fe (const double & time) const
+{
+  return pwl.value (time);
+}
+
+int PertConstTiltTable::
+numMode () const
+{
+  return pwl.get_x().size();
+}
+
+void PertConstTiltTable::
+FeMode (const double & time,
+	vector<double > & modes) const
+{
+  modes.resize(numMode());
+  std::fill (modes.begin(), modes.end(), 0.0);
+  int index = int(time / (pwl.get_x()[1] - pwl.get_x()[0]));
+  if (index == numMode() - 1) index --;
+  if (index >= 0 && index < numMode() - 1){
+    modes[index  ] = (pwl.get_x()[index+1] - time) / (pwl.get_x()[index+1] - pwl.get_x()[index]);
+    modes[index+1] = (time - pwl.get_x()[index  ]) / (pwl.get_x()[index+1] - pwl.get_x()[index]);
+  }
+}
+
+void PertConstTiltTable::
+FeModePref (vector<double > & pref ) const
+{
+  pref.resize(numMode());
+  pwl.value (pwl.get_x(), pref);
+}
+
 
 
 

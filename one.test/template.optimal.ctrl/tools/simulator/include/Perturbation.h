@@ -3,7 +3,11 @@
 
 #include "Defines.h"
 #include "Force.h"
+#include "Poly.h"
+#include "Interpolation.h"
 #include <vector>
+#include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -46,6 +50,31 @@ public:
   PertConstTilt (const double & s,
 		 const double warmTime = 0.);
 public:
+  virtual double Fe (const double & time) const;
+  virtual int numMode () const;
+  virtual void FeMode (const double & time,
+		       vector<double > & modes) const;
+  virtual void FeModePref (vector<double > & pref ) const;
+public:
+  virtual void operator () (const Dofs & dofs,
+  			    Dofs & pvalue) const;
+  virtual void operator () (const Dofs & dofs,
+			    const double & time,
+			    Dofs & pvalue) const;
+}
+    ;
+
+
+class PertConstTiltTable : public Perturbation
+{
+  PiecewisePoly pwl;
+public:
+  PertConstTiltTable (const double & s,
+		      const vector<double > & xx,
+		      const vector<double > & vv);
+public:
+  void reinit (const vector<double > & xx,
+	       const vector<double > & vv);
   virtual double Fe (const double & time) const;
   virtual int numMode () const;
   virtual void FeMode (const double & time,
