@@ -68,6 +68,8 @@ reinit (const double & beta_,
 void NoneqResponseInfo::
 newTraj ()
 {
+  ntraj ++;
+
   punish = 0;
   Gj.resize (numMode);
   Hjk.resize (numMode);
@@ -147,8 +149,6 @@ depositMainTraj (const Dofs & oldx,
       // }
     }
   }
-
-  ntraj ++;
 }
 
 

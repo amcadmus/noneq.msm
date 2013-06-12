@@ -126,9 +126,6 @@ int main(int argc, char * argv[])
     tt[ii] = timeResolution * ii;
     ttvalue[ii] = pertSt0;
   }
-  Dofs xx;
-  xx.xx[0] = 0.;
-  xx.vv[0] = 0.;
 
   // // prints....
   // unsigned numNoneqCheck = int((noneqTime + 0.5 * noneqCheckFeq) / noneqCheckFeq) + 1;
@@ -173,7 +170,10 @@ int main(int argc, char * argv[])
 			     seed+2);
     double inteSigma = noneqInte.getSigma();
     // std::cout << "# inte sigma is: " << inteSigma << std::endl;
-
+    Dofs xx;
+    xx.xx[0] = 0.;
+    xx.vv[0] = 0.;
+    
     NoneqResponseInfo resInfo;
     resInfo.reinit (beta, x0, x1, nx, v0, v1, nv, dt, noneqTime, noneqCheckFeq, pert);
 
@@ -187,7 +187,7 @@ int main(int argc, char * argv[])
       time += dt;
       if (int(nstprint) == count){
 	count = 0;
-	printf ("# %f %f %f\n", time, xx.xx[0], xx.vv[0]);
+	printf ("# %f %f %f    \r", time, xx.xx[0], xx.vv[0]);
 	fflush (stdout);
       }
       if (countBranch == int(branchNumFeq)){
@@ -208,13 +208,22 @@ int main(int argc, char * argv[])
       }
     }
     resInfo.average ();
+    printf ("\n");
 
-    printf ("step: %d  \t endv %f \t endpunish: %f \n",
-	    iter, resInfo.get_order0().back(), resInfo.get_order0punish().back());
+    printf ("step: %d  \t endv %e \t endpunish: %e endstable: %e\n",
+	    iter,
+	    resInfo.get_order0().back(), resInfo.get_order0punish().back(),
+	    resInfo.get_order0().back()- resInfo.get_order0punish().back()
+	    );
+    printf ("value of end order1: ");
+    for (unsigned ii = 0; ii < resInfo.get_order1().back().size(); ++ii){
+      printf ("%e ", resInfo.get_order1().back()[ii]);
+    }
+    printf ("\n");    
     printf ("value of ctr: ");
     for (unsigned ii = 0; ii < nTimeFrame; ++ii){
       ttvalue[ii] -= gradientDescentStep * resInfo.get_order1().back()[ii];
-      printf ("%f ", ttvalue[ii]);
+      printf ("%e ", ttvalue[ii]);
     }
     printf ("\n");
   }
