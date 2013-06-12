@@ -47,8 +47,8 @@ int main(int argc, char * argv[])
   double beta;
   double timeResolution;
   unsigned nTimeFrame;
-
   string sfile, lfile;
+  double gradientDescentStep;
   
   unsigned long seed;
 
@@ -80,6 +80,7 @@ int main(int argc, char * argv[])
       ("v-up",  po::value<double > (&v1)->default_value ( 8.0), "the upper bound of v range considered")
       ("x-grid", po::value<unsigned > (&nx)->default_value (50), "the number of grid point of x")
       ("v-grid", po::value<unsigned > (&nv)->default_value (50), "the number of grid point of v")
+      ("gradient-descent-step", po::value<double > (&gradientDescentStep)->default_value (0.1), "step size of GD")
       ("seed",po::value<unsigned long > (&seed)->default_value(1), "random seed");
       
   po::variables_map vm;
@@ -114,6 +115,8 @@ int main(int argc, char * argv[])
   std::cout << "# nv: " << nv << std::endl;
   std::cout << "###################################################" << std::endl;  
 
+
+  // initial sets
   DoubleWell dw (kk, aa);
 
   nTimeFrame = unsigned((noneqTime + 0.5 * timeResolution) / timeResolution) + 1;
@@ -123,103 +126,116 @@ int main(int argc, char * argv[])
     tt[ii] = timeResolution * ii;
     ttvalue[ii] = pertSt0;
   }
-  
-  PertConstTiltTable pert (pertSt0, tt, ttvalue);
-  
-  EulerMaruyama inte (gamma, kT, dt,
-		      NULL,
-		      dynamic_cast<Force *> (&dw),
-		      seed);
-  EulerMaruyama noneqInte (gamma, kT, dt,
-			   dynamic_cast<Perturbation *> (&pert),
-			   dynamic_cast<Force *> (&dw),
-			   seed+2);
-
-  double inteSigma = noneqInte.getSigma();
-  std::cout << "# inte sigma is: " << inteSigma << std::endl;
-
   Dofs xx;
   xx.xx[0] = 0.;
   xx.vv[0] = 0.;
 
-  unsigned numNoneqCheck = int((noneqTime + 0.5 * noneqCheckFeq) / noneqCheckFeq) + 1;
-  Distribution_1d dist;
-  vector<double > checkTimes(numNoneqCheck);
-  vector<string > xFileNames(numNoneqCheck);
-  vector<string > xvFileNames(numNoneqCheck);
-  vector<string > diffxFileNames(numNoneqCheck);
-  vector<string > diffxvFileNames(numNoneqCheck);
-  dist      .reinit (x0, x1, nx, v0, v1, nv);
-  for (unsigned ii = 0; ii < numNoneqCheck; ++ii){
-    checkTimes[ii] = ii * noneqCheckFeq;
-    int timeI = int(checkTimes[ii] + 0.005);
-    int timeF = int(100 * (checkTimes[ii] + 0.005 - timeI));
-    char name[2048];
-    sprintf (name, "distrib.resp.x.%05d.%02d.out", timeI, timeF);
-    xFileNames[ii] = string(name);
-    sprintf (name, "distrib.resp.vx.%05d.%02d.out", timeI, timeF);
-    xvFileNames[ii] = string(name);
-    sprintf (name, "indicator.resp.x.%05d.%02d.out", timeI, timeF);
-    diffxFileNames[ii] = string(name);
-    sprintf (name, "indicator.resp.vx.%05d.%02d.out", timeI, timeF);
-    diffxvFileNames[ii] = string(name);
-  }
+  // // prints....
+  // unsigned numNoneqCheck = int((noneqTime + 0.5 * noneqCheckFeq) / noneqCheckFeq) + 1;
+  // Distribution_1d dist;
+  // vector<double > checkTimes(numNoneqCheck);
+  // vector<string > xFileNames(numNoneqCheck);
+  // vector<string > xvFileNames(numNoneqCheck);
+  // vector<string > diffxFileNames(numNoneqCheck);
+  // vector<string > diffxvFileNames(numNoneqCheck);
+  // dist      .reinit (x0, x1, nx, v0, v1, nv);
+  // for (unsigned ii = 0; ii < numNoneqCheck; ++ii){
+  //   checkTimes[ii] = ii * noneqCheckFeq;
+  //   int timeI = int(checkTimes[ii] + 0.005);
+  //   int timeF = int(100 * (checkTimes[ii] + 0.005 - timeI));
+  //   char name[2048];
+  //   sprintf (name, "distrib.resp.x.%05d.%02d.out", timeI, timeF);
+  //   xFileNames[ii] = string(name);
+  //   sprintf (name, "distrib.resp.vx.%05d.%02d.out", timeI, timeF);
+  //   xvFileNames[ii] = string(name);
+  //   sprintf (name, "indicator.resp.x.%05d.%02d.out", timeI, timeF);
+  //   diffxFileNames[ii] = string(name);
+  //   sprintf (name, "indicator.resp.vx.%05d.%02d.out", timeI, timeF);
+  //   diffxvFileNames[ii] = string(name);
+  // }
   
-  int count = 0;
-  int countBranch = 0;
-  double time = 0;
-
-  NoneqResponseInfo resInfo;
-  resInfo.reinit (beta, x0, x1, nx, v0, v1, nv, dt, noneqTime, noneqCheckFeq, pert);
-
   sw_total.start();
-  for (double ii = 0.; ii < nst+0.1; ii += 1.){
-    // sw_eq.start();
-    inte.step (xx, 0.);
-    // sw_eq.stop();
-    count ++;
-    countBranch ++;
-    time += dt;
-    if (int(nstprint) == count){
-      count = 0;
-      printf ("# %f %f %f\n", time, xx.xx[0], xx.vv[0]);
-      fflush (stdout);
-    }
-    if (countBranch == int(branchNumFeq)){
-      countBranch = 0;
-      Dofs branchXX (xx);
-      Dofs branchXX_old (xx);
-      resInfo.newTraj ();
-      // branching
-      for (double ttNoneq = 0.; ttNoneq < noneqTime-0.5*dt; ttNoneq += dt){
-	// printf ("%f %d %d\n", ttNoneq, countNoneqCheck, noneqCheckNumFeq);
-	branchXX_old = branchXX;
-	// sw_noneq.start();
-	noneqInte.step (branchXX, ttNoneq);
-	// sw_noneq.stop();
-	Dofs dw = noneqInte.getDw ();
-	resInfo.depositMainTraj (branchXX_old, branchXX, inteSigma, dw);
+
+  for (unsigned iter = 0; iter < 100 ; ++iter){
+    int count = 0;
+    int countBranch = 0;
+    double time = 0;
+
+    PertConstTiltTable pert (tt, ttvalue);
+
+    EulerMaruyama inte (gamma, kT, dt,
+			NULL,
+			dynamic_cast<Force *> (&dw),
+			seed);
+    EulerMaruyama noneqInte (gamma, kT, dt,
+			     dynamic_cast<Perturbation *> (&pert),
+			     dynamic_cast<Force *> (&dw),
+			     seed+2);
+    double inteSigma = noneqInte.getSigma();
+    // std::cout << "# inte sigma is: " << inteSigma << std::endl;
+
+    NoneqResponseInfo resInfo;
+    resInfo.reinit (beta, x0, x1, nx, v0, v1, nv, dt, noneqTime, noneqCheckFeq, pert);
+
+
+    for (double ii = 0.; ii < nst+0.1; ii += 1.){
+      // sw_eq.start();
+      inte.step (xx, 0.);
+      // sw_eq.stop();
+      count ++;
+      countBranch ++;
+      time += dt;
+      if (int(nstprint) == count){
+	count = 0;
+	printf ("# %f %f %f\n", time, xx.xx[0], xx.vv[0]);
+	fflush (stdout);
+      }
+      if (countBranch == int(branchNumFeq)){
+	countBranch = 0;
+	Dofs branchXX (xx);
+	Dofs branchXX_old (xx);
+	resInfo.newTraj ();
+	// branching
+	for (double ttNoneq = 0.; ttNoneq < noneqTime-0.5*dt; ttNoneq += dt){
+	  // printf ("%f %d %d\n", ttNoneq, countNoneqCheck, noneqCheckNumFeq);
+	  branchXX_old = branchXX;
+	  // sw_noneq.start();
+	  noneqInte.step (branchXX, ttNoneq);
+	  // sw_noneq.stop();
+	  Dofs dw = noneqInte.getDw ();
+	  resInfo.depositMainTraj (branchXX_old, branchXX, inteSigma, dw);
+	}
       }
     }
-  }
-  resInfo.average ();
+    resInfo.average ();
 
-  for (unsigned ii = 0; ii < numNoneqCheck; ++ii){
-    double nowTime = ii * noneqCheckFeq;
-    printf ("%f  %e %e\n",
-	    nowTime,
-	    resInfo.get_order0()[ii],
-	    resInfo.get_order0punish()[ii]);
-    // resInfo.calculate (nowTime, pert1, dist, distQuench, order);
-    // dist.print_x  (xFileNames[ii]);
-    // dist.print_xv (xvFileNames[ii]);
-    // distQuench.print_x  (xQuenchFileNames[ii]);
-    // distQuench.print_xv (xvQuenchFileNames[ii]);
-    
-    // dist.substract (distQuench);
-    // dist.print_x  (diffxFileNames[ii]);
-    // dist.print_xv (diffxvFileNames[ii]);
+    printf ("step: %d  \t endv %f \t endpunish: %f \n",
+	    iter, resInfo.get_order0().back(), resInfo.get_order0punish().back());
+    printf ("value of ctr: ");
+    for (unsigned ii = 0; ii < nTimeFrame; ++ii){
+      ttvalue[ii] -= gradientDescentStep * resInfo.get_order1().back()[ii];
+      printf ("%f ", ttvalue[ii]);
+    }
+    printf ("\n");
   }
+  
+
+  // for (unsigned ii = 0; ii < numNoneqCheck; ++ii){
+  //   double nowTime = ii * noneqCheckFeq;
+  //   printf ("%f  %e %e\n",
+  // 	    nowTime,
+  // 	    resInfo.get_order0()[ii],
+  // 	    resInfo.get_order0punish()[ii]);
+  //   // resInfo.calculate (nowTime, pert1, dist, distQuench, order);
+  //   // dist.print_x  (xFileNames[ii]);
+  //   // dist.print_xv (xvFileNames[ii]);
+  //   // distQuench.print_x  (xQuenchFileNames[ii]);
+  //   // distQuench.print_xv (xvQuenchFileNames[ii]);
+    
+  //   // dist.substract (distQuench);
+  //   // dist.print_x  (diffxFileNames[ii]);
+  //   // dist.print_xv (diffxvFileNames[ii]);
+  // }
   sw_total.stop();
 
   cout << "# time static: user, real, sys" << endl;

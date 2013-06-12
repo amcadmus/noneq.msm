@@ -69,8 +69,7 @@ class PertConstTiltTable : public Perturbation
 {
   PiecewisePoly pwl;
 public:
-  PertConstTiltTable (const double & s,
-		      const vector<double > & xx,
+  PertConstTiltTable (const vector<double > & xx,
 		      const vector<double > & vv);
 public:
   void reinit (const vector<double > & xx,

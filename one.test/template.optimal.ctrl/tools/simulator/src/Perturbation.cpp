@@ -103,8 +103,7 @@ FeModePref (vector<double > & pref ) const
 
 
 PertConstTiltTable::
-PertConstTiltTable (const double & s,
-		    const vector<double > & xx,
+PertConstTiltTable (const vector<double > & xx,
 		    const vector<double > & vv)
 {
   reinit (xx, vv);
