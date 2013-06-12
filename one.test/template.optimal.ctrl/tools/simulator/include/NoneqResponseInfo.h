@@ -66,7 +66,7 @@ public:
   // 		  double & quench_dist,
   // 		  const int order = 2);
   const vector<double > &	   get_order0 () const {return order0;}
-  const vector<double > &	   get_order0punish () const {return order0;}
+  const vector<double > &	   get_order0punish () const {return order0punish;}
   const vector<vector<double > > & get_order1 () const {return order1;}
 }
     ;

@@ -110,7 +110,7 @@ depositMainTraj (const Dofs & oldx,
   Dofs pvalue;
   ppert->operator () (oldx, pvalue);
   Dofs pvalueTime;
-  ppert->operator () (oldx, nowTime, pvalue);
+  ppert->operator () (oldx, nowTime, pvalueTime);
   std::vector<double > modes;
   ppert->FeMode (nowTime, modes);
   
@@ -124,9 +124,9 @@ depositMainTraj (const Dofs & oldx,
   }
   for (int jj = 0; jj < numMode; ++jj){
     Gj[jj] += 1./sigma * modes[jj] * tmp0;
-    for (int kk = 0; kk < numMode; ++kk){
-      Hjk[jj][kk] += 1./(sigma*sigma) * modes[jj] * modes[kk] * tmp1 * dt;
-    }
+    // for (int kk = 0; kk < numMode; ++kk){
+    //   Hjk[jj][kk] += 1./(sigma*sigma) * modes[jj] * modes[kk] * tmp1 * dt;
+    // }
   }
   punish += beta * 0.5 * tmp2 * dt;
 
@@ -142,9 +142,9 @@ depositMainTraj (const Dofs & oldx,
     order0punish[countNoneqSeg] += (punish);
     for (int jj = 0; jj < numMode; ++jj){
       order1[countNoneqSeg][jj] +=  (- inSet(newx) + punish) * Gj[jj];
-      for (int kk = 0; kk < numMode; ++kk){
-	order2[countNoneqSeg][jj][kk] = (- inSet(newx) + punish) * (Gj[jj] * Gj[kk] - Hjk[jj][kk]);
-      }
+      // for (int kk = 0; kk < numMode; ++kk){
+      // 	order2[countNoneqSeg][jj][kk] = (- inSet(newx) + punish) * (Gj[jj] * Gj[kk] - Hjk[jj][kk]);
+      // }
     }
   }
 
@@ -161,9 +161,9 @@ average ()
     order0punish[tt]			/= double(ntraj);
     for (int jj = 0; jj < numMode; ++jj){
       order1[tt][jj]			/= double(ntraj);
-      for (int kk = 0; kk < numMode; ++kk){
-	order2[tt][jj][kk]		/= double(ntraj);
-      }
+      // for (int kk = 0; kk < numMode; ++kk){
+      // 	order2[tt][jj][kk]		/= double(ntraj);
+      // }
     }
   }
 }

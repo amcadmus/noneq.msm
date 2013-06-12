@@ -59,7 +59,7 @@ int main(int argc, char * argv[])
   desc.add_options()
       ("help,h", "print this message")
       ("dt,d", po::value<double > (&dt)->default_value(0.0001), "time step [ps]")
-      ("dt,d", po::value<double > (&beta)->default_value(1.0), "the punishment constant, unknown unit...")
+      ("beta,b", po::value<double > (&beta)->default_value(1.0), "the punishment constant, unknown unit...")
       ("nst,n", po::value<double > (&nst)->default_value(10000), "number of time step")
       ("print-feq,p", po::value<unsigned > (&nstprint)->default_value(10000), "print frequency")
       ("gamma,g", po::value<double > (&gamma)->default_value(1.), "gamma [ps^-1]")
@@ -136,7 +136,7 @@ int main(int argc, char * argv[])
 			   seed+2);
 
   double inteSigma = noneqInte.getSigma();
-  std::cout << "inte sigma is: " << inteSigma << std::endl;
+  std::cout << "# inte sigma is: " << inteSigma << std::endl;
 
   Dofs xx;
   xx.xx[0] = 0.;
@@ -182,7 +182,7 @@ int main(int argc, char * argv[])
     time += dt;
     if (int(nstprint) == count){
       count = 0;
-      printf ("%f %f %f\n", time, xx.xx[0], xx.vv[0]);
+      printf ("# %f %f %f\n", time, xx.xx[0], xx.vv[0]);
       fflush (stdout);
     }
     if (countBranch == int(branchNumFeq)){
@@ -222,7 +222,7 @@ int main(int argc, char * argv[])
   }
   sw_total.stop();
 
-  cout << "time static: user, real, sys" << endl;
+  cout << "# time static: user, real, sys" << endl;
   // cout << "eq inte:       "
   //      << sw_eq.user() << " "
   //      << sw_eq.real() << " "
@@ -239,7 +239,7 @@ int main(int argc, char * argv[])
   //      << sw_eq.user() + sw_noneq.user() + sw_quench.user() << " "
   //      << sw_eq.real() + sw_noneq.real() + sw_quench.real() << " "
   //      << sw_eq.system() + sw_noneq.system() + sw_quench.system() << endl;
-  cout << "total:    "
+  cout << "# total:    "
        << sw_total.user() << " "
        << sw_total.real() << " "
        << sw_total.system() << endl;
