@@ -126,6 +126,7 @@ depositMainTraj (const Dofs & oldx,
   }
   for (int jj = 0; jj < numMode; ++jj){
     Gj[jj] += 1./sigma * modes[jj] * tmp0;
+    // Gj[jj] += - 1./sigma * modes[jj] * tmp0;
     // for (int kk = 0; kk < numMode; ++kk){
     //   Hjk[jj][kk] += 1./(sigma*sigma) * modes[jj] * modes[kk] * tmp1 * dt;
     // }

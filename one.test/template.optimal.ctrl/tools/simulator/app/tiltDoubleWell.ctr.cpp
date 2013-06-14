@@ -173,6 +173,25 @@ int main(int argc, char * argv[])
     Dofs xx;
     xx.xx[0] = 0.;
     xx.vv[0] = 0.;
+
+    // double dt = 0.1;
+    // Dofs pvalue;
+    // Dofs pvalueTime;
+    // std::vector<double > modes;
+    // for (unsigned ii = 0; ii < 200; ++ii){
+    //   pert (xx, pvalue);
+    //   pert (xx, ii * dt, pvalueTime);
+    //   pert.FeMode (ii * dt, modes);
+    //   printf ("%f %e %e  ",
+    // 	      ii * dt,
+    // 	      pvalue.vv[0], pvalueTime.vv[0]);
+    //   for (unsigned jj = 0; jj < modes.size(); ++jj){
+    // 	printf ("%e ", modes[jj]);
+    //   }
+    //   printf ("\n");
+    // }
+    // return 0;
+
     
     NoneqResponseInfo resInfo;
     resInfo.reinit (beta, x0, x1, nx, v0, v1, nv, dt, noneqTime, noneqCheckFeq, pert);
@@ -220,9 +239,16 @@ int main(int argc, char * argv[])
       printf ("%e ", resInfo.get_order1().back()[ii]);
     }
     printf ("\n");    
-    printf ("value of ctr: ");
+    printf ("value of ctr:        ");
+    ttvalue.back() -= 0.1;
+    if (resInfo.get_order1().back().size() != nTimeFrame) {
+      cerr << "problem, nTimeFrame and numMode do not match"
+	   << resInfo.get_order1().back().size() << " "
+	   << nTimeFrame
+	   << endl;
+    }
     for (unsigned ii = 0; ii < nTimeFrame; ++ii){
-      ttvalue[ii] -= gradientDescentStep * resInfo.get_order1().back()[ii];
+      // ttvalue[ii] -= gradientDescentStep * resInfo.get_order1().back()[ii];
       printf ("%e ", ttvalue[ii]);
     }
     printf ("\n");
