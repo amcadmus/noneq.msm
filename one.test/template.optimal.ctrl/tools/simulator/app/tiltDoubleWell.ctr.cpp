@@ -26,6 +26,28 @@
 namespace po = boost::program_options;
 using namespace MPI;
 
+void readFile (const string & filename,
+	       std::vector<double > & tt,
+	       std::vector<double > & value)
+{
+  tt.clear ();
+  value.clear ();
+  FILE * fp = fopen (filename.c_str(), "r");
+  if (fp == NULL){
+    cerr << "cannot open file " << filename << endl;
+    exit (1);
+  }
+
+  double tmp1, tmp2;
+  while (fscanf (fp, "%lf%lf", &tmp1, &tmp2) == 2){
+    tt.push_back (tmp1);
+    value.push_back (tmp2);
+  }
+  
+  fclose (fp);
+}
+
+
 int main(int argc, char * argv[])
 {
   MPI::Init (argc, argv);
@@ -54,6 +76,7 @@ int main(int argc, char * argv[])
   unsigned nTimeFrame;
   string sfile, lfile;
   double gradientDescentStep;
+  string ifile;
   
   unsigned long seed;
 
@@ -86,6 +109,7 @@ int main(int argc, char * argv[])
       ("x-grid", po::value<unsigned > (&nx)->default_value (50), "the number of grid point of x")
       ("v-grid", po::value<unsigned > (&nv)->default_value (50), "the number of grid point of v")
       ("gradient-descent-step", po::value<double > (&gradientDescentStep)->default_value (0.1), "step size of GD")
+      ("init,i", po::value<string > (&ifile), "initial guess of GD")
       ("seed",po::value<unsigned long > (&seed)->default_value(1), "random seed");
       
   po::variables_map vm;
@@ -129,34 +153,19 @@ int main(int argc, char * argv[])
   nTimeFrame = unsigned((noneqTime + 0.5 * timeResolution) / timeResolution) + 1;
   vector<double > tt (nTimeFrame);
   vector<double > ttvalue (nTimeFrame);
-  for (unsigned ii = 0; ii < nTimeFrame; ++ii){
-    tt[ii] = timeResolution * ii;
-    ttvalue[ii] = pertSt0;
+  if (vm.count("init") ){
+    readFile (ifile, tt, ttvalue);
+    if (tt.size() != nTimeFrame){
+      cerr << "inconsistent time frame with init input file\n";
+      return 1;
+    }
   }
-
-  // // prints....
-  // unsigned numNoneqCheck = int((noneqTime + 0.5 * noneqCheckFeq) / noneqCheckFeq) + 1;
-  // Distribution_1d dist;
-  // vector<double > checkTimes(numNoneqCheck);
-  // vector<string > xFileNames(numNoneqCheck);
-  // vector<string > xvFileNames(numNoneqCheck);
-  // vector<string > diffxFileNames(numNoneqCheck);
-  // vector<string > diffxvFileNames(numNoneqCheck);
-  // dist      .reinit (x0, x1, nx, v0, v1, nv);
-  // for (unsigned ii = 0; ii < numNoneqCheck; ++ii){
-  //   checkTimes[ii] = ii * noneqCheckFeq;
-  //   int timeI = int(checkTimes[ii] + 0.005);
-  //   int timeF = int(100 * (checkTimes[ii] + 0.005 - timeI));
-  //   char name[2048];
-  //   sprintf (name, "distrib.resp.x.%05d.%02d.out", timeI, timeF);
-  //   xFileNames[ii] = string(name);
-  //   sprintf (name, "distrib.resp.vx.%05d.%02d.out", timeI, timeF);
-  //   xvFileNames[ii] = string(name);
-  //   sprintf (name, "indicator.resp.x.%05d.%02d.out", timeI, timeF);
-  //   diffxFileNames[ii] = string(name);
-  //   sprintf (name, "indicator.resp.vx.%05d.%02d.out", timeI, timeF);
-  //   diffxvFileNames[ii] = string(name);
-  // }
+  else {
+    for (unsigned ii = 0; ii < nTimeFrame; ++ii){
+      tt[ii] = timeResolution * ii;
+      ttvalue[ii] = pertSt0;
+    }
+  }
   
   sw_total.start();
 
@@ -184,24 +193,6 @@ int main(int argc, char * argv[])
     xx.xx[0] = 0.;
     xx.vv[0] = 0.;
 
-    // double dt = 0.1;
-    // Dofs pvalue;
-    // Dofs pvalueTime;
-    // std::vector<double > modes;
-    // for (unsigned ii = 0; ii < 200; ++ii){
-    //   pert (xx, pvalue);
-    //   pert (xx, ii * dt, pvalueTime);
-    //   pert.FeMode (ii * dt, modes);
-    //   printf ("%f %e %e  ",
-    // 	      ii * dt,
-    // 	      pvalue.vv[0], pvalueTime.vv[0]);
-    //   for (unsigned jj = 0; jj < modes.size(); ++jj){
-    // 	printf ("%e ", modes[jj]);
-    //   }
-    //   printf ("\n");
-    // }
-    // return 0;
-
     vector<double > order1punish;
     {
       const std::vector<double > & vv (ttvalue);
@@ -218,7 +209,6 @@ int main(int argc, char * argv[])
     
     NoneqResponseInfo resInfo;
     resInfo.reinit (beta, x0, x1, nx, v0, v1, nv, dt, noneqTime, noneqCheckFeq, pert);
-
 
     for (double ii = 0.; ii < nst+0.1; ii += 1.){
       // sw_eq.start();
@@ -275,40 +265,47 @@ int main(int argc, char * argv[])
       }
       printf ("\n");    
     }
+    
+    if (resInfo.get_order1().back().size() != nTimeFrame) {
+      cerr << "rank: "
+	   << rank
+	   << ". problem: nTimeFrame and numMode do not match"
+	   << resInfo.get_order1().back().size() << " "
+	   << nTimeFrame
+	   << endl;
+    }
+    for (unsigned ii = 0; ii < nTimeFrame; ++ii){
+      ttvalue[ii] -= gradientDescentStep * (resInfo.get_order1().back()[ii] + order1punish[ii]);
+    }    
     // ttvalue.back() -= 0.5;
+    
     if (rank == 0){
-      if (resInfo.get_order1().back().size() != nTimeFrame) {
-      	cerr << "problem, nTimeFrame and numMode do not match"
-      	     << resInfo.get_order1().back().size() << " "
-      	     << nTimeFrame
-      	     << endl;
-      }
       printf ("value of ctr:           ");
       for (unsigned ii = 0; ii < nTimeFrame; ++ii){
-	ttvalue[ii] -= gradientDescentStep * (resInfo.get_order1().back()[ii] + order1punish[ii]);
 	printf ("%e \t", ttvalue[ii]);
       }
       printf ("\n");
+
+      char tmpfilename[1024];
+      sprintf (tmpfilename, "ctr.step%03d.out", iter);
+      FILE * fp = fopen (tmpfilename, "w");
+      for (unsigned ii = 0; ii < nTimeFrame; ++ii){
+	fprintf (fp, "%e %e\n", tt[ii], ttvalue[ii]);
+      }
+      fclose (fp);
+      sprintf (tmpfilename, "state.step%03d.out", iter);
+      fp = fopen (tmpfilename, "w");
+      for (unsigned ii = 0; ii < nTimeFrame-1; ++ii){
+	fprintf (fp, "%e   %e %e %e\n", tt[ii],
+		 resInfo.get_order0()[ii],
+		 resInfo.get_order0punish()[ii],
+		 resInfo.get_order0()[ii] + resInfo.get_order0punish()[ii]);
+      }
+      fclose (fp);
     }
   }
   
 
-  // for (unsigned ii = 0; ii < numNoneqCheck; ++ii){
-  //   double nowTime = ii * noneqCheckFeq;
-  //   printf ("%f  %e %e\n",
-  // 	    nowTime,
-  // 	    resInfo.get_order0()[ii],
-  // 	    resInfo.get_order0punish()[ii]);
-  //   // resInfo.calculate (nowTime, pert1, dist, distQuench, order);
-  //   // dist.print_x  (xFileNames[ii]);
-  //   // dist.print_xv (xvFileNames[ii]);
-  //   // distQuench.print_x  (xQuenchFileNames[ii]);
-  //   // distQuench.print_xv (xvQuenchFileNames[ii]);
-    
-  //   // dist.substract (distQuench);
-  //   // dist.print_x  (diffxFileNames[ii]);
-  //   // dist.print_xv (diffxvFileNames[ii]);
-  // }
   sw_total.stop();
 
   if (rank == 0){
