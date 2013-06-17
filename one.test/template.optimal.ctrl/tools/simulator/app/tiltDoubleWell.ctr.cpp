@@ -254,13 +254,13 @@ int main(int argc, char * argv[])
 
     if (rank == 0){
       printf ("\n");
+      printf ("step %d\n", iter);
       printf ("value of ctr:           ");
       for (unsigned ii = 0; ii < nTimeFrame; ++ii){
 	printf ("%e \t", ttvalue[ii]);
       }
       printf ("\n");
-      printf ("step: %d  \t endv %e \t endpunish: %e \t endtotal: %e\n",
-	      iter,
+      printf ("endv %e \t endpunish: %e \t endtotal: %e\n",
 	      resInfo.get_order0().back(), resInfo.get_order0punish().back(),
 	      resInfo.get_order0().back()+ resInfo.get_order0punish().back()
 	  );
