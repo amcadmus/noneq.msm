@@ -29,7 +29,7 @@ struct Dofs
 
 inline Dofs::
 Dofs ()
-    : xx(NUMDOFS), vv(NUMDOFS)
+    : xx(NUMDOFS, 0.), vv(NUMDOFS, 0.)
 {
 }
 

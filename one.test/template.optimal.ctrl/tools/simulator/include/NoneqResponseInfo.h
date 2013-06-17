@@ -28,9 +28,9 @@ class NoneqResponseInfo
   int numMode;
   
   vector<double >				order0;		// time
-  vector<double >				order0punish;	// time
   vector<vector<double > >			order1;		// time x vec
   vector<vector<vector<double > > >		order2;		// time x mat  
+  vector<double >				order0punish;	// time
   
   vector<double >				Gj;		// vec 
   vector<vector<double > >			Hjk;		// mat

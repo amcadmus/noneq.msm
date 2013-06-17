@@ -202,6 +202,19 @@ int main(int argc, char * argv[])
     // }
     // return 0;
 
+    vector<double > order1punish;
+    {
+      const std::vector<double > & vv (ttvalue);
+      order1punish.resize (tt.size());
+      order1punish[0] = (2./3. * vv[0] + 1./3. * vv[1]) * (tt[1] - tt[0]);
+      int nn = tt.size() - 1;
+      order1punish[nn] = 0.5 * beta * (1./3. * vv[nn-1] + 2./3. * vv[nn]) * (tt[nn] - tt[nn-1]);
+  
+      for (unsigned ii = 1; ii < tt.size() - 1; ++ii){
+	order1punish[ii] = 0.5 * beta * ((1./3. * vv[ii-1] + 2./3. * vv[ii]) * (tt[ii] - tt[ii-1]) +
+					 (1./3. * vv[ii+1] + 2./3. * vv[ii]) * (tt[ii+1] - tt[ii]) );
+      }
+    }
     
     NoneqResponseInfo resInfo;
     resInfo.reinit (beta, x0, x1, nx, v0, v1, nv, dt, noneqTime, noneqCheckFeq, pert);
@@ -246,12 +259,17 @@ int main(int argc, char * argv[])
 	      resInfo.get_order0().back(), resInfo.get_order0punish().back(),
 	      resInfo.get_order0().back()- resInfo.get_order0punish().back()
 	  );
-      printf ("value of end order1: ");
+      printf ("value of end    order1: ");
       for (unsigned ii = 0; ii < resInfo.get_order1().back().size(); ++ii){
 	printf ("%e ", resInfo.get_order1().back()[ii]);
       }
       printf ("\n");    
-      printf ("value of ctr:        ");
+      printf ("value of punish order1: ");
+      for (unsigned ii = 0; ii < resInfo.get_order1().back().size(); ++ii){
+	printf ("%e ", order1punish[ii]);
+      }
+      printf ("\n");    
+      printf ("value of ctr:           ");
     }
     ttvalue.back() -= 0.5;
     if (rank == 0){
