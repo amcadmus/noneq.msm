@@ -206,7 +206,7 @@ int main(int argc, char * argv[])
     {
       const std::vector<double > & vv (ttvalue);
       order1punish.resize (tt.size());
-      order1punish[0] = (2./3. * vv[0] + 1./3. * vv[1]) * (tt[1] - tt[0]);
+      order1punish[0] = 0.5 * beta * (2./3. * vv[0] + 1./3. * vv[1]) * (tt[1] - tt[0]);
       int nn = tt.size() - 1;
       order1punish[nn] = 0.5 * beta * (1./3. * vv[nn-1] + 2./3. * vv[nn]) * (tt[nn] - tt[nn-1]);
   
