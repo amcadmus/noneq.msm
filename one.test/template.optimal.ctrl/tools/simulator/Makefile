@@ -35,11 +35,11 @@ cdepends = 	$(addprefix $(cdepends_dir)/,$(tmp_cdepends))
 cobjects = 	$(addprefix $(cobjects_dir)/,$(tmp_cobjects))
 
 
-C:=		gcc
+C:=		mpicc
 CFLAGS +=	-g -O3 -Wall 
 CFLAGS += 	$(addprefix -I ,$(include_dirs))
 
-CXX:=		g++
+CXX:=		mpicxx
 CXXFLAGS += 	$(CFLAGS)
 
 target:		makedir $(application_target)

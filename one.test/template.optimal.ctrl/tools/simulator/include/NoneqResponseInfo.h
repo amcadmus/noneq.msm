@@ -59,6 +59,7 @@ public:
 			const double & sigma,
 			const Dofs & dw);
   void average ();
+  void collectLast () ;
 public:
   // void calculate (const double & time,
   // 		  const Perturbation & pert1,

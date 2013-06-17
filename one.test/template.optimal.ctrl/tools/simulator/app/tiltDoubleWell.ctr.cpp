@@ -21,11 +21,16 @@
 
 #include <boost/program_options.hpp>
 #include "RandomGenerator.h"
+#include <mpi.h>
 
 namespace po = boost::program_options;
+using namespace MPI;
 
 int main(int argc, char * argv[])
 {
+  MPI::Init (argc, argv);
+  int rank = COMM_WORLD.Get_rank();  
+  
   double gamma;
   double kT;
   double T;
@@ -91,30 +96,32 @@ int main(int argc, char * argv[])
     return 0;
   }
 
-  RandomGenerator_MT19937::init_genrand (seed);
+  RandomGenerator_MT19937::init_genrand (seed+rank);
   kT = T * 1.38 * 6.02 * 1e-3;
   branchNumFeq = (branchFeq+0.5*dt) / dt;
   noneqCheckNumFeq = (noneqCheckFeq+0.5*dt) / dt;
-  
-  std::cout << "###################################################" << std::endl;
-  std::cout << "# T: " << T << " [K]" << std::endl;
-  std::cout << "# kT: " << kT << " [kJ/mol]" << std::endl;
-  std::cout << "# k: " << kk << " [kJ/(mol nm^4)]" << std::endl;
-  std::cout << "# a: " << aa << " [nm]" << std::endl;
-  std::cout << "# barrier: " << 0.5 * kk * aa*aa*aa*aa << " [kJ/mol]" << std::endl;
-  std::cout << "# gamma: " << gamma << " [ps^-1]" << std::endl;
-  std::cout << "# pert st0 (init)   : " << pertSt0 << " [kJ/(mol nm)]" << std::endl;
-  std::cout << "# branch Feq: " << branchFeq << " [ps]" << std::endl;
-  std::cout << "# branch every: " << branchNumFeq << " steps" << std::endl;
-  std::cout << "# noneq check Feq: " << noneqCheckFeq << " [ps]" << std::endl;
-  std::cout << "# noneq check every: " << noneqCheckNumFeq << " steps" << std::endl;
-  std::cout << "# noneq time: " << noneqTime << " [ps]" << std::endl;
-  std::cout << "# xrange: [ " << x0 << " , " << x1 << " ] " << std::endl;
-  std::cout << "# vrange: [ " << v0 << " , " << v1 << " ] " << std::endl;
-  std::cout << "# nx: " << nx << std::endl;
-  std::cout << "# nv: " << nv << std::endl;
-  std::cout << "###################################################" << std::endl;  
 
+  if (rank == 0){
+    std::cout << "###################################################" << std::endl;
+    std::cout << "# T: " << T << " [K]" << std::endl;
+    std::cout << "# kT: " << kT << " [kJ/mol]" << std::endl;
+    std::cout << "# k: " << kk << " [kJ/(mol nm^4)]" << std::endl;
+    std::cout << "# a: " << aa << " [nm]" << std::endl;
+    std::cout << "# barrier: " << 0.5 * kk * aa*aa*aa*aa << " [kJ/mol]" << std::endl;
+    std::cout << "# gamma: " << gamma << " [ps^-1]" << std::endl;
+    std::cout << "# pert st0 (init)   : " << pertSt0 << " [kJ/(mol nm)]" << std::endl;
+    std::cout << "# branch Feq: " << branchFeq << " [ps]" << std::endl;
+    std::cout << "# branch every: " << branchNumFeq << " steps" << std::endl;
+    std::cout << "# noneq check Feq: " << noneqCheckFeq << " [ps]" << std::endl;
+    std::cout << "# noneq check every: " << noneqCheckNumFeq << " steps" << std::endl;
+    std::cout << "# noneq time: " << noneqTime << " [ps]" << std::endl;
+    std::cout << "# xrange: [ " << x0 << " , " << x1 << " ] " << std::endl;
+    std::cout << "# vrange: [ " << v0 << " , " << v1 << " ] " << std::endl;
+    std::cout << "# nx: " << nx << std::endl;
+    std::cout << "# nv: " << nv << std::endl;
+    std::cout << "###################################################" << std::endl;  
+  }
+  
 
   // initial sets
   DoubleWell dw (kk, aa);
@@ -153,23 +160,26 @@ int main(int argc, char * argv[])
   
   sw_total.start();
 
-  for (unsigned iter = 0; iter < 100 ; ++iter){
+  for (unsigned iter = 0; iter < 3 ; ++iter){
     int count = 0;
     int countBranch = 0;
     double time = 0;
 
     PertConstTiltTable pert (tt, ttvalue);
+    // PertConstTilt pert (ttvalue.back(), noneqTime);
 
     EulerMaruyama inte (gamma, kT, dt,
 			NULL,
 			dynamic_cast<Force *> (&dw),
-			seed);
+			seed + rank*2);
     EulerMaruyama noneqInte (gamma, kT, dt,
 			     dynamic_cast<Perturbation *> (&pert),
 			     dynamic_cast<Force *> (&dw),
-			     seed+2);
+			     seed + rank*2 + 1);
     double inteSigma = noneqInte.getSigma();
-    // std::cout << "# inte sigma is: " << inteSigma << std::endl;
+    if (rank == 0){
+      std::cout << "# inte sigma is: " << inteSigma << std::endl;
+    }
     Dofs xx;
     xx.xx[0] = 0.;
     xx.vv[0] = 0.;
@@ -204,7 +214,7 @@ int main(int argc, char * argv[])
       count ++;
       countBranch ++;
       time += dt;
-      if (int(nstprint) == count){
+      if (int(nstprint) == count && rank == 0){
 	count = 0;
 	printf ("# %f %f %f    \r", time, xx.xx[0], xx.vv[0]);
 	fflush (stdout);
@@ -227,31 +237,36 @@ int main(int argc, char * argv[])
       }
     }
     resInfo.average ();
-    printf ("\n");
+    resInfo.collectLast ();
 
-    printf ("step: %d  \t endv %e \t endpunish: %e endstable: %e\n",
-	    iter,
-	    resInfo.get_order0().back(), resInfo.get_order0punish().back(),
-	    resInfo.get_order0().back()- resInfo.get_order0punish().back()
-	    );
-    printf ("value of end order1: ");
-    for (unsigned ii = 0; ii < resInfo.get_order1().back().size(); ++ii){
-      printf ("%e ", resInfo.get_order1().back()[ii]);
+    if (rank == 0){
+      printf ("\n");
+      printf ("step: %d  \t endv %e \t endpunish: %e endstable: %e\n",
+	      iter,
+	      resInfo.get_order0().back(), resInfo.get_order0punish().back(),
+	      resInfo.get_order0().back()- resInfo.get_order0punish().back()
+	  );
+      printf ("value of end order1: ");
+      for (unsigned ii = 0; ii < resInfo.get_order1().back().size(); ++ii){
+	printf ("%e ", resInfo.get_order1().back()[ii]);
+      }
+      printf ("\n");    
+      printf ("value of ctr:        ");
     }
-    printf ("\n");    
-    printf ("value of ctr:        ");
-    ttvalue.back() -= 0.1;
-    if (resInfo.get_order1().back().size() != nTimeFrame) {
-      cerr << "problem, nTimeFrame and numMode do not match"
-	   << resInfo.get_order1().back().size() << " "
-	   << nTimeFrame
-	   << endl;
+    ttvalue.back() -= 0.5;
+    if (rank == 0){
+      if (resInfo.get_order1().back().size() != nTimeFrame) {
+      	cerr << "problem, nTimeFrame and numMode do not match"
+      	     << resInfo.get_order1().back().size() << " "
+      	     << nTimeFrame
+      	     << endl;
+      }
+      for (unsigned ii = 0; ii < nTimeFrame; ++ii){
+	// ttvalue[ii] -= gradientDescentStep * resInfo.get_order1().back()[ii];
+	printf ("%e ", ttvalue[ii]);
+      }
+      printf ("\n");
     }
-    for (unsigned ii = 0; ii < nTimeFrame; ++ii){
-      // ttvalue[ii] -= gradientDescentStep * resInfo.get_order1().back()[ii];
-      printf ("%e ", ttvalue[ii]);
-    }
-    printf ("\n");
   }
   
 
@@ -273,28 +288,31 @@ int main(int argc, char * argv[])
   // }
   sw_total.stop();
 
-  cout << "# time static: user, real, sys" << endl;
-  // cout << "eq inte:       "
-  //      << sw_eq.user() << " "
-  //      << sw_eq.real() << " "
-  //      << sw_eq.system() << endl;
-  // cout << "noneq inte:    "
-  //      << sw_noneq.user() << " "
-  //      << sw_noneq.real() << " "
-  //      << sw_noneq.system() << endl;
-  // cout << "quench inte:   "
-  //      << sw_quench.user() << " "
-  //      << sw_quench.real() << " "
-  //      << sw_quench.system() << endl;
-  // cout << "total inte:    "
-  //      << sw_eq.user() + sw_noneq.user() + sw_quench.user() << " "
-  //      << sw_eq.real() + sw_noneq.real() + sw_quench.real() << " "
-  //      << sw_eq.system() + sw_noneq.system() + sw_quench.system() << endl;
-  cout << "# total:    "
-       << sw_total.user() << " "
-       << sw_total.real() << " "
-       << sw_total.system() << endl;
+  if (rank == 0){
+    cout << "# time static: user, real, sys" << endl;
+    // cout << "eq inte:       "
+    //      << sw_eq.user() << " "
+    //      << sw_eq.real() << " "
+    //      << sw_eq.system() << endl;
+    // cout << "noneq inte:    "
+    //      << sw_noneq.user() << " "
+    //      << sw_noneq.real() << " "
+    //      << sw_noneq.system() << endl;
+    // cout << "quench inte:   "
+    //      << sw_quench.user() << " "
+    //      << sw_quench.real() << " "
+    //      << sw_quench.system() << endl;
+    // cout << "total inte:    "
+    //      << sw_eq.user() + sw_noneq.user() + sw_quench.user() << " "
+    //      << sw_eq.real() + sw_noneq.real() + sw_quench.real() << " "
+    //      << sw_eq.system() + sw_noneq.system() + sw_quench.system() << endl;
+    cout << "# total:    "
+	 << sw_total.user() << " "
+	 << sw_total.real() << " "
+	 << sw_total.system() << endl;
+  }
   
+  Finalize ();
   return 0;
 }
 

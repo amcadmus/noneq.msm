@@ -62,6 +62,7 @@ reinit (const double & beta_,
 
   ntraj = 0;
   newTraj ();
+  ntraj = 0;
 }
 
 
@@ -141,10 +142,12 @@ depositMainTraj (const Dofs & oldx,
       std::cerr << "# the non eq traj is too long, problematic!" << std::endl;
       exit (1);
     }
-    order0[countNoneqSeg] += (- inSet(newx) + punish);
+    // order0[countNoneqSeg] += (- inSet(newx) + punish);
+    order0[countNoneqSeg] += (- inSet(newx));
     order0punish[countNoneqSeg] += (punish);
     for (int jj = 0; jj < numMode; ++jj){
-      order1[countNoneqSeg][jj] +=  (- inSet(newx) + punish) * Gj[jj];
+      // order1[countNoneqSeg][jj] +=  (- inSet(newx) + punish) * Gj[jj];
+      order1[countNoneqSeg][jj] +=  (- inSet(newx)) * Gj[jj];
       // for (int kk = 0; kk < numMode; ++kk){
       // 	order2[countNoneqSeg][jj][kk] = (- inSet(newx) + punish) * (Gj[jj] * Gj[kk] - Hjk[jj][kk]);
       // }
@@ -167,6 +170,30 @@ average ()
       // }
     }
   }
+}
+
+#include <mpi.h>
+using namespace MPI;
+
+void NoneqResponseInfo::
+collectLast () 
+{
+  double tmporder0r;
+  double * tmporder1s = (double *) malloc (sizeof(double) * numMode);
+  double * tmporder1r = (double *) malloc (sizeof(double) * numMode);
+
+  COMM_WORLD.Allreduce (&(order0.back()), &tmporder0r, 1, MPI_DOUBLE, SUM);
+  for (int ii = 0; ii < numMode; ++ii){
+    tmporder1s[ii] = order1.back()[ii];
+  }
+  COMM_WORLD.Allreduce (tmporder1s, tmporder1r, numMode, MPI_DOUBLE, SUM);
+  int size = COMM_WORLD.Get_size();
+  for (int ii = 0; ii < numMode; ++ii){
+    order1.back()[ii] = tmporder1r[ii] / double(size);
+  }
+  
+  free (tmporder1s);
+  free (tmporder1r);
 }
 
 
