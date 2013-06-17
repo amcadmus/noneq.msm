@@ -160,7 +160,7 @@ int main(int argc, char * argv[])
   
   sw_total.start();
 
-  for (unsigned iter = 0; iter < 3 ; ++iter){
+  for (unsigned iter = 0; iter < 100 ; ++iter){
     int count = 0;
     int countBranch = 0;
     double time = 0;
@@ -254,24 +254,28 @@ int main(int argc, char * argv[])
 
     if (rank == 0){
       printf ("\n");
-      printf ("step: %d  \t endv %e \t endpunish: %e endstable: %e\n",
+      printf ("value of ctr:           ");
+      for (unsigned ii = 0; ii < nTimeFrame; ++ii){
+	printf ("%e \t", ttvalue[ii]);
+      }
+      printf ("\n");
+      printf ("step: %d  \t endv %e \t endpunish: %e \t endtotal: %e\n",
 	      iter,
 	      resInfo.get_order0().back(), resInfo.get_order0punish().back(),
-	      resInfo.get_order0().back()- resInfo.get_order0punish().back()
+	      resInfo.get_order0().back()+ resInfo.get_order0punish().back()
 	  );
       printf ("value of end    order1: ");
       for (unsigned ii = 0; ii < resInfo.get_order1().back().size(); ++ii){
-	printf ("%e ", resInfo.get_order1().back()[ii]);
+	printf ("%e \t", resInfo.get_order1().back()[ii]);
       }
       printf ("\n");    
       printf ("value of punish order1: ");
       for (unsigned ii = 0; ii < resInfo.get_order1().back().size(); ++ii){
-	printf ("%e ", order1punish[ii]);
+	printf ("%e \t", order1punish[ii]);
       }
       printf ("\n");    
-      printf ("value of ctr:           ");
     }
-    ttvalue.back() -= 0.5;
+    // ttvalue.back() -= 0.5;
     if (rank == 0){
       if (resInfo.get_order1().back().size() != nTimeFrame) {
       	cerr << "problem, nTimeFrame and numMode do not match"
@@ -279,9 +283,10 @@ int main(int argc, char * argv[])
       	     << nTimeFrame
       	     << endl;
       }
+      printf ("value of ctr:           ");
       for (unsigned ii = 0; ii < nTimeFrame; ++ii){
-	// ttvalue[ii] -= gradientDescentStep * resInfo.get_order1().back()[ii];
-	printf ("%e ", ttvalue[ii]);
+	ttvalue[ii] -= gradientDescentStep * (resInfo.get_order1().back()[ii] + order1punish[ii]);
+	printf ("%e \t", ttvalue[ii]);
       }
       printf ("\n");
     }
