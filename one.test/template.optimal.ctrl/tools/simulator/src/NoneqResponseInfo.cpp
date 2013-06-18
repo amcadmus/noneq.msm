@@ -103,11 +103,11 @@ depositMainTraj (const Dofs & oldx,
 		 const double & sigma,
 		 const Dofs & dw)
 {
-  // if (countNoneq == 0){
-  //   order0[0].deposite (oldx);
-  //   countNoneq ++;
-  //   return;
-  // }
+  if (countNoneq == 0){
+    order0[0] += (-inSet(oldx));
+    // countNoneq ++;
+    // return;
+  }
     
   double nowTime = countNoneq * dt;
   Dofs pvalue;
