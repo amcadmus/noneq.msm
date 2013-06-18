@@ -1,27 +1,15 @@
 dt=1e-4
-nst=1e10
+nst=1e8
 noneq_check_feq=1.0
 noneq_time=20.0
-corr_step=0.01
-corr_time=10.0
-warm_time=20.0
-refe_strength=2.0
-pert_strength=3.0
+time_resolution=1.0
+beta=0.01
+gd_step=10
+pert_strength=1.0
 resp_order=1
-#project_name=splitSingleWell
-project_name=tiltDoubleWell
-
-load_saved_corr=no
-saved_corr_dir=~/study/noneq.msm/one.test/saved.corr.result5
-saved_corr_nst=1e9
-load_saved_resp=yes
-saved_resp_dir=~/study/noneq.msm/one.test/saved.corr.result5
-
+branch_feq=10
 gamma=1.0
 temperature=300.0
-branch_feq=1.0
-quench_temperature=150
-quench_time=1.0
 x0=-2.0
 x1=2.0
 v0=-8.0
@@ -29,6 +17,8 @@ v1=8.0
 nx=30
 nv=30
 seed=`date +%s`
+
+project_name=tiltDoubleWell
 
 # tilt double well parameters
 double_well_k=8.0
