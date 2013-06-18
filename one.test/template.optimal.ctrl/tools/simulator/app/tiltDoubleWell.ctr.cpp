@@ -180,11 +180,11 @@ int main(int argc, char * argv[])
     EulerMaruyama inte (gamma, kT, dt,
 			NULL,
 			dynamic_cast<Force *> (&dw),
-			seed + rank*2);
+			iter + seed + rank*2);
     EulerMaruyama noneqInte (gamma, kT, dt,
 			     dynamic_cast<Perturbation *> (&pert),
 			     dynamic_cast<Force *> (&dw),
-			     seed + rank*2 + 1);
+			     iter + seed + rank*2 + 1);
     double inteSigma = noneqInte.getSigma();
     if (rank == 0){
       std::cout << "# inte sigma is: " << inteSigma << std::endl;
