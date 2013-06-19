@@ -274,6 +274,7 @@ int main(int argc, char * argv[])
 	   << nTimeFrame
 	   << endl;
     }
+    
     for (unsigned ii = 0; ii < nTimeFrame; ++ii){
       ttvalue[ii] -= gradientDescentStep * (resInfo.get_order1().back()[ii] + order1punish[ii]);
     }    
@@ -305,7 +306,7 @@ int main(int argc, char * argv[])
       fclose (fp);
       sprintf (tmpfilename, "state.step%03d.out", iter+1);
       fp = fopen (tmpfilename, "w");
-      for (unsigned ii = 0; ii < nTimeFrame-1; ++ii){
+      for (unsigned ii = 0; ii < nTimeFrame; ++ii){
 	fprintf (fp, "%e   %e %e %e\n", tt[ii],
 		 resInfo.get_order0()[ii],
 		 resInfo.get_order0punish()[ii],
