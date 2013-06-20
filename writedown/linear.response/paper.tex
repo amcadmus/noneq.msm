@@ -386,7 +386,7 @@ By using the Girsanov formula,
   {\dd\mathcal P_0[\vect X_s]}  
   =&\,
   \exp
-  \big\{{\eps G[\vect X_s] - \eps^2 H[\vect X_s]}
+  \big\{{\eps G[\vect X_s] - \frac{\eps^2}{2} H[\vect X_s]}
   \big\}
 \end{align}
 where the short notations are defined by:
@@ -396,7 +396,7 @@ where the short notations are defined by:
   \Delta F_e(s)\,\vect D(\vect q_s)\cdot\dd\vect W_s \\
   H[\vect X_s]
   &=
-  \frac 1{2\sigma^2}\int_0^t
+  \frac 1{\sigma^2}\int_0^t
   \Delta F_e^2(s)\,\vect D^2(\vect q_s)\,\dd s.
 \end{align}
 Expansion of the right-hand-side of Eq.~\eqref{eqn:girsanov} in $\eps$, we have
@@ -457,7 +457,7 @@ That is, we can compute all derivatives $\partial O(T)/\partial a_j$ from just o
 
 Now we consider the optimization problem
 \[
-O_{min}(T) = \min_{F_e\in \mathcal{F}} O[F_e](T),
+O_{max}(T) = \max_{F_e\in \mathcal{F}} O[F_e](T),
 \]
 where $O[F](T)$ is the expectation value of the path observable $\mathcal{O}$ that results from \eqref{eqn:langevin-1b}--\eqref{eqn:langevin-2b} with $F_e=F$ and $\eps=0$.
 With the gradient being computed one can solve the optimization problem by means of gradient descent in coefficient space,
@@ -728,15 +728,14 @@ non-equilibrium simulation.
 \begin{figure}
   \centering
   \includegraphics[]{figs/fig-ctr-stat.eps}
-  \caption{The optimal forcing.
-    The red color indicates $\eta = 0.01$ and the
-    green color indicates $\eta = 0.05$.
-    In the lower plot, the dashed lines display the
-    value of $P(\vect X_t)$ as the time eloves.
-    The solid lines present $O[F_e](t)$.  In the upper
-    plot, the solid lines present the magnitude of the
-    control $F_e(t)$.
-  }\label{fig:tmp7}
+  \caption{The optimal forcing.  In this plot, $T=20$ ps.  The red
+    color indicates $\eta = 0.01$ and the green color indicates $\eta
+    = 0.05$.  In the upper plot, the solid lines present the magnitude
+    of the control $F_e(t)$, which is calculated on a family of
+    piecewise linear ansatz functions. The time interval of a linear
+    piece is 1 ps.  In the lower plot, the dashed lines display the
+    value of $P(\vect X_t)$ as the time evolves.  The solid lines
+    present $O[F_e](t)$.  }\label{fig:tmp7}
 \end{figure}
 
 We investigate the example of the double well potential, and
@@ -744,21 +743,49 @@ consider the problem of optimally forcing the population from the
 left well to the right well. That is equal to consider the 
 the following optimal forcing problem:
 \begin{align}
-  O_{\min}(T)& = \min_{F_e\in\mathcal F} O[F_e](T) 
+  O_{\max}(T)& = \max_{F_e\in\mathcal F} O[F_e](T) 
 \end{align}
 with
 \begin{align}
-  O[F_e](T) &= P(\vect X_T) + \eta \int_0^T\vert F_e(t)\vect D(\vect q)\vert^2\, dt
+  O[F_e](T) &= P(\vect X_T) - \eta \int_0^T\vert F_e(t)\vect D(\vect q)\vert^2\, dt
 \end{align}
-where $P(\vect X_T)$ is equal to 1 when the end point of the
+where $P(\vect X_T)$ is equal to $1$ when the end point of the
 trajectory $\vect X_T$ is in the right well, and equal to 0 otherwise.
-The integral is the ``cost'' of the control and $\eta$ is a constant
-that indicates the relative magnitude of the cost. We consider the
-ansatz function family $\mathcal F$ of piecewise linear functions on
-$[0, T]$. 
-Fig.~\ref{fig:tmp7} presents the numerical result. The magnitude of control
-is shown in the upper plot, and the value of $O[F_e](T)$ and $P(\vect X_T)$
-are given in the lower plot. 
+It is clear that for an unbiased double-well, the average of $P(\vect
+X_T)$ is 0.5.  The integral is the ``cost'' of the control and $\eta$
+is a positive constant that indicates the relative magnitude of the
+cost. We consider the ansatz function family $\mathcal F$ of piecewise
+linear functions on $[0, T]$.
+
+Fig.~\ref{fig:tmp7} presents the numerical result. The magnitude of
+control $F_e(t)$ is shown in the upper plot, and the value of
+optimization target $O[F_e](T)$ and the value of $P(\vect X_T)$ are
+given in the lower plot by the solid and dashed lines, respectively.
+The plot shows that with a smaller $\eta$ (the relative magnitude of
+the cost of the control is smaller), a stronger control is calculated
+from the optimization, and the optimized value of $O[F_e](T)$ and
+$P(\vect X_T)$ are bigger, which means the end position of $\vect X_t$
+is more biased towards the right well. This observation is consistent
+with intuition.  When $t<10$~ps, the magnitude of the control is
+almost 0.  Near the end time $T$, the magnitude of the control firstly
+quickly goes up, and then falls down a little bit.  This implies some
+interesting information.  If the system were able to immediately relax
+to its instantaneous equilibrium state (sometimes called
+quasi-equilibrium), the population in the right well (dashed lines in
+Fig.~\ref{fig:tmp7}) would immediately go down, as the control
+decreases.  The fact that this does not happen, indicates that the
+speed of changing the control is relatively faster that the internal
+time scale of the system, so the system does not have enough time to
+fully relax itself. Therefore, the observed phenomenon is truly
+non-equilibrium, and our non-equilibrium linear response theory is a
+tool that facilitates the investigation of this optimal forcing
+problem in the non-equilibrium setting.  Intuitively, one concludes
+that as the control goes up, the population in the right well actually
+does not have enough time to go as high as it could be, so when the
+control decreases, it continues going up rather than following the
+decreasing control.
+
+
 
 
 \section{Conclusions and Remarks}
