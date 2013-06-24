@@ -306,8 +306,9 @@ int main(int argc, char * argv[])
       fclose (fp);
       sprintf (tmpfilename, "state.step%03d.out", iter+1);
       fp = fopen (tmpfilename, "w");
-      for (unsigned ii = 0; ii < nTimeFrame; ++ii){
-	fprintf (fp, "%e   %e %e %e\n", tt[ii],
+      for (unsigned ii = 0; ii < resInfo.get_order0().size(); ++ii){
+	fprintf (fp, "%e   %e %e %e\n",
+		 noneqCheckFeq * ii,
 		 resInfo.get_order0()[ii],
 		 resInfo.get_order0punish()[ii],
 		 resInfo.get_order0()[ii] + resInfo.get_order0punish()[ii]);
