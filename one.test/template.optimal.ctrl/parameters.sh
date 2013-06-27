@@ -5,6 +5,7 @@ noneq_time=20.0
 time_resolution=1.0
 beta=0.01
 gd_step=10
+finiteDiff_step=0.5
 pert_strength=1.0
 resp_order=1
 branch_feq=10
@@ -17,6 +18,7 @@ v1=8.0
 nx=30
 nv=30
 seed=`date +%s`
+init_ctr="ctr.init.out"
 
 project_name=tiltDoubleWell
 
@@ -39,3 +41,4 @@ else if echo $project_name | grep splitSingleWell &> /dev/null; then
     save_corr_param_note="k$print_k.s$print_s"
 fi
 fi
+

@@ -116,7 +116,18 @@ using namespace MPI;
 void NoneqInfo::
 collectLast () 
 {
-  double tmporder0r;
-  COMM_WORLD.Allreduce (&(order0.back()), &tmporder0r, 1, MPI_DOUBLE, SUM);  
+  double* tmporder0s = (double *) malloc (sizeof(double) * numCheck);
+  double* tmporder0r = (double *) malloc (sizeof(double) * numCheck);
+  for (int ii = 0; ii < numCheck; ++ii) {
+    tmporder0s[ii] = order0[ii];
+  }
+  COMM_WORLD.Allreduce (tmporder0s, tmporder0r, numCheck, MPI_DOUBLE, SUM);
+  int size = COMM_WORLD.Get_size();
+  for (int ii = 0; ii < numCheck; ++ii) {
+    order0[ii] = tmporder0r[ii] / double(size);
+  }
+  
+  free (tmporder0r);
+  free (tmporder0s);
 }
 

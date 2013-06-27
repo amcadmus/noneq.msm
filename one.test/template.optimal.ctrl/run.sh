@@ -17,6 +17,12 @@ print_v1=`printf %.1f $v1`
 print_nx=`printf %d $nx`
 print_nv=`printf %d $nv`
 
+if test -f $init_ctr; then
+    init_ctr_opt=" --init $init_ctr"
+else
+    init_ctr_opt=" "
+fi
+
 command="`pwd`/tools/simulator/$project_name.ctr
 --dt $dt \
     --nst $nst \
@@ -32,9 +38,10 @@ command="`pwd`/tools/simulator/$project_name.ctr
     --noneq-time $noneq_time \
     --seed $seed \
     --order $resp_order \
+    $init_ctr_opt \
     --pert-strength0 $pert_strength"
 
 echo "# run on `hostname`" &>> run.ctr.log
 echo "# command is $command" &>> run.ctr.log
-mpiexec -np 8 $command > output.ctr 2> error.ctr &
+mpiexec -np 8 $command > output.ctr 2> error.ctr 
 echo "# pid is $!" &>> run.ctr.log

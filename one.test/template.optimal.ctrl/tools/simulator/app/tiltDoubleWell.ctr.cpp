@@ -163,7 +163,8 @@ int main(int argc, char * argv[])
   else {
     for (unsigned ii = 0; ii < nTimeFrame; ++ii){
       tt[ii] = timeResolution * ii;
-      ttvalue[ii] = pertSt0;
+      // ttvalue[ii] = pertSt0;
+      ttvalue[ii] = pertSt0 * tt[ii] / noneqTime;
     }
   }
   

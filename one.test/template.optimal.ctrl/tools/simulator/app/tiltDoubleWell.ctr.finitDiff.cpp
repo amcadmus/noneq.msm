@@ -118,7 +118,7 @@ double runTraj (const vector<double > & tt,		// size num mode
     time += dt;
     if (int(nstprint) == count && rank == 0){
       count = 0;
-      printf ("# %f %f %f    \r", time, xx.xx[0], xx.vv[0]);
+      printf ("# traj time: %f %f %f    \r", time, xx.xx[0], xx.vv[0]);
       fflush (stdout);
     }
     if (countBranch == int(branchNumFeq)){
@@ -141,6 +141,7 @@ double runTraj (const vector<double > & tt,		// size num mode
   
   order0 = noneqInfo.get_order0();
   order0punish = noneqInfo.get_order0punish();
+  if (rank == 0) printf ("\n# rank: %d order0: %e\n", rank, order0.back());
 
   return order0.back() + order0punish.back();
 }
@@ -185,33 +186,33 @@ int main(int argc, char * argv[])
   
   po::options_description desc ("Allow options");
   desc.add_options()
-      ("help,h", "print this message")
-      ("dt,d", po::value<double > (&dt)->default_value(0.0001), "time step [ps]")
-      ("beta,b", po::value<double > (&beta)->default_value(1.0), "the punishment constant, unknown unit...")
-      ("nst,n", po::value<double > (&nst)->default_value(10000), "number of time step")
-      ("print-feq,p", po::value<unsigned > (&nstprint)->default_value(10000), "print frequency")
-      ("gamma,g", po::value<double > (&gamma)->default_value(1.), "gamma [ps^-1]")
-      ("temperature,t", po::value<double > (&T)->default_value(300.), "temperature [K]")
-      ("double-well-k,k", po::value<double > (&kk)->default_value(8.0), "k parameter of the double well potential [kJ/(mol nm^2)]")
-      ("double-well-a,a", po::value<double > (&aa)->default_value(1.0), "a parameter of the double well potential [nm]")
-      ("branch-feq", po::value<double > (&branchFeq)->default_value(1.), "branch frequency [ps]")
-      ("noneq-check-feq", po::value<double > (&noneqCheckFeq)->default_value(10.), "non-equilibrium branch check frequency [ps]")
-      ("noneq-time", po::value<double > (&noneqTime)->default_value(200.), "non-equilibrium simulation time [ps]")
-      ("time-resolution", po::value<double > (&timeResolution)->default_value(10.), "time resolution of the ctrl [ps]")      
-      ("pert-strength0",po::value<double > (&pertSt0)->default_value(1.0), "perturbation strength 0 [kJ/(mol nm)]")
-      ("order", po::value<int > (&order)->default_value(2), "order of response")
-      // ("save-corr", po::value<string > (&sfile), "save correlation")
-      // ("load-corr", po::value<string > (&lfile), "load saved correlation")
-      ("x-low", po::value<double > (&x0)->default_value (-2.0), "the lower bound of x range considered")
-      ("x-up",  po::value<double > (&x1)->default_value ( 2.0), "the upper bound of x range considered")
-      ("v-low", po::value<double > (&v0)->default_value (-8.0), "the lower bound of v range considered")
-      ("v-up",  po::value<double > (&v1)->default_value ( 8.0), "the upper bound of v range considered")
-      ("x-grid", po::value<unsigned > (&nx)->default_value (50), "the number of grid point of x")
-      ("v-grid", po::value<unsigned > (&nv)->default_value (50), "the number of grid point of v")
-      ("gradient-descent-step", po::value<double > (&gradientDescentStep)->default_value (0.1), "step size of GD")
-      ("finite-diff-step", po::value<double > (&finiteDiffStep)->default_value (0.5), "step size of finite diff to calculate the gradient")
-      ("init,i", po::value<string > (&ifile), "initial guess of GD")
-      ("seed",po::value<unsigned long > (&seed)->default_value(1), "random seed");
+    ("help,h", "print this message")
+    ("dt,d", po::value<double > (&dt)->default_value(0.0001), "time step [ps]")
+    ("beta,b", po::value<double > (&beta)->default_value(1.0), "the punishment constant, unknown unit...")
+    ("nst,n", po::value<double > (&nst)->default_value(10000), "number of time step")
+    ("print-feq,p", po::value<unsigned > (&nstprint)->default_value(10000), "print frequency")
+    ("gamma,g", po::value<double > (&gamma)->default_value(1.), "gamma [ps^-1]")
+    ("temperature,t", po::value<double > (&T)->default_value(300.), "temperature [K]")
+    ("double-well-k,k", po::value<double > (&kk)->default_value(8.0), "k parameter of the double well potential [kJ/(mol nm^2)]")
+    ("double-well-a,a", po::value<double > (&aa)->default_value(1.0), "a parameter of the double well potential [nm]")
+    ("branch-feq", po::value<double > (&branchFeq)->default_value(1.), "branch frequency [ps]")
+    ("noneq-check-feq", po::value<double > (&noneqCheckFeq)->default_value(10.), "non-equilibrium branch check frequency [ps]")
+    ("noneq-time", po::value<double > (&noneqTime)->default_value(200.), "non-equilibrium simulation time [ps]")
+    ("time-resolution", po::value<double > (&timeResolution)->default_value(10.), "time resolution of the ctrl [ps]")      
+    ("pert-strength0",po::value<double > (&pertSt0)->default_value(1.0), "perturbation strength 0 [kJ/(mol nm)]")
+    ("order", po::value<int > (&order)->default_value(2), "order of response")
+    // ("save-corr", po::value<string > (&sfile), "save correlation")
+    // ("load-corr", po::value<string > (&lfile), "load saved correlation")
+    ("x-low", po::value<double > (&x0)->default_value (-2.0), "the lower bound of x range considered")
+    ("x-up",  po::value<double > (&x1)->default_value ( 2.0), "the upper bound of x range considered")
+    ("v-low", po::value<double > (&v0)->default_value (-8.0), "the lower bound of v range considered")
+    ("v-up",  po::value<double > (&v1)->default_value ( 8.0), "the upper bound of v range considered")
+    ("x-grid", po::value<unsigned > (&nx)->default_value (50), "the number of grid point of x")
+    ("v-grid", po::value<unsigned > (&nv)->default_value (50), "the number of grid point of v")
+    ("gradient-descent-step", po::value<double > (&gradientDescentStep)->default_value (0.1), "step size of GD")
+    ("finite-diff-step", po::value<double > (&finiteDiffStep)->default_value (0.5), "step size of finite diff to calculate the gradient")
+    ("init,i", po::value<string > (&ifile), "initial guess of GD")
+    ("seed",po::value<unsigned long > (&seed)->default_value(1), "random seed");
       
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -264,7 +265,7 @@ int main(int argc, char * argv[])
   else {
     for (unsigned ii = 0; ii < nTimeFrame; ++ii){
       tt[ii] = timeResolution * ii;
-      ttvalue[ii] = pertSt0;
+      ttvalue[ii] = pertSt0 * tt[ii] / noneqTime;
     }
   }
   
@@ -280,15 +281,32 @@ int main(int argc, char * argv[])
     thisvalue = runTraj (tt, ttvalue,
 			 order0, order0punish,
 			 dw, dt, gamma, kT, nst, x0, x1, beta, noneqTime, noneqCheckFeq, branchFeq, nstprint, seed);    
-
+    if (rank == 0) printf ("# finish value at the point				\n");
+    
+    if (rank == 0) {
+      FILE * fp;
+      char tmpfilename[2000];
+      sprintf (tmpfilename, "state.step%03d.out", iter+1);
+      fp = fopen (tmpfilename, "w");
+      for (unsigned ii = 0; ii < order0.size(); ++ii){
+    	fprintf (fp, "%e   %e %e %e\n",
+    		 noneqCheckFeq * ii,
+    		 order0[ii],
+    		 order0punish[ii],
+    		 order0[ii] + order0punish[ii]);
+      }
+      fclose (fp);
+    }
+    
     order1.resize(nTimeFrame);
-    for (unsigned ii = 0; ii < nTimeFrame; ++ii){
+    for (unsigned ii = nTimeFrame - 1; ii > 0; --ii){
+      if (rank == 0) printf ("# cal %d th grad					\n", ii);
       vector<double > order0a, order0punisha;
       vector<double > order0b, order0punishb;
       vector<double > ttvaluea (ttvalue);
       vector<double > ttvalueb (ttvalue);
       ttvaluea[ii] += finiteDiffStep;
-      ttvalueb[ii] += finiteDiffStep;
+      ttvalueb[ii] -= finiteDiffStep;
       runTraj (tt, ttvaluea,
 	       order0a, order0punisha,
 	       dw, dt, gamma, kT, nst, x0, x1, beta, noneqTime, noneqCheckFeq, branchFeq, nstprint, seed);
@@ -296,8 +314,41 @@ int main(int argc, char * argv[])
 	       order0b, order0punishb,
 	       dw, dt, gamma, kT, nst, x0, x1, beta, noneqTime, noneqCheckFeq, branchFeq, nstprint, seed);
       order1[ii] = (order0a.back() - order0b.back()) / (2 * finiteDiffStep);
+      if (rank == 0) printf ("order1[%d] = %e ,  order1punish[%d] = %e\n", ii, order1[ii], ii, order1punish[ii]);
     }
-    
+
+
+    if (rank == 0) {
+      FILE * fp;
+      char tmpfilename[2000];
+      sprintf (tmpfilename, "order1.step%03d.out", iter+1);
+      fp = fopen (tmpfilename, "w");
+      fprintf (fp, "# time   order1   order1punish\n");
+      for (unsigned ii = 0; ii < order1.size(); ++ii){
+    	fprintf (fp, "%e   %e   %e\n",
+    		 tt[ii],
+    		 order1[ii],
+    		 order1punish[ii]);
+	  }
+      fclose (fp);
+    }
+
+    for (unsigned ii = 0; ii < nTimeFrame; ++ii){
+      ttvalue[ii] -= gradientDescentStep * (order1[ii] + order1punish[ii]);
+    }    
+	
+    if (rank == 0) {
+      FILE * fp;
+      char tmpfilename[2000];
+      sprintf (tmpfilename, "ctr.step%03d.out", iter+1);
+      fp = fopen (tmpfilename, "w");
+      for (unsigned ii = 0; ii < order1.size(); ++ii){
+    	fprintf (fp, "%e   %e\n",
+    		 tt[ii],
+    		 ttvalue[ii]);
+	  }
+      fclose (fp);
+    }
     // if (rank == 0){
     //   printf ("\n");
     //   printf ("step %d\n", iter);
@@ -331,13 +382,6 @@ int main(int argc, char * argv[])
     // 	   << endl;
     // }
 
-    {
-      
-      // for (unsigned ii = 0; ii < nTimeFrame; ++ii){
-      //   ttvalue[ii] -= gradientDescentStep * (resInfo.get_order1().back()[ii] + order1punish[ii]);
-      // }    
-
-    }
 
     
     // ttvalue.back() -= 0.5;
