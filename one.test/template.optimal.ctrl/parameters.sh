@@ -20,6 +20,12 @@ nv=30
 seed=`date +%s`
 init_ctr="ctr.init.out"
 
+# simulated annealing parameters
+saTmax=1.0
+saNst=200
+saSigma=0.2
+saChangeMin=0.03
+
 project_name=tiltDoubleWell
 
 # tilt double well parameters

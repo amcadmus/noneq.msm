@@ -170,35 +170,35 @@ int main(int argc, char * argv[])
   
   po::options_description desc ("Allow options");
   desc.add_options()
-      ("help,h", "print this message")
-      ("dt,d", po::value<double > (&dt)->default_value(0.0001), "time step [ps]")
-      ("beta,b", po::value<double > (&beta)->default_value(1.0), "the punishment constant, unknown unit...")
-      ("nst,n", po::value<double > (&nst)->default_value(10000), "number of time step")
-      ("print-feq,p", po::value<unsigned > (&nstprint)->default_value(10000), "print frequency")
-      ("gamma,g", po::value<double > (&gamma)->default_value(1.), "gamma [ps^-1]")
-      ("temperature,t", po::value<double > (&T)->default_value(300.), "temperature [K]")
-      ("double-well-k,k", po::value<double > (&kk)->default_value(8.0), "k parameter of the double well potential [kJ/(mol nm^2)]")
-      ("double-well-a,a", po::value<double > (&aa)->default_value(1.0), "a parameter of the double well potential [nm]")
-      ("branch-feq", po::value<double > (&branchFeq)->default_value(1.), "branch frequency [ps]")
-      ("noneq-check-feq", po::value<double > (&noneqCheckFeq)->default_value(10.), "non-equilibrium branch check frequency [ps]")
-      ("noneq-time", po::value<double > (&noneqTime)->default_value(200.), "non-equilibrium simulation time [ps]")
-      ("time-resolution", po::value<double > (&timeResolution)->default_value(10.), "time resolution of the ctrl [ps]")      
-      ("pert-strength0",po::value<double > (&pertSt0)->default_value(1.0), "perturbation strength 0 [kJ/(mol nm)]")
-      ("order", po::value<int > (&order)->default_value(2), "order of response")
-      // ("save-corr", po::value<string > (&sfile), "save correlation")
-      // ("load-corr", po::value<string > (&lfile), "load saved correlation")
-      ("x-low", po::value<double > (&x0)->default_value (-2.0), "the lower bound of x range considered")
-      ("x-up",  po::value<double > (&x1)->default_value ( 2.0), "the upper bound of x range considered")
-      ("v-low", po::value<double > (&v0)->default_value (-8.0), "the lower bound of v range considered")
-      ("v-up",  po::value<double > (&v1)->default_value ( 8.0), "the upper bound of v range considered")
-      ("x-grid", po::value<unsigned > (&nx)->default_value (50), "the number of grid point of x")
-      ("v-grid", po::value<unsigned > (&nv)->default_value (50), "the number of grid point of v")
-      ("init,i", po::value<string > (&ifile), "initial guess of GD")
-      ("saNst", po::value<double > (&saNst)->default_value (200), "")
-      ("saTmax", po::value<double > (&saTmax)->default_value (1.0), "")
-      ("saSigma", po::value<double > (&saSigma)->default_value (0.2), "")
-      ("saChangeMin", po::value<double > (&saChangeMin)->default_value (0.05), "")
-      ("seed",po::value<unsigned long > (&seed)->default_value(1), "random seed");
+    ("help,h", "print this message")
+    ("dt,d", po::value<double > (&dt)->default_value(0.0001), "time step [ps]")
+    ("beta,b", po::value<double > (&beta)->default_value(1.0), "the punishment constant, unknown unit...")
+    ("nst,n", po::value<double > (&nst)->default_value(10000), "number of time step")
+    ("print-feq,p", po::value<unsigned > (&nstprint)->default_value(10000), "print frequency")
+    ("gamma,g", po::value<double > (&gamma)->default_value(1.), "gamma [ps^-1]")
+    ("temperature,t", po::value<double > (&T)->default_value(300.), "temperature [K]")
+    ("double-well-k,k", po::value<double > (&kk)->default_value(8.0), "k parameter of the double well potential [kJ/(mol nm^2)]")
+    ("double-well-a,a", po::value<double > (&aa)->default_value(1.0), "a parameter of the double well potential [nm]")
+    ("branch-feq", po::value<double > (&branchFeq)->default_value(1.), "branch frequency [ps]")
+    ("noneq-check-feq", po::value<double > (&noneqCheckFeq)->default_value(10.), "non-equilibrium branch check frequency [ps]")
+    ("noneq-time", po::value<double > (&noneqTime)->default_value(200.), "non-equilibrium simulation time [ps]")
+    ("time-resolution", po::value<double > (&timeResolution)->default_value(10.), "time resolution of the ctrl [ps]")      
+    ("pert-strength0",po::value<double > (&pertSt0)->default_value(1.0), "perturbation strength 0 [kJ/(mol nm)]")
+    ("order", po::value<int > (&order)->default_value(2), "order of response")
+    // ("save-corr", po::value<string > (&sfile), "save correlation")
+    // ("load-corr", po::value<string > (&lfile), "load saved correlation")
+    ("x-low", po::value<double > (&x0)->default_value (-2.0), "the lower bound of x range considered")
+    ("x-up",  po::value<double > (&x1)->default_value ( 2.0), "the upper bound of x range considered")
+    ("v-low", po::value<double > (&v0)->default_value (-8.0), "the lower bound of v range considered")
+    ("v-up",  po::value<double > (&v1)->default_value ( 8.0), "the upper bound of v range considered")
+    ("x-grid", po::value<unsigned > (&nx)->default_value (50), "the number of grid point of x")
+    ("v-grid", po::value<unsigned > (&nv)->default_value (50), "the number of grid point of v")
+    ("init,i", po::value<string > (&ifile), "initial guess of GD")
+    ("saNst", po::value<double > (&saNst)->default_value (200), "")
+    ("saTmax", po::value<double > (&saTmax)->default_value (1.0), "")
+    ("saSigma", po::value<double > (&saSigma)->default_value (0.2), "")
+    ("saChangeMin", po::value<double > (&saChangeMin)->default_value (0.05), "")
+    ("seed",po::value<unsigned long > (&seed)->default_value(1), "random seed");
       
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -285,8 +285,8 @@ int main(int argc, char * argv[])
 			  trialOrder0, trialOrder0punish,
 			  dw, dt, gamma, kT, nst, x0, x1, beta, noneqTime, noneqCheckFeq, branchFeq, nstprint, seed);    
 
-    // if (rank == 0) printf ("# trialvalue: %e   %e %e\n", trialvalue, trialOrder0.back(), trialOrder0punish);
-    printf ("# trialvalue: %e   %e %e\n", trialvalue, trialOrder0.back(), trialOrder0punish.back());
+    if (rank == 0) printf ("# trialvalue: %e   %e %e\n", trialvalue, trialOrder0.back(), trialOrder0punish.back());
+    // printf ("# trialvalue: %e   %e %e\n", trialvalue, trialOrder0.back(), trialOrder0punish.back());
     int accept = 0;
 
     if (rank == 0){
@@ -302,8 +302,10 @@ int main(int argc, char * argv[])
     COMM_WORLD.Bcast (&accept, 1, MPI_INT, 0);
 
     if (accept){
-      // if (rank == 0) printf ("# accepted trialvalue: %e   %e %e\n", trialvalue, trialOrder0.back(), trialOrder0punish);
-      printf ("# accepted trialvalue: %e   %e %e\n", trialvalue, trialOrder0.back(), trialOrder0punish.back());
+      // printf ("# accepted trialvalue: %e   %e %e\n", trialvalue, trialOrder0.back(), trialOrder0punish);
+      if (rank == 0) printf ("# temperature: %f  accepted trialvalue: %e   %e %e\n",
+			     temperature,
+			     trialvalue, trialOrder0.back(), trialOrder0punish.back());
       ttvalue = trialttvalue;
       thisvalue = trialvalue;
       order0 = trialOrder0;
@@ -334,10 +336,10 @@ int main(int argc, char * argv[])
 		   ttvalue[ii]);
 	}
 	fclose (fp);
-      }
+      }      
     }    
   }
-  
+
 
   sw_total.stop();
 
