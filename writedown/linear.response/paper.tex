@@ -4,7 +4,7 @@
 % \documentclass[aps,jcp,groupedaddress,twocolumn,unsortedaddress]{revtex4}
 
 \usepackage[fleqn]{amsmath}
-\usepackage{amssymb}
+\usepackage{amssymb,amsthm}
 \usepackage[dvips]{graphicx}
 \usepackage{color}
 \usepackage{tabularx}
@@ -14,6 +14,9 @@
 \makeatletter
 \makeatother
 
+
+\newtheorem{thm}{Theorem}
+
 \newcommand{\recheck}[1]{{\color{red} #1}}
 \newcommand{\redc}[1]{{\color{red} #1}}
 \newcommand{\bluec}[1]{{\color{blue} #1}}
@@ -21,6 +24,12 @@
 \newcommand{\dd}{\textsf{d}}
 \newcommand{\inv}{\textrm{inv}}
 
+
+\newcommand{\R}{{\mathbf R}}
+\newcommand{\Q}{{\mathbf Q}}
+\newcommand{\Z}{{\mathbf Z}}
+\newcommand{\N}{{\mathbf N}}
+\newcommand{\T}{{\mathbf T}}
 \newcommand{\mh}{\mathcal H}
 \newcommand{\eps}{\varepsilon}
 \newcommand{\ml}{\mathcal L}
@@ -30,14 +39,21 @@
 \newcommand{\mc}{\mathcal C}
 \newcommand{\proj}{\mathit\Pi}
 \newcommand{\fwg}{{\mathcal A}}
+\newcommand{\cA}{\mathcal A}
 \newcommand{\bwg}{{\mathcal B}}
 \newcommand{\bsigma}{\boldsymbol\sigma}
+\newcommand{\bE}{{\mathbf E}}
+\newcommand{\bP}{{\mathbf P}}
+\newcommand{\one}{{\mathbf 1}}
+\newcommand{\zero}{{\mathbf 0}}
+
+\newcommand{\wrt}{with respect to }
 
 
 \begin{document}
 
 % \title{Linear response theory for core set identification}
-\title{The response theory for the system under a non-equilibrium driving}
+\title{Linear response theory for a system under non-equilibrium conditions}
 \author{Han Wang}
 \author{Carsten Hartmann}
 \affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Germany}
@@ -49,384 +65,219 @@
 \date{\today}
 
 \begin{abstract}
-  In this talk, we firstly review the traditional linear response
-  theory, and then generalize it to the system under a non-equilibrium
+  In this paper, we firstly review standard equilibrium linear response
+  theory in the context of molecular dynamics, and then generalize it to systems in nonequilibrium and under a nonequilibrium
   driving. We calculate not only the linear response term, but also
-  the higher order terms with respect to the perturbation to the
-  reference dynamics. The response theory is applied to investigate
-  the dynamics of core set that plays a central role in the Markov
-  State Model (MSM). The advantages and limitations are discussed from
-  the numerical tests.
-  % In this draft, we are trying to study the core set based Markov
-  % State Model (MSM) under non-equilirbium conditions.
+  second order terms for small perturbations to the reference dynamics. Furthermore, we outline how the novel nonequilibirum linear response formula can be used to compute optimal controls of molecular systems for cases in which one wants to steer the system to maximize a certain target expectation value.
+
 \end{abstract}
 
 \maketitle
 
-\section{Theoretical background}
-\subsection{Classical equilibrium linear response theory}
+\section{Introduction}
+
+Standard molecular dynamics simulations are dealing with systems in thermal equilibrium; in this case they are tuned to the canonial or Boltzmann distribution in the sense that either (1) if one starts from this distribution it remains invariant under the dynamics or (2) if one generates a very long trajectory it samples state space with respect this distribution, that is, every possible state of the molecular system under consideration is visited according to the probability given by it.  Obviously, this allows to compute equilibrium expectation values with respect to the  canonical distribution simply be computing long trajectories. 
+
+Often, however, one is interested in knowing about the response of the molecular system to perturbation out of equilibrium. The standard linear response formula allows to answer this question, at least partially. In the standard setting it gives us the first order of the change to an equilibrium expectation value as resulting from the non-equilibrium perturbation. Here, first order means first order in the size of the perturbation. This linear response formula has a long history of extensions and generalizations. In some sense it has become one of the cornerstones of modern statistical physics since it can be related to the fluctuation dissipation theorem (FDT) which roughly states that for appropriate systems in statistical equilibrium, the average response to small external perturbations can be calculated through the knowledge of suitable correlation functions of the unperturbed statistical system. In this sense there the standard linear response theory holds in a  very general sense \cite{Majda} as long as one assumes that the unperturbed system is in equilibrium.
+%=Martin Hairer and Andrew J Majda, A simple framework to justify linear response theory, Nonlinearity 23 (2010) 909–922 doi:10.1088/0951-7715/23/4/008
+
+There is an increasing number of articles in the literature that report on applications of molecular dynamics to nonequilibrium settings. There are many generalization to so-called nonequilibrium steady states based on the generality of the FDT, but despite its wide use, the present authors do not know of a linear response formula that applies to fully general nonequilibirium cases. We will provide such a formula for the case that the underlying dynamics can be described by Langevin dynamics. Furthermore, we will even provide a formula for the second order response of a Langevin system in non-equilibrium to a small perturbation.
+
+Instead of applying this theory to a molecular system we will go one step further. We will outline how the novel nonequilibrium linear response formula can be used to compute the optimal control of molecular systems. In optimal control one seeks the optimal way to perturbed a molecular system such that a certain target expectation value (e.g. population of certain states) is maximized under constraints on the energy of the control. In general the control drives the molecular system under control out of equilibrium. Thus, the nonequilibrium linear response formula can be used to find the optimal correction of the present control regarding the expectation value of interest. 
+
+The outline of the article is as follows: First, we will review the derivation of the standard linear response formula for  rather general diffusion processes which include which Langevin dynamics. Next, we will show how to derive first and second order response formulas for the nonequilibrium case and how to apply these formula for the computation of optimal controls. Finally, we will validate the nonequilibrium linear response formula and its use for optimal control for simple test cases. This numerical experiments will also outline that the use of the linear response formula is imperative for numerical efficiency and allows to extend the applicability of linear response theory to stronger perturbations. 
 
 
-In this section, we want to firstly give a brief description of the classical linear response
-theory, for details see Ref.~\cite{tuckeman2010statistical} for
-example.
-We study the non-equilibrium system driven by some external force.
-More strictly, we investigate the system that is governed by the
-following Langevin equation:
-\begin{align}\label{eqn:langevin-1}
-  \dot{\vect q} & = \nabla_{\vect p}\mh(\vect q,\vect p), \\\label{eqn:langevin-2}
-  \dot{\vect p} & =- \nabla_{\vect q}\mh(\vect q,\vect p)
-  + \eps F_e(t) \vect D(\vect q) 
-  - \gamma\vect p
-  + \sigma\dot{\vect W}.
-\end{align}
-Here $\vect D$ is the external driving force applied to the system,
-the magnitude of which is always assumed to be controllable.
-$\eps F_e(t)$ is the strength of the driving as a function of time.
-The prefactor $\eps$ indicates that we regard the driving force to be considerably smaller than the internal forces. We will comment on what is meant by "considerably smaller" further below.
+ 
 
-% , and
-% the magnitude of $F_e(t)$ is small and of order $\mo (\eps)$, $\eps \ll 1$.
 
-Then the phase space distribution $f(\vect x, t)$ ($\vect x = \{\vect
-q, \vect p\}$) is subject to the Kolmogorov forward equation:
-\begin{align}\label{eqn:orig-forward}
-  \frac{\partial}{\partial t} f(\vect x, t) - \fwg^\beta(t) f(\vect x, t) = 0
-\end{align}
-where $\fwg^\beta(t)$ is the forward infiniesimal generator given by
-\begin{align}
-  \fwg^\beta(t) =
-  \frac{\sigma^2}2\Delta_{\vect p}
-  - \nabla_{\vect p}\mh 
-  \cdot\nabla_{\vect q}
-  - \Big(
-  -\nabla_{\vect q}\mh +
-  \eps F_e(t)  \vect D  - \gamma\vect p
-  \Big)\cdot\nabla_{\vect p}
-  + 3N\gamma,
-\end{align}
-and $\beta2=\gamma / \sigma^2$ is the inverse temperature.
-The equilibrium system
-is governed by
-the standard Langevin equation, i.e. with
-vanishing driving force $\eps = 0$ in
-Eqn.~\eqref{eqn:langevin-1} and \eqref{eqn:langevin-2}.
+\section{Linear response}
 
-Under our smallness assumption on the driving force the full phase space distribution has the following asymptotic expansion in $\eps$:
-\begin{align}\label{eqn:f-expan}
-  f(\vect x, t) &= f_0(\vect x, t) + \eps f_1(\vect x, t)
-  +\eps^2 f_2(\vect x, t) + \mo (\eps^3),
-\end{align}
-where $f_0=f_0(x,t)$ denotes the evolution of the phase space distribution for the undriven system (with $\eps=0$).
-In addition we have:
-\begin{align}\label{eqn:A-expan}
-  \fwg^\beta(t) = \fwg^\beta_0 + \eps\fwg_1(t),
-\end{align}
-where
-\begin{align}
-  \fwg_0^\beta =&
-  \frac{\sigma^2}2\Delta_{\vect p}
-  -
-  \nabla_{\vect p}\mh\cdot\nabla_{\vect q}
-  - \big(
-  -\nabla_{\vect q}\mh - \gamma\vect p
-  \big)\cdot\nabla_{\vect p}
-  + 3N\gamma,\\
-  \fwg_1(t) =&
-  - F_e(t)  \vect D \cdot\nabla_{\vect p}.
-\end{align}
 
-The invariant measure of $\fwg^\beta_0$ satisfies $\fwg^\beta_0f^\beta_{\inv}(\vect x) = 0$, and is given by the Boltzmann distribution
-\begin{align}
-  f^\beta_{\inv}(\vect x) \propto e^{-\beta\mh(\vect x)}
-\end{align}
-Inserting \eqref{eqn:f-expan} and \eqref{eqn:A-expan} into
-\eqref{eqn:orig-forward}, 
-the Kolmogorov forward equation becomes:
-\begin{align}
-  \frac{\partial}{\partial t}
-  [f_0(\vect x, t) + \eps  f_1(\vect x, t) + \eps^2f_2(\vect x, t)]
-  -
-  [\,\fwg^\beta_0 + \eps\fwg_1(t)\,]
-  [f_0(\vect x, t) + \eps  f_1(\vect x, t) + \eps^2f_2(\vect x, t)]
-  = 0
-\end{align}
-Matching this equation at different orders of $\eps$, the zeroth
-order gives:
-\begin{align}\label{eqn:e-o0}
-  \bigg[
-  \frac{\partial}{\partial t}
-  - \fwg_0^\beta
-  \bigg]
-  f_0(\vect x, t)
-  = 0
-\end{align}
-which is the Kolmogorov forward equation of the undriven system. Matching the first and the second order gives:
-\begin{align}\label{eqn:e-o1}
-  \bigg[
-  \frac{\partial}{\partial t}
-  - \fwg_0^\beta
-  \bigg]
-  f_1(\vect x, t)
-  =&
-  \fwg_1(t) f_0(\vect x, t)\\\label{eqn:e-o2}
-  \bigg[
-  \frac{\partial}{\partial t}
-  - \fwg_0^\beta
-  \bigg]
-  f_2(\vect x, t)
-  =&
-  \fwg_1(t) f_1(\vect x, t)
-\end{align}
-Formally solving \eqref{eqn:e-o0} -- \eqref{eqn:e-o2} with
-initial conditions $f_1(\vect x, 0) = 0$ and $f_2(\vect x, 0) = 0$
-gives
-\begin{align}\label{eqn:f0-0}
-  f_0(\vect x, t)
-  =&\,
-  e^{t\fwg^\beta_0}f_0(\vect x, 0) \\\label{eqn:f1-0}
-  f_1(\vect x, t)
-  =&\,
-  \int_0^t\dd s\,
-  e^{(t-s)\fwg^\beta_0}\circ
-  \fwg_1(s) f_0(\vect x,s)
-  =
-  \int_0^t\dd s\,
-  e^{(t-s)\fwg^\beta_0}\circ
-  \fwg_1(s)\circ
-  e^{s\fwg^\beta_0}f_0(\vect x, 0) \\\nonumber
-  f_2(\vect x, t)
-  =&\,
-  \int_0^t\dd s\,
-  e^{(t-s)\fwg^\beta_0}\circ
-  \fwg_1(s) f_1(\vect x,s) \\\label{eqn:f2-0}
-  &=
-  \int_0^t\dd s
-  \int_0^s\dd u\,\,
-  e^{(t-s)\fwg^\beta_0}\circ
-  \fwg_1(s)\circ
-  e^{(s-u)\fwg^\beta_0}\circ
-  \fwg_1(u)\circ
-  e^{u\fwg^\beta_0}
-  f_0(\vect x, 0) 
-\end{align}
-If the initial distribution is the invariant distribution, i.e.
-$f_0(\vect x, 0) = f_{\inv}^\beta(\vect x)$,
-\eqref{eqn:f0-0} becomes:
-\begin{align}
-  f_0(\vect x, t) = f_{\inv}^\beta(\vect x)
-\end{align}
-It can be shown that
-\begin{align}
-  \fwg_1(s) f_{\inv}^\beta(\vect x)
-  =
-  -\beta {F_e(s)}
-  j(\vect x)
-  f_{\inv}^\beta(\vect x),
-\end{align}
-where the \emph{dissipative flux} $j(\vect x)$ is defined by,
-\begin{align}
-  j(\vect x) =
-  -\vect D\cdot\nabla_{\vect p}\mh
-\end{align}
-Then $f_1(\vect x, t)$ becomes:
-\begin{align}
-  f_1(\vect x, t)
-  =
-  -\beta
-  \int_0^t\dd s\,
-  F_e(s)\,
-  e^{(t-s)\fwg^\beta_0}
-  \big[
-  j(\vect x)
-  f_{\inv}^\beta(\vect x)
-  \big]
-\end{align}
-Therefore, the linear order approximation to
-the solution of~\eqref{eqn:orig-forward} is 
-\begin{align}\label{eqn:solv-orig-linear}
-  f(\vect x, t) =
-  f_{\inv}^\beta(\vect x)
-  - \eps\beta
-  \int_0^t\dd s\,
-  F_e(s)\,
-  e^{(t-s)\fwg^\beta_0}
-  \big[
-  j(\vect x)
-  f_{\inv}^\beta(\vect x)
-  \big]
-  + \mo(\eps^2)
-\end{align}
-Now let $\mathcal{O}$ be an observable of the system. Its expectation value satisfies the linear response formula:
-\begin{align}\nonumber
-  \mathcal O(t)
-  &=
-  \int\dd \vect x \:O(\vect x)f(\vect x, t)  \\\nonumber
-  &=
-  \int\dd \vect x\, O(\vect x)\,
-  [\,f_{\inv}^\beta(\vect x) + \eps f_1(\vect x, t)] +\mathcal{O}(\eps^2)\\\nonumber
-   \label{eqn:eqi-pert-1}
-  &=
-  \langle O\rangle
-  -
- \eps \beta
-  \int_0^t\dd s\,
-  F_e(t-s)
-  \int \dd \vect x\,
-  f^\beta_{\inv}(\vect x) j(\vect x)\,
-  e^{s\bwg_0^\beta}
-  O(\vect x)+\mathcal{O}(\eps^2)
-\end{align}
-where $ \langle O\rangle=\int \dd\vect x\,O(\vect x) f_{\inv}^\beta(\vect x)$ is the expectation value of the undriven equilibrium system, and $\bwg^\beta_0$ is the infiniesimal generator of the undriven 
-Kolmogorov backward equation, which is the adjoint operator of $\fwg^\beta_0$. That is,
-we have
-\begin{align}
-  e^{s\bwg^\beta_0} O(\vect x) = \mathbb E_{\vect x} [O(\vect X^\beta_s)]
-\end{align}
-where $\vect X^\beta_t$ is the trajectory of the undriven Langevin equation (with $\eps=0$)
-starting at $\vect x$.
-Therefore, we have up to order 2 in $\eps$:
-% Notice that $e^{i\ml_0(t-s)}O(\vect x) = O(\phi_{t-s}(\vect x))$,
-% where $\phi_t(\vect x)$ is the flow mapping of the \emph{unperturbed}
-% Hamiltonian system. We have
-\begin{align}\nonumber
-  \mathcal O(t)
- & =
-  \langle O\rangle
-  -
-  \eps\beta
-  \int_0^t\dd s\,
-  F_e(t-s)
-  \int \dd \vect x\,
-  f^\beta_{\inv}(\vect x)
-  j(\vect x)\,
-  \mathbb E_{\vect x} [O(\vect X^\beta_s)]\\
-\label{eqn:eq-lr}  
- & =
-  \langle O\rangle
-  -
-  \eps \beta
-  \int_0^t\dd s\,
-  F_e(t-s)
-  \big\langle
-  j\cdot
-  \mathbb E [O(\vect X^\beta_s)]
-  \big\rangle
-\end{align}
-where $  \langle
-  j\cdot
-  \mathbb E [O(\vect X^\beta_s)]
-  \rangle$ is the \emph{equilibrium time
-  correlation} between the observation $O$ at time $s$ and the flux $j$.
+In this section, we want to firstly give a simple and formal derivation of the linear response for equilibrium and nonequilibrium systems. To this end we consider a general It\^o stochastic differential equation of the form
+\begin{equation}\label{sde}
+dX_{t} = (b(X_{t},t) + \eps v_{t})dt +a(X_{t})dB_{t}\,,\quad t\ge 0\,,
+\end{equation}
+where $X_{t}\in\R^{d}$, $b(\cdot,\cdot)$ is a smooth time-dependent vector field, $a(\cdot)$ a smooth field of $d\times n$ matrices and $B_{t}$ is standard Brownian motion in $\R^{n}$. Here $v_{t}\in\R^{d}$ is any given driving force applied to the system, which in general may depend on $X_{t}$ and $t$; $\eps>0$ is a small parameter. We consider the equilibrium and nonequilibrium case separately. 
+
+
+  
+
+
+
+
+\subsection{Small perturbations from equilibrium: Langevin dynamics}
+
+For the equilibrium case (see, e.g., \cite{XXX,YYY,ZZZ}), we assume that the infinitesimal generator
+\[
+\fwg^{\eps} = \fwg_{0} + \eps\fwg_{1}\,, 
+\]
+with 
+\[
+\fwg_{0} = \frac{1}{2}aa^{T}\colon\nabla^{2} + b\cdot\nabla\,,\quad \fwg_{1}=v\cdot\nabla 
+\]
+of (\ref{sde}) has an isolated eigenvalue 0 corresponding to the unique invariant measure of the dynamics for $\eps=0$ and satisfies a spectral gap condition (see, e.g., \cite{stoltz2012}), so that the operator $(\fwg_{0}^{*})^{-1}\fwg_{1}^{*}$ is bounded (on an appropriate domain), where $\cA_{0}^{*}$ and $\cA_{1}^{*}$ denote the formal adjoints in $L^{2}$, e.g., $\cA_{1}^{*}\phi=-\nabla(v \phi)$.  
+
+Specifically, we are interested in the case that (\ref{sde}) has the form of a Langevin equation, in which case  
+\begin{equation}\label{eqn:langevin-1}
+b = \left(\nabla_{p}H, -\nabla_{q} H - \gamma\nabla_{p}H\right )^{T}\,,\quad a= (\zero,\sigma)^{T}\,,
+\end{equation}
+where $H\colon\R^{d}\to\R$, $d=2n$ is the Hamiltonian of the system, $\gamma=\gamma^{T}>0$ the positive semi-definite $n\times n$ friction matrix, $\sigma$ constant, satisfying $2\gamma=\beta\sigma\sigma^{T}$ for some $\beta>0$, and we have used the convention $x=(q,p)\in\R^{n}\times\R^{n}$. Under these conditions on friction and noise and some mild growth conditions on the Hamiltonian for large arguments, the unperturbed dynamics has a unique invariant measure with density 
+\[
+\rho_{0}(q,p) = \frac{1}{Z}e^{-\beta H(q,p)}\,,\quad  Z=\int  e^{-\beta H(q,p)}\,dqdp\,.
+\] 
+and the above spectral gap condition is met. Now let $f$ be any integrable phase space function and let $\rho^{\eps}=\rho^{\eps}(q,p,t)$ denote the probability density of $X_t=(Q_{t},P_{t})$, the solution to the Langevin equation (\ref{sde})--(\ref{eqn:langevin-1}), assuming that $(Q_{0},P_{0})=(q,p)$ was distributed according to the invariant density $\rho_{0}$. We define the expectation \wrt $\rho^{\eps}$ as 
+\[
+\bE_{\rho^{\eps}}[f] = \int f \rho^{\eps} \,dqdp\,.
+\] 
+A classical result (see, e.g., \cite{HairerMaijda08} and the references therein), that is usually derived using a formal expansion of the solution to the Kolmogorov forward or backward equations in powers of $\eps$, now states that 
+\begin{equation}\label{lr}
+\lim_{\eps\to 0}\frac{\bE_{\rho^{\eps}}[f] - \bE_{\rho^{0}}[f]}{\eps} = \bE_{\rho^{0}}[\cA_{1}\cA_{0}^{-1}(f-\bE_{\rho^{0}}[f])]\,.
+\end{equation}
+
+\subsubsection*{Green-Kubo relations} 
+For the specific case of the Langevin equation (\ref{sde})--(\ref{eqn:langevin-1}), the general linear response (\ref{lr}) can be recast in form of the better known Green-Kubo formula \cite{MarconiPhysRep,Risken}. Using the formal operator identity 
+\[
+-\cA_{0}^{-1} g = \int_{0}^{\infty}e^{t\cA_{0}}g \,dt\,,
+\]
+that can shown to hold for the generator of the Langevin equation under mild conditions (formally for functions $g$ that are orthogonal to the nullspace of $\cA_{0}^{*}$, i.e. functions satisfying $\bE_{\rho_{0}}[g]=0$), we find that 
+\begin{equation}\label{GreenKubo}
+\lim_{\eps\to 0}\frac{\bE_{\rho^{\eps}}[f] - \bE_{\rho^{0}}[f]}{\eps} = -\beta\int_{0}^{\infty}\bE_{\rho^{0}}[J(Q_{0},P_{0}) (f(Q_{t},P_{t})-\bE_{\rho^{0}}[f])]\,,dt
+\end{equation}
+in terms of the dissipative flux $J=-v\cdot\nabla H$, where the expectation under the integral is taken over all realizations/path of the unperturbed Langevin equation with initial distribution $\rho^{0}(q,p,0)=\rho_{0}$. In other words: 
+\[
+\bE_{\rho^{\eps}}[f] \approx \bE_{\rho_{0}}[f] - \eps\beta\int_{0}^{\infty}\bE_{\rho_{0}}[J(Q_{0},P_{0}) (f(Q_{t},P_{t})-\bE_{\rho_{0}}[f])]\,dt.
+\]
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The non-equilibrium response theory}
+\subsection{Nonequilibrium response theory: controlled Langevin dynamics}
 
-The classical response theory mainly has the following two limitations:
-Firstly, one has to start from an equilibrium simulation. That means if the
-external driving is no longer small ($\eps$ is relatively big), the
-first order (or linear) response~\eqref{eqn:eq-lr} may not be a good approximation to
-the true non-equilibrium process any more.
-One possible way to improve the accuracy is to introduce the second
-order response term, e.g., based on equation~\eqref{eqn:f2-0}.
-Here one encounters the second limitation of the classical
-response theory: it does not provide a frame work, under which
-the second and even higher order responses can be easily derived.
-The limitations of the classical responses theory motivate us to
-develop a more general framework that allows one starting from any
-non-equilibrium process (arbitrarily driven), and calculating linear responses from it.
+The classical response theory has the limitation that the reference (equilibrium) distribution $\rho_{0}$ must be stationary under the dynamics and is unique. Moreover the validity of the linear approximation relies on a spectral gap condition that is difficult to verify in practice. In particular the perturbation argument does not provide a framework, under which the second and even higher order responses can be easily derived. 
 
-This time, we consider the following Langevin equation:
-\begin{align}\label{eqn:langevin-1b}
-  \dot{\vect q} & = \nabla_{\vect p}\mh(\vect q,\vect p), \\\label{eqn:langevin-2b}
-  \dot{\vect p} & =- \nabla_{\vect q}\mh(\vect q,\vect p)
-  + (F_e(t)+\eps \Delta F_e(t)) \vect D(\vect q)
-  - \gamma\vect p
-  + \sigma\dot{\vect W},
-\end{align}
-such that for $\eps=0$ we get a driven system that is further
-perturbed by the addition time-dependent driving force $ \Delta
-F_e(t) \vect D(\vect q)$. Let $\vect X^\eps_t$ denote the associated solution process, and
-$\mathcal P_\eps$ the probability measure of the trajectories
-generated by driven Langevin
-dynamics~\eqref{eqn:langevin-1b}--\eqref{eqn:langevin-2b}.
+\subsubsection*{Girsanov transformation}
 
-The time-dependent expectation value $O_0(t)$ of the path observable $O$ under the dynamics of the Langevin equation (\ref{eqn:langevin-1b})-(\ref{eqn:langevin-2b}) for $\eps=0$
-can be written as
+Here we propose an alternative (purely formal) derivation of the linear response result, that is based on a change of drift in the corresponding SDE and which allows for an easy generalization of the above linear response result to nonequilibrium systems. We will briefly review the idea of the change of drift via Girsanov transformations; for details we refer to the textbook \cite{oksendal}. Now let $x_{t},X_{t}$ be the solutions to the following stochastic differential equations:
+\begin{subequations}\label{sde2}
 \begin{align}
-  O_0( t) =
-  \langle O[\vect X^0_s]\,\rangle_{0,t} = 
-  \int\dd \vect u\, f(\vect u, 0) 
-  \int_{\mc\{\vect u,0; t\}}
-  O[\vect X_s]\, \dd\mathcal P_0[\vect X_s],
+dx_{t} & = b(x_{t},t)dt + a(x_{t})dB_{t} \label{sde2-1}\\
+dX_{t} & = (b(X_{t},t) + \eps v_{t})dt +a(X_{t})dB_{t} \label{sde2-2}
 \end{align}
+\end{subequations}
+for $0\le t\le T$ and with fixed initial conditions
+\[
+x_{0} = X_{0} = x\,,
+\]
+Suppose that there exists a auxiliary stochastic process $\xi_{t}\in\R^{m}$ such that 
+\begin{equation}\label{xi}
+a(X_{t})\xi_{t} = v_{t}\,,
+\end{equation}
+The auxiliary variable $\xi$ will be called \emph{control variable}. We define  
+\[
+W_{t} = \eps\int_{0}^{t}\xi_{s}\,ds + B_{t}\,,\quad 0\le t\le T\,,
+\]
+which allows us to express (\ref{sde2-2}) by
+\begin{equation}\label{sde2-3}
+dX_{t} = b(X_{t},t)dt +a(X_{t})dW_{t} 
+\end{equation}
+It follows from the Girsanov theorem \cite[Thm.~8.6.8]{oksendal2003}, sometimes also called \emph{Cameron-Martin-Girsanov theorem} \cite{}, that $W_{t}$ is again a Brownian motion under a new probability measure that has a density \wrt the Gaussian probability measure that is generated by the Brownian motion $B_{t}$. Specifically, let $\nu$ denote the law of the Brownian motion $B_{t}$ and define a new probability measure $\mu$ on the space of continuous trajectories by 
+\[
+d\mu=M_{T}d\nu
+\]
+with 
+\begin{equation}\label{likelihood}
+M_{t} = \exp\left(-\eps\int_{0}^{t}\xi_{s}\cdot dB_{s} - \frac{\eps^{2}}{2}\int_{0}^{t}|\xi_{s}|^{2}ds\right)\,,\quad 0\le t\le T\,.
+\end{equation}
+Technical details aside, the Girsanov theorem implies that $W_{t}$  for any function $f=f(\{X_{t}\}_{0\le t\le T})$ that is integrable \wrt $\nu$, we have the identity
+\[
+\bE_{\nu}[f] := \int f(\{X_{t}\}_{0\le t\le T})\, d\nu = \int f(\{X_{t}\}_{0\le t\le T}) \frac{d\nu}{d\mu}\,d\mu =: \bE_{\mu}[M^{-1}_{T}f]\,.
+\]
 where 
-$\langle \cdot \,\rangle_{0,t}$ is the ensemble average over all possible trajectories for $\eps=0$ in time interval $[0,t]$,
-$f(\vect x, 0)$ is the initial distribution that may not be the equilibrium distribution, and
-$\mc\{\vect u,0; t\}$ is the set of all admissible continuous trajectories starting from point
-$\vect u$ at time $0$, and ending at some position at time $t$.
+\[
+M_{T}^{-1} = \exp\left(\eps\int_{0}^{T}\xi_{s}\cdot dW_{s} - \frac{\eps^{2}}{2}\int_{0}^{T}|\xi_{s}|^{2}ds\right)\,.
+\]
+is the density of $\nu$ relative to $\mu$. 
 
-For $\eps\ge 0$ the  expectation value $O_\eps(t)$ takes the form
-\begin{align}
-  O_\eps(t) & =
-  \int \dd\vect u f(\vect x,0)
-  \int_{\mc\{\vect u,0; t\}} O[\vect X_s]\,
-  \, \dd\mathcal P_\eps[\vect X_s]   \\
-& = \int \dd\vect u f(\vect x,0)
-  \int_{\mc\{\vect u,0; t\}} O[\vect X_s]\,
-  \frac{\dd {\mathcal P}_\eps[\vect X_s]}{\dd\mathcal P_0[\vect X_s]}
-  \, \dd\mathcal P_0[\vect X_s] .   
-\end{align}
-By using the Girsanov formula, 
-\begin{align}\label{eqn:girsanov}
-  \frac
-  {\dd{\mathcal P_\eps}[\vect X_s]}
-  {\dd\mathcal P_0[\vect X_s]}  
-  =&\,
-  \exp
-  \big\{{\eps G[\vect X_s] - \frac{\eps^2}{2} H[\vect X_s]}
-  \big\}
-\end{align}
-where the short notations are defined by:
-\begin{align}
-  G[\vect X_s]
-  &= \frac{1}\sigma\int_0^t
-  \Delta F_e(s)\,\vect D(\vect q_s)\cdot\dd\vect W_s \\
-  H[\vect X_s]
-  &=
-  \frac 1{\sigma^2}\int_0^t
-  \Delta F_e^2(s)\,\vect D^2(\vect q_s)\,\dd s.
-\end{align}
-Expansion of the right-hand-side of Eq.~\eqref{eqn:girsanov} in $\eps$, we have
-\begin{align}\label{eqn:neq-response}
-   O_\eps(t) -
-  O_0(t)
-  =
-  \eps\, \big\langle O[\vect X_s]\cdot G[\vect X_s]\big\rangle_{0,t}
-  +
-  \frac{\eps^2}{2} \big\langle O[\vect X_s] \cdot (G^2[\vect X_s] - H[\vect X_s] )\big\rangle_{0,t}
-  +
-  \mo (\eps^3)
-\end{align}
-Some remarks concerning Eq.~\eqref{eqn:neq-response} seem in order:
+
+
+Linearization of $M_{T}^{-1}$ about $\eps=0$, assuming that the control has bounded variance, yields the alternative linear response formula 
+\begin{equation}\label{lr-alt}
+\lim_{\eps\to 0}\frac{\bE_{\nu}[f] + \bE_{\mu}[f]}{\eps} = \bE_{\mu}\left[f(\{X_{t}\}_{0\le t\le T})\int_{0}^{T}\xi_{s}\cdot dW_{s} \right]\,,
+\end{equation}
+where $X_{t}$ is the solution (\ref{sde2-3}). Note that this is the unperturbed nonequilibrium dynamics, because $W_{t}$ is a standard Brownian motion under $\mu$, and the expectation is over all realizations of (\ref{sde2-3}) starting from either any given initial condition $X_{0}=x$ or an arbitrary initial distribution. On the other hand, $X_{t}$ under $\nu$ corresponds to the perturbed dynamics, which should become clear upon comparing equations (\ref{sde2-2}) and (\ref{sde2-3}). Further note that $f$ and $W_{t}$ are not independent, hence the expectation on the right hand side of the equation is not zero in general. 
+
+
+\paragraph*{Remark.} A quick-and-dirty derivation of the above change-of-measure formula can be easily obtained, if the noise covariance $a(\cdot)a(\cdot)^{T}$ has full rank almost everywhere with bounded inverse. Then, using Euler's method for (\ref{sde2}), it follows that (\ref{likelihood}) is basically the likelihood ratio between the time-discrete path densities of (\ref{sde2-2}) and (\ref{sde2-1}).    
+
+\paragraph*{Remark.} By formally expanding $M^{-1}_T$ up to second order we get an analogous second order response formula: 
+\begin{equation}\label{2nd}
+\bE_{\nu}[f] \approx \bE_{\mu}[f] + \eps \bE_{\mu}\left[f\int_{0}^{T}\xi_{s}\cdot dW_{s} \right] +\frac{\eps^{2}}{2} \bE_{\mu}\left[f\left\{\left(\int_{0}^{T}\xi_{s}\cdot dW_{s}\right)^2 -\int_0^T |\xi_s|^2\,ds\right\} \right]
+\end{equation}
+ 
+
+
+
+
+
+\subsubsection*{Nonequilibrium Langevin equation}
+
+We now link our previous considerations with the previous case and consider a non-equilibrium Langevin equation. Specifically, we add a non-gradient perturbation to the Langevin equation 
+\begin{equation}\label{eqn:langevin-1b}
+b = \left(\nabla_{p}H, -\nabla_{q} H - \gamma\nabla_{p}H  + D(q) u \right)^{T}\,,\quad a= (\zero,\sigma)^{T}\,,
+\end{equation}
+where $u\in\R^{n}$ is some control variable and $D(\cdot)\in\R^{n\times n}$ satisfies the Fredholm alternative $\mathrm{range}(D(\cdot))\perp \mathrm{ker}(\sigma^{T})$, where $\mathrm{ker}(\sigma^T)$ denotes the kernel of $\sigma^T$. As we are interested in small perturbation $\delta u$ in the controls $u$, it is convenient to further specify what $v$ in (\ref{sde2}) is. Specifically, we assume that $v$ is of the form 
+\begin{equation}\label{eqn:langevin-1c}
+v = (\zero, D(q)\,\delta u)
+\end{equation}
+so that equation (\ref{xi}) that determines the change of measure in terms of the auxiliary control variable $\xi$ (and thus the linear response) reads 
+\[
+\sigma \xi_{t} = D(Q_{t})\,\delta u_{t}\,.
+\]
+To be more explicit, the equation we are considering has the form
+\begin{equation}\label{eqn:langevin-1d}
+\begin{aligned}
+dQ_t & =  \nabla_p H(Q_t,P_t)\\
+dP_t & =  -\nabla_q H(Q_t,P_t) - \gamma \nabla_p H(Q_t,P_t) + D(Q_t)\,(u_t+\eps \delta u_t)+\sigma dB_t,
+\end{aligned}
+\end{equation}
+so that $X_t$ from above now is $(Q_t,P_t)$ and $x_t=(q_t,p_t)$ from above is the solution of our last equation for $\eps=0$.
+
+The equation is solvable by the requirement  $\mathrm{range}(D(\cdot))\perp \mathrm{ker}(\sigma^{T})$, which, if $\sigma$ has full rank, means that $D(\cdot)$ must be invertible almost everywhere. Hence the linear response formula (\ref{lr-alt})  becomes
+\begin{equation}\label{lr-alt2}
+\lim_{\eps\to 0}\frac{\bE_{\nu}[f] - \bE_{\mu}[f]}{\eps} =  \bE_{\mu}\left[f(\{(Q_{t},P_{t})_{0\le t\le T}\})\int_{0}^{T}(\sigma^{-1}D(Q_{s})\,\delta u_{s})\cdot dW_{s} \right]\,
+\end{equation}
+or, in other words: 
+\begin{equation}\label{eqn:neq-response}
+\bE_{\nu}[f] \approx \bE_{\mu}[f] + \eps\bE_{\mu}\left[f(\{Q_{t},P_{t}\}_{0\le t\le T})\int_{0}^{T}(\sigma^{-1}D(Q_{s})\,\delta u_{s})\cdot dW_{s} \right]\,.
+\end{equation}
+Here, as before, the expectation on the right is over all realizations of (\ref{eqn:langevin-1d}) for $\eps=0$ with arbitrary initial conditions (fixed or distributed); see also the remark below on the choice of initial conditions. 
+
+
+
+
+
+
+\paragraph*{Remark.} Some comments on the above result are in order:
 \begin{itemize}
-\item The first term on the right-hand-side of Eq.~\eqref{eqn:neq-response} is the linear
-  response to the reference non-equilibrium process (driven by $F_e$, $\eps=0$). The next term is the second order response term. Obviously, one can easily write down higher orders of response by the Taylor expansion of the right-hand-side of Eq.~\eqref{eqn:girsanov}.
-\item When the observable $O[\vect X_s]$ only depends on the end point of the trajectory, i.e.
-  $O[\vect X_s] = O(\vect X_t)$, then $\big\langle O(\vect X_t)\cdot G[\vect X_s]\big\rangle_{0,t}$
-  gives the well-know time correlation form of the linear response formula.
-\item If one wants to calculate the same expectation value for a family of non-equilibrium perturbations $\Delta F_e(t)$ then 
-one does not need to repeat the calculations of Eq.~\eqref{eqn:neq-response} for every member of the family. 
+
+\item[(i)] The rightmost term in \eqref{eqn:neq-response} is the linear 
+  response to the reference non-equilibrium process (driven by $u_t$ with $\eps=0$). From (\ref{2nd}) we can also get the second order response term. The latter is bounded by the assumption that the controls have bounded second moment.  
+
+\item[(ii)] In the above derivation, we have tacitly assumes that the reference and the perturbed non-equilibrium processes start from the same initial value or
+  have the same initial distribution. For fixed initial values (i.e.~points) this assumption cannot be relaxed (because otherwise $dP/dQ$ does not exist). For distributed initial values, however, there is no problem for the unperturbed and perturbed dynamics to have different initial distribution as long as both distributions are strictly positive almost everywhere. In this case one can apply a similar reweighing approach between the initial distribution as we used it for the trajectory ensemble.  
+
+\item[(iii)] If one wants to calculate the same expectation value for a family of non-equilibrium perturbations $\delta u_t$ then 
+one does not need to repeat the calculations of \eqref{eqn:neq-response} for every member of the family. 
   If it is possible to
-  express different $\Delta F_e$ in the same basis, then the responses must only be
+  express different $\delta u_t$ in the same basis, then the responses must only be
   calculated for the single basis functions. Then with a linear combination of the responses on basis functions, one can derive
-  the responses of the whole family. 
-\item In the above derivation, we assume that the reference and the perturbed non-equilibrium processes
-  have the same initial distribution (both of them may be different from the equilibrium distribution),
-  but this is not a necessary. One can easily
-  apply a similar reweighing approach to the initial distribution as we used it for the trajectory ensemble.
+  the responses for the whole family. This feature will be used below when discussion optimal control as an application of the linear response formula. 
+  
+
 \end{itemize}
 
 
@@ -435,7 +286,7 @@ one does not need to repeat the calculations of Eq.~\eqref{eqn:neq-response} for
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Optimal Forcing}
+\section{Application of the nonequilibrium response formula: optimal control}
 
 Let us remain in the setting of the last section and assume that we are interested in a finite dimensional family of forcings
 \[
@@ -471,59 +322,23 @@ a^{(i+1)}=a^{(i)} -\gamma \frac{\partial O(T)}{\partial a}.
 \section{Numerical tests}
 
 \subsection{The metastability of a single-well potential}
-The metastability of the system at time $t$ can be investigated by
-calculating the function $\Delta \mt_\tau f(\vect x, t) = (\mt_\tau
--\mi) f(\vect x, t)$, where $f(\vect x, t)$ is the probability
-distribution at position $\vect x$ and time $t$, the propagator
-$\mt_\tau$ is defined by $\mt_\tau = e^{\tau\fwg_t^{2\beta}}$, and
-$\mi$ is the identity.  Notice that here the physical time $t$ is
-frozen, and the distribution $f$ evolves a long the artificial time
-$\tau$ at temperature $1/(2\beta)$.  If the position $\vect x$ is
-``stable'', then intuitively the probability of the system being at
-position $\vect x$ will be higher when the temperature is lower, i.e.,
-$\Delta \mt_\tau f(\vect x, t) > 0$.  Otherwise, when position $\vect
-x$ is not stable, $\Delta \mt_\tau f(\vect x, t) < 0$.  The
-artificial time $\tau$ should be chosen smaller than the investigated
-relaxation time scales of the original system. However, on the other
-hand, $\tau$ cannot be arbitrarily small, because otherwise the
-statistical uncertainty would not allow us to distinguish $\mt_\tau f$
-and $f$.
 
 \begin{figure}
   \centering
   \includegraphics[width=0.4\textwidth]{figs/fig-split-pot.eps}
   \caption{The single-well potential with splitting splitting drving
-    force at time $t_c = 20$ ps.  Since the drving force is
-    conservative ($\vect D(\vect q) = -\nabla_{\vect q}V(\vect q)$),
+    force at time $T = 20$ ps.  Since the drving force is
+    conservative ($ D( q) = -\nabla_{q}V( q)$),
     we plot the non-equilibrium drving energy of the system.  The red,
     green and blue lines are the potential energy without
     non-equilibrium driving, with non-equilibrium driving and
-    the non-equilibrium driving perturbed by $\eps\Delta F_e(t)$,
+    the non-equilibrium driving perturbed by $\eps\delta u(t)$,
     respectively.  }
   \label{fig:tmp4}
 \end{figure}
 
-% The core set plays a very important role in the MSM theory.  We
-% therefore want to test our idea of non-equilibrium response theory by
-% identifying the core sets in a non-equilibrium driven system.
-% There are several ways to define a core set.
-% One possible choice  is to calculate the stability of the phase space
-% distribution: $\Delta \mt_\tau f(\vect x, t) = (\mt_\tau -\mi) f(\vect
-% x, t)$. And the core sets are defined by
-% \begin{align}
-%   C_\tau(t) = \{\vect x\vert \Delta \mt_\tau f(\vect x, t) \geq 0\}
-% \end{align}
-% Here the propagator $\mt_\tau$ is defined by $\mt_\tau =
-% e^{\tau\fwg_t^{2\beta}}$.  Notice that here the physical time $t$ is
-% frozen, and the distribution $f$ evolves a long the artificial time
-% $\tau$ at temperature $1/(2\beta)$. The artificial time $\tau$ should
-% be chosen smaller than the investigated relaxation time scales of the
-% original system. However, on the other hand, $\tau$ cannot be
-% arbitrarily small, because otherwise the statistical uncertainty would
-% not allow us to distinguish $\mt_\tau f$ and $f$.
-
 We use the idea of non-equilibrium linear response to investigate the
-metastability a one-dimensional model system: one particle in a
+nonequilibrium phase space probability density distribution, denoted by $f(q, p, t)$, of a one-dimensional model system: one particle in a
 splitting single-well potential.  For convenience, we let the mass of
 the particle to be 1~\textsf{amu}, and the friction coefficient to be
 $1\,\textsf{ps}^{-1}$.
@@ -532,85 +347,74 @@ room temperature $300\ \textsf{K}$, $k_BT = 2.48$~\textsf{kJ/mol}.
 The unperturbed Hamiltonian of the system is
 given by:
 \begin{align}
-  \mh (\vect p, \vect q) = \frac 12 \vect p^2 + U(\vect q) 
+  \mh ( p,  q) = \frac 12  p^2 + U( q) 
 \end{align}
 with potential
 \begin{align}
-  U(\vect q) = \frac12\,k\,\vect q^2 
+  U( q) = \frac12\,k\, q^2 
 \end{align}
 Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^2)$.
 See the red line in Fig.~\ref{fig:tmp4} for the  potential $U$.
 %$\textsf{kJ} / (\textsf{mol nm}^4)}$
-The non-equilibrium driving $\vect D$ is given by a conservative force:
+The non-equilibrium driving $ D$ is given by a conservative force:
 \begin{align}
-  \vect D(\vect q) = -\nabla_{\vect q} V(\vect q) 
+   D( q) = -\nabla_{ q} V( q) 
 \end{align}
-where the driving potential $V(\vect q)$ has a Gaussian profile:
+where the driving potential $V( q)$ has a Gaussian profile:
 \begin{align}
-  V(\vect q) = \frac{1}{\sqrt{2\pi \sigma^2}}
-  \exp\Big\{-\frac{\vect q^2}{2\sigma^2}\Big\}
+  V( q) = \frac{1}{\sqrt{2\pi \sigma^2}}
+  \exp\Big\{-\frac{ q^2}{2\sigma^2}\Big\}
 \end{align}
 we use $\sigma = 0.16$~\textsf{nm}.  The strength of non-equilibrium
-driving $F_e(t)$ is set to be a unitless constant $k_e$, when the time $t$ is
-larger than some warm-up time $t_c$.  When $t \leq t_c$, the strength
-of $F_e(t)$ is linearly growing, i.e. $ F_e(t) = k_e\cdot t/t_c$.  We
-consider the perturbation to the system given by $\eps\Delta F_e(t) =
-\eps$ when $t> t_c$, and $\eps\Delta F_e(t) = \eps \cdot t/t_c$ when
-$t\leq t_c$.
-We consider the following parameters: $t_c = 20$~\textsf{ps}, 
+driving $u(t)$ is set to be linearly growing, i.e. $ u(t) = k_e\cdot t/T$,
+where $k_e$ is a unitless constant.
+We
+consider the perturbation to the system given by $\eps\delta u(t) = \eps \cdot t/T$.
+We consider the following parameters: end time $T = 20$~\textsf{ps}, 
 $k_e = 1$ and $\eps = 1$, see Fig.~\ref{fig:tmp4}
 for the non-equilibrium driving potential and perturbed
-potential at time $t = t_c$.
-$\tau$ is set to be $1~\textsf{ps}$.
+potential at time $t = T$. The initial distribution $f(q, p, 0)$ is set to
+be equilibrium distribution of the unperturbed system.
 
 \begin{figure}
   \centering
   \includegraphics[width=0.95\textwidth]
-  {figs/fig-split-str2-2d-more.eps}
-  \caption{ The plot of $\Delta\mt_\tau f(\vect x,t)$ in the phase
-    space under perturbed non-equilibrium driving ($k_e = 1$ and $\eps
-    = 1$). From left to right the columns present results at time $t =
+  {figs/fig-split-str2-2d-distrib-no2nd.eps}
+  \caption{ The plot of $ f(q,p,t)$ in the phase
+    space under perturbed non-equilibrium driving. From left to right the columns present results at time $t =
     0$, 5, 10 and 20~\textsf{ps}.  The 1st row: the brute force
     non-equilibrium simulation. The 2nd row: the results of
     traditional equilibrium linear response theory. In this case we
-    effectivly consider an equilibrium system free of driving ($k_e =
-    0$), and the perturbation $\eps$ is set to 2.  The 3rd row: the
-    second order equilibrium response result.  The 4th row: the
+    effectivly consider an equilibrium system free of driving, and the perturbation $\eps$ is set to 2.  The 3rd row: the
     non-equilibrium linear response result.  }
   \label{fig:tmp6}
 \end{figure}
 
-Fig.~\ref{fig:tmp6} presents the numerical results of the splitting
+Fig.~\ref{fig:tmp6} presents the numerical results of the phase space probability distribution for the splitting
 single-well potential. From left to right the four rows presents the
-stability of the system at time $t = 0$, 5, 10 and 20~\textsf{ps}. The first
+distribution of the system at time $t = 0$, 5, 10 and 20~\textsf{ps}. The first
 row presents the brute force non-equilibrium simulation.  It is clear
-that at the beginning, there is only one stable region in the phase,
-i.e. arount $q = 0$. As the time evolves, an energy barrier develops
-in the center of the simulation region, therefore, the single stable
-region splits into two equally sized stable regions.  In the end, the two
-stable regions are entirly seperated.  This brute non-equilibrium
+that at the beginning, the distribution has only one peak,
+i.e. arount $q = 0$ and $p = 0$. As the time evolves, an energy barrier develops
+in the center of the simulation region, therefore, the single peak
+splits into two equally sized peaks.  In the end, the two
+peaks are entirly seperated.  This brute force non-equilibrium
 simulation serves as the precise result that the response theory
 should compare with. The second row shows the result of the
 traditional equilibrium linear response theory.  Please notice that in
-this case, since the reference simulation is in equilibrium (i.e. $k_e = 0$),
-the effective perturbation is of strength $\eps = 2$.  At $t =
-5$~\textsf{ps}, the accuracy of the equilibrium linear response is
-perfect. When $t = 10$~\textsf{ps}, the left stable region is a little
-over estimate. This may be due to the statistical uncertainty. At $t =
-20$~\textsf{ps}, stability of the two stable regions are too strong,
-and the unstable region in between is less stable than the brute
-force result. The accuracy of the equilibrium linear response is poor
-at $t \geq 10$~\textsf{ps}, because the strength of perturbation is no
+this case, since the reference simulation is in equilibrium, so 
+the effective perturbation is of strength $\eps = 2$.  At $t \leq
+15$~\textsf{ps}, the accuracy of the equilibrium linear response is
+perfect. At $t =
+20$~\textsf{ps}, magnitude of the peaks are relatively too strong,
+and the gap between them is actually negative.
+Since the probability distribution is always positive, the
+numerical solution of the equilibrium linear response is qualitatively wrong.
+The poor accuracy is due to the fact that the strength of perturbation is no
 longer small so that the preliminary assumption of the reponse theory
-is not well fulfilled. On the third row, we present second order
-equilibrium response theory. The using of a higher order response term
-should improve the numerical accuracy, however, this is not the case,
-because the second order response term cannot be accuratly calculated
-due to the huge statistical error. By doing longer reference
-equilibrium simulations may improve the accuracy of statistics, but it
-is not ecnomic to do that.  On the fourth row of Fig.~\ref{fig:tmp6},
+is not well fulfilled.  On the third row of Fig.~\ref{fig:tmp6},
 we present the linear response starting from a non-equilibrium driving
-of $k_e = 1$.  The numerical results is satisfactorily consistent with
+of $u(t)$.  The numerical results is satisfactorily consistent with
 the brute force non-equilibrium simulation, because the perturbation
 ($\eps = 1$) is so small that the linear perturbation theory achieves
 good accuracy.
@@ -650,11 +454,11 @@ good accuracy.
 % The unperturbed
 % Hamiltonian of the system is given by:
 % \begin{align}
-%   \mh (\vect p, \vect q) = \frac 12 \vect p^2 + U(\vect q) 
+%   \mh ( p,  q) = \frac 12  p^2 + U( q) 
 % \end{align}
 % with potential
 % \begin{align}
-%   U(\vect q) = \frac12 k (\vect q^2 - a^2)^2
+%   U( q) = \frac12 k ( q^2 - a^2)^2
 % \end{align}
 % Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^4)$, and $ a = 1\ \textsf{nm}$.
 % At room temperature $300\ \textsf{K}$, $k_BT = 2.48$~\textsf{kJ/mol}.
@@ -662,14 +466,14 @@ good accuracy.
 % %$\textsf{kJ} / (\textsf{mol nm}^4)}$
 % The perturbation is given by
 % \begin{align}
-%   \vect D(\vect q) = -\nabla_{\vect q} V(\vect q) = 1
+%    D( q) = -\nabla_{ q} V( q) = 1
 % \end{align}
-% Here $V(\vect q) = -\vect q$   effectively tilts the original
-% potential $U(\vect q)$ (see the gree and blue lines in Fig.~\ref{fig:tmp1}).
-% The strength of $F_e(t)$ is
+% Here $V( q) = - q$   effectively tilts the original
+% potential $U( q)$ (see the gree and blue lines in Fig.~\ref{fig:tmp1}).
+% The strength of $u(t)$ is
 % set to be $k_e$, when the time $t$ is larger than some warm-up time $t_c$.
-% When $t \leq t_c$, the strength of $F_e(t)$ is linearly growing,
-% i.e. $ F_e(t) = k_e\cdot t/t_c$.
+% When $t \leq t_c$, the strength of $u(t)$ is linearly growing,
+% i.e. $ u(t) = k_e\cdot t/t_c$.
 % We use the value $t_c = 20$~\textsf{ps}, so that the perturbation increases slow
 % enough: the typical decaying time scale of the correlation function
 % in~\eqref{eqn:eq-lr} is roughly 3~\textsf{ps}.
@@ -678,7 +482,7 @@ good accuracy.
 % % to be the propagator of the Langevin dynamics at temperature $150$
 % % \textsf{K} with $\alpha = 1$ \textsf{ps}.
 % consider the stability of the
-% distribution $f(\vect x, t)$ at time $t$: $\Delta\mt_\tau f(\vect x, t)$.
+% distribution $f( x, t)$ at time $t$: $\Delta\mt_\tau f( x, t)$.
 % The larger
 % this value, the more stable the core sets are.
 
@@ -734,32 +538,32 @@ good accuracy.
 \subsection{Optimal tilting of a double-well potential}
 \begin{figure}
   \centering
-  \includegraphics[]{figs/fig-ctr-stat.eps}
+  \includegraphics[]{figs/fig-ctr-stat-2.eps}
   \caption{The optimal forcing.  In this plot, $T=20$ ps.  The red
     color indicates $\eta = 0.01$ and the green color indicates $\eta
     = 0.05$.  In the upper plot, the solid lines present the magnitude
     of the control $F_e(t)$, which is calculated on a family of
     piecewise linear ansatz functions. The time interval of a linear
     piece is 1 ps.  The blue insertions show the shape of the
-    non-equilibrium driving potential $U(\vect q) + F_e(t)V(\vect
+    non-equilibrium driving potential $U( q) + F_e(t)V(
     q)$ at time indicated by the black arrow.  In the lower plot, the
-    dashed lines display the value of $P(\vect X_t)$ as the time
+    dashed lines display the value of $P( X_t)$ as the time
     evolves.  The solid lines present $O[F_e](t)$.  }\label{fig:tmp7}
 \end{figure}
 
 In this section, we consider the following double well potential:
 \begin{align}
-  U(\vect q) = \frac12 k (\vect q^2 - a^2)^2
+  U( q) = \frac12 k ( q^2 - a^2)^2
 \end{align}
 Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^4)$, and $ a = 1\
 \textsf{nm}$.  See the leftmost blue insertion of Fig.~\ref{fig:tmp7} for
 the shape of the potential.
 %$\textsf{kJ} / (\textsf{mol nm}^4)}$
-The perturbation is given by a conservative tilting to $U(\vect q)$:
+The perturbation is given by a conservative tilting to $U( q)$:
 \begin{align}
-  \vect D(\vect q) = -\nabla_{\vect q} V(\vect q) = 1
+   D( q) = -\nabla_{ q} V( q) = 1
 \end{align}
-Here $V(\vect q) = -\vect q$. We want to
+Here $V( q) = - q$. We want to
 optimally design the tilting such that the probability
 of being in the right well is as high as possible 
 at the end time of the process. That is equal to consider the 
@@ -769,14 +573,14 @@ the following optimal forcing problem:
 \end{align}
 with
 \begin{align}
-  O[F_e](T) &= P(\vect X_T) -
+  O[F_e](T) &= P( X_T) -
   \eta\,
-  \big\langle \int_0^T\vert F_e(t)\vect D(\vect q)\vert^2\, dt\,
+  \big\langle \int_0^T\vert F_e(t) D( q)\vert^2\, dt\,
   \big\rangle
 \end{align}
-where $P(\vect X_T)$ is probability of the end point of the trajectory
-$\vect X_T$ being in the right well.  It is
-clear that for an unbiased double-well, $P(\vect X_T)$
+where $P( X_T)$ is probability of the end point of the trajectory
+$ X_T$ being in the right well.  It is
+clear that for an unbiased double-well, $P( X_T)$
 is 0.5.  The integral is the ``cost'' of the control and $\eta$ is a
 positive constant that indicates the relative magnitude of the
 cost. We consider the ansatz function family $\mathcal F$ of piecewise
@@ -784,12 +588,12 @@ linear functions on $[0, T]$.
 
 Fig.~\ref{fig:tmp7} presents the numerical result. The magnitude of
 control $F_e(t)$ is shown in the upper plot, and the value of
-optimization target $O[F_e](T)$ and the value of $P(\vect X_T)$ are
+optimization target $O[F_e](T)$ and the value of $P( X_T)$ are
 given in the lower plot by the solid and dashed lines, respectively.
 The plot shows that with a smaller $\eta$ (the relative magnitude of
 the cost of the control is smaller), a stronger control is calculated
 from the optimization, and the optimized value of $O[F_e](T)$ and
-$P(\vect X_T)$ are bigger, which means the end position of $\vect X_t$
+$P( X_T)$ are bigger, which means the end position of $ X_t$
 is more biased towards the right well. This observation is consistent
 with intuition.  When $t<10$~ps, the magnitude of the control is
 almost 0.  Near the end time $T$, the magnitude of the control firstly
@@ -815,52 +619,11 @@ decreasing control.
 
 \section{Conclusions and Remarks}
 
-When the strength of the perturbation $\eps$ is relatively small, then
-the traditional linear response theory gives good approximation.  When
-the perturbation reaches the strength, that is not small for the
-linear response, including the second order response term does not
-substantially improve the accuracy.
-In the splitting single-well example, the statistical
-noise of the second order response is so big that overwhelms the
-information. Spending more computational effort on reducing the noise
-is not economic. The non-equilibrium response theory developed by this
-work allows one to calculate the response from some intermediate
-non-equilibrium simulation, so the effective perturbation is much
-smaller than it would be calculated from an equilibrium
-simulation.
-In both examples considered by this paper, the
-numerical results of the proposed idea  satisfactory consistent with the
-brute force non-equilibrium simulation.
-From the face that, in a strongly driven system,
-one should do an intermediate non-equilibrium
-simulation and calculate the response from it,
-one may argue that this may not be able to
-save a lot computational cost comparing with a brute force
-non-equilibrium simulation.  However, in practice, one need the
-response theory for the following reasons: (1) One may want to study
-multiple non-equilibrium system that are not very far from each other,
-so only do one system and apply the linear response idea takes
-advantage over doing non-equilibrium simulation for each of them.
-(2) A stronger driven non-equilibrium system may be more difficult to
-simulation directly comparing with a weakly driven system. For
-example, the energy barrier between two rare events may be increased
-greatly due to the external driven. (3) By the traditional linear
-response theory, some information concerning the intermediate
-non-equilibrium system can be derived from an standard equilibrium
-simulation.
-With this extra information, may be able to design better simulation methods
-for the intermediate non-equilibrium system,
-so that it is not as expensive as a brute force non-equilibrium
-simulation starting with nothing know before hand.
-(4) A thermodynamic multistep integration method can be developed from the
-response theory plus idea (3): the non-equilibrium driving is increased
-step-by-step and the total simulation effort at all the steps is still
-cheaper than doing one brute force non-equilibrium simulation for the
-target driven system.
-Till now we have not investigated idea (3) and (4) mentioned above,
-however, we believe the non-equilibrium response theory is a very
-important step toward it and by itself deserves a separate careful
-investigation.
+We derived  first and second order response formulas for molecular dynamics (driven Langevin dynamics) starting from general nonequilibrium distributions. For the special case of the initial distribution being the equilibrium distribution of the unperturbed dynamics, the novel linear response formula siimplifies to the well-known standard formula. We validated the novel formula in numerical experiments in comparison to brute-force nonequilibrium simulations. There, we demonstrated that the novel linear response formula allows to extend the algorithmic use of linear response theory to significantly stronger perturbutions of the system since it permits intermediate steps based on partially propagated nonequilibrium distributions. 
+
+By means of this theory we outlined how to use the novel linear response formula for the computation of optimal controls in molecular dynamics where one desires to find the optimal perturbation/control that maximizes a target functional, that is, a certain expectation value (like the population of a certain region of state space) under a constraint on the energy used in the perturbation. Application of the novel nonequilibrium theory allows to compute the gradient of the target functional by computing expectation values \emph{only} for the dynamics at hand which permits efficient application of standard optimization techniques. We illustrated this technique in application to a simple test case and validated it in comparison to brute force optimization.  
+
+
 
 
 
@@ -889,11 +652,11 @@ investigation.
 % particle to be 1 \textsf{amu}. The unperturbed
 % Hamiltonian of the system is given by:
 % \begin{align}
-%   \mh (\vect p, \vect q) = \frac 12 \vect p^2 + U(\vect q) 
+%   \mh ( p,  q) = \frac 12  p^2 + U( q) 
 % \end{align}
 % with potential
 % \begin{align}
-%   U(\vect q) = \frac12 k (\vect q^2 - a^2)^2
+%   U( q) = \frac12 k ( q^2 - a^2)^2
 % \end{align}
 % Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^4)$, and $ a = 1\ \textsf{nm}$.
 % Notice at room temperature $300\ \textsf{K}$, $k_BT = 2.48$~\textsf{kJ/mol}.
@@ -901,11 +664,11 @@ investigation.
 % %$\textsf{kJ} / (\textsf{mol nm}^4)}$
 % The perturbation is given by
 % \begin{align}
-%   \vect C(\vect p, \vect q) = 0; \qquad
-%   \vect D(\vect p, \vect q) = -\nabla_{\vect q} V(\vect q) = 1
+%    C( p,  q) = 0; \qquad
+%    D( p,  q) = -\nabla_{ q} V( q) = 1
 % \end{align}
-% Here $V(\vect q) = -\vect q$ is  effectively tilting the original
-% potential $U(\vect q)$. The strength of the perturbation $F_e(t)$ is given
+% Here $V( q) = - q$ is  effectively tilting the original
+% potential $U( q)$. The strength of the perturbation $F_e(t)$ is given
 % by the following function:
 % \begin{align}
 %   F_e(t) = 
@@ -923,7 +686,7 @@ investigation.
 % % \textsf{K} with $\alpha = 1$ \textsf{ps}.
 % Since the dynamics is in
 % 1-d, the projection $\mathcal P$ is identity.  We consider the stability of the
-% distribution $f(\vect x, t)$ at time $t$: $\Delta\mt_\tau f(\vect x, t)$.
+% distribution $f( x, t)$ at time $t$: $\Delta\mt_\tau f( x, t)$.
 % The larger
 % this value, the more stable the core sets are.
 
@@ -933,7 +696,7 @@ investigation.
 %   {figs/fig-tilt-str2-simple.eps}
 %   \caption{
 %     Tilting double well potential testing case:
-%     the plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+%     the plot of $\Delta\mt_\tau f( x,t)$  under perturbation of
 %     $F_e^{\textrm{max}} = 2.0$.
 %     From left to right:
 %     (a) $t=0$~\textsf{ps},
@@ -958,7 +721,7 @@ investigation.
 %   {figs/fig-tilt-str4-simple.eps}
 %   \caption{
 %     Tilting double well potential:
-%     the plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+%     the plot of $\Delta\mt_\tau f( x,t)$  under perturbation of
 %     $F_e^{\textrm{max}} = 4.0$.
 %     From left to right:
 %     (a) $t=0$~\textsf{ps},
@@ -983,7 +746,7 @@ investigation.
 % calculate core sets of the tilting double-well potential.
 % Fig.~\ref{fig:new-tmp2} presents
 % the snapshot at $t=20$~\textsf{ps}
-% of $\Delta\mt_\tau f(\vect x,t)$ under the maximum perturbation
+% of $\Delta\mt_\tau f( x,t)$ under the maximum perturbation
 % strength $F_e^{\max} = 2.0$. Response formula truncated
 % at both order $n=1$ and $n=2$ are compared to 
 % the brutal force non-equilibirum simulation.
@@ -995,7 +758,7 @@ investigation.
 % negligibly small; (2) the statistical error of numerically measuring the
 % linear response is also small.
 % Fig.~\ref{fig:new-tmp3} presents the $t=20$~\textsf{ps}
-% snapshots of $\Delta\mt_\tau f(\vect x,t)$
+% snapshots of $\Delta\mt_\tau f( x,t)$
 % under a larger perturbations $F_e^{\max} = 4.0$.
 % The linear reponse using the equilibirum process as the reference
 % shows poor accuracy: the left well vanishes in this case,
@@ -1048,7 +811,7 @@ investigation.
 % In this splitting single-well potential example, the unperturbed
 % potential is simply the harmonic potential given by:
 % \begin{align}
-%   U(\vect q) = \frac12\,k\,\vect q^2 
+%   U( q) = \frac12\,k\, q^2 
 % \end{align}
 % Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^2)$.
 % Notice at room temperature $300\ \textsf{K}$, $k_BT = 2.48$~\textsf{kJ/mol}.
@@ -1056,13 +819,13 @@ investigation.
 % %$\textsf{kJ} / (\textsf{mol nm}^4)}$
 % The perturbation is again given by
 % \begin{align}
-%   \vect C(\vect p, \vect q) = 0; \qquad
-%   \vect D(\vect p, \vect q) = -\nabla_{\vect q} V(\vect q) 
+%    C( p,  q) = 0; \qquad
+%    D( p,  q) = -\nabla_{ q} V( q) 
 % \end{align}
-% where $V(\vect q)$ is a Gaussian type potential:
+% where $V( q)$ is a Gaussian type potential:
 % \begin{align}
-%   V(\vect q) = \frac{1}{\sqrt{2\pi \sigma^2}}
-%   \exp\Big\{-\frac{\vect q^2}{2\sigma^2}\Big\}
+%   V( q) = \frac{1}{\sqrt{2\pi \sigma^2}}
+%   \exp\Big\{-\frac{ q^2}{2\sigma^2}\Big\}
 % \end{align}
 % we use $\sigma = 0.16$~\textsf{nm}. Please see Fig~\ref{fig:tmp4}.
 % For the results, please see Fig.~\ref{fig:tmp5} -- Fig.~\ref{fig:tmp6}.
@@ -1076,7 +839,7 @@ investigation.
 %   {figs/fig-split-str1-simple.eps}
 %   \caption{
 %     Splitting single-well potential testing case:
-%     the plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+%     the plot of $\Delta\mt_\tau f( x,t)$  under perturbation of
 %     $F_e^{\textrm{max}} = 1.0$.
 %     From left to right:
 %     (a) $t=0$~\textsf{ps},
@@ -1101,7 +864,7 @@ investigation.
 %   {figs/fig-split-str2-simple.eps}
 %   \caption{
 %     splitting single well potential:
-%     the plot of $\Delta\mt_\tau f(\vect x,t)$  under perturbation of
+%     the plot of $\Delta\mt_\tau f( x,t)$  under perturbation of
 %     $F_e^{\textrm{max}} = 2.0$.
 %     From left to right:
 %     (a) $t=0$~\textsf{ps},

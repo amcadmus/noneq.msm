@@ -19,8 +19,8 @@ set key spacing 1.5
 
 pl[-1.5:1.5][-1:8] 0 ls 0 not, \
 0.0 * 1./sqrt(2*pi*sigma2) * exp(-x**2/(2.*sigma2)) + 4*x**2 ls 1 t'U(q)',\
-1.0 * 1./sqrt(2*pi*sigma2) * exp(-x**2/(2.*sigma2)) + 4*x**2 ls 2 t'U(q) + F_e(t_c)V(q)',\
-2.0 * 1./sqrt(2*pi*sigma2) * exp(-x**2/(2.*sigma2)) + 4*x**2 ls 3 t'U(q) + [F_e(t_c) + {/Symbol e}{/Symbol D}F_e(t_c)]V(q)'
+1.0 * 1./sqrt(2*pi*sigma2) * exp(-x**2/(2.*sigma2)) + 4*x**2 ls 2 t'U(q) + u(T)V(q)',\
+2.0 * 1./sqrt(2*pi*sigma2) * exp(-x**2/(2.*sigma2)) + 4*x**2 ls 3 t'U(q) + [u(T) + {/Symbol e}{/Symbol d} u(T)]V(q)'
 
 
 # pl[-2:2][-10:20] 0 ls 0 not,\
