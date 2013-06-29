@@ -53,8 +53,7 @@
 
 \begin{document}
 
-% \title{Linear response theory for core set identification}
-\title{Linear response theory for a system under non-equilibrium conditions}
+\title{Linear response theory and optimal control for a molecular system under non-equilibrium conditions}
 
 \author{Han Wang$^{a}$ and Carsten Hartmann$^{a}$ and Christof Sch\"utte$^{a,b}$$^{\ast}$\thanks{$^\ast$Corresponding author. Email: Christof.Schuette@fu-berlin.de}\\\vspace{6pt}$^{a}${\em Institute for Mathematics, Freie Universit\"at Berlin, Germany}\\$^{b}${\em Zuse Institute Berlin (ZIB), Germany}}
   
@@ -79,10 +78,10 @@
 
 Standard molecular dynamics simulations are dealing with systems in thermal equilibrium; in this case they are tuned to the canonial or Boltzmann distribution in the sense that either (1) if one starts from this distribution it remains invariant under the dynamics or (2) if one generates a very long trajectory it samples state space with respect this distribution, that is, every possible state of the molecular system under consideration is visited according to the probability given by it.  Obviously, this allows to compute equilibrium expectation values with respect to the  canonical distribution simply be computing long trajectories. 
 
-Often, however, one is interested in knowing about the response of the molecular system to perturbation out of equilibrium. The standard linear response formula allows to answer this question, at least partially. In the standard setting it gives us the first order of the change to an equilibrium expectation value as resulting from the non-equilibrium perturbation. Here, first order means first order in the size of the perturbation. This linear response formula has a long history of extensions and generalizations. In some sense it has become one of the cornerstones of modern statistical physics since it can be related to the fluctuation dissipation theorem (FDT) which roughly states that for appropriate systems in statistical equilibrium, the average response to small external perturbations can be calculated through the knowledge of suitable correlation functions of the unperturbed statistical system. The standard linear response theory holds in a  very general sense \cite{hairer2008} as long as one assumes that the unperturbed system is in equilibrium.
+Often, however, one is interested in knowing about the response of the molecular system to perturbation out of equilibrium. The standard linear response formula allows to answer this question, at least partially. In the standard setting it gives us the first order of the change to an equilibrium expectation value as resulting from the non-equilibrium perturbation. Here, first order means first order in the size of the perturbation. This linear response formula has a long history of extensions and generalizations. In some sense it has become one of the cornerstones of modern statistical physics since it can be related to the fluctuation dissipation theorem (FDT) which roughly states that for appropriate systems in statistical equilibrium, the average response to small external perturbations can be calculated through the knowledge of suitable correlation functions of the unperturbed statistical system. The standard linear response theory holds in a  very general sense \cite{HairerMajda} as long as one assumes that the unperturbed system is in equilibrium.
 %=Martin Hairer and Andrew J Majda, A simple framework to justify linear response theory, Nonlinearity 23 (2010) 909–922 doi:10.1088/0951-7715/23/4/008
 
-There is an increasing number of articles in the literature that report on applications of molecular dynamics to nonequilibrium settings. There are many generalization to so-called nonequilibrium steady states based on the generality of the FDT, but despite its wide use, the present authors do not know of a linear response formula that applies to fully general nonequilibirium cases. We will provide such a formula for the case that the underlying dynamics can be described by Langevin dynamics. Furthermore, we will even provide a formula for the second order response of a Langevin system in non-equilibrium to a small perturbation.
+There is an increasing number of articles in the literature that report on applications of molecular dynamics to nonequilibrium settings. There are many generalization to so-called nonequilibrium steady states based on the generality of the FDT \cite{Seifert}, but despite its wide use, the present authors do not know of a linear response formula that applies to fully general nonequilibirium cases. We will provide such a formula for the case that the underlying dynamics can be described by Langevin dynamics. Furthermore, we will even provide a formula for the second order response of a Langevin system in non-equilibrium to a small perturbation.
 
 Instead of applying this theory to a molecular system we will go one step further. We will outline how the novel nonequilibrium linear response formula can be used to compute the optimal control of molecular systems. In optimal control one seeks the optimal way to perturbed a molecular system such that a certain target expectation value (e.g. population of certain states) is maximized under constraints on the energy of the control. In general the control drives the molecular system under control out of equilibrium. Thus, the nonequilibrium linear response formula can be used to find the optimal correction of the present control regarding the expectation value of interest. 
 
@@ -253,11 +252,11 @@ so that $X_t$ from above now is $(Q_t,P_t)$ and $x_t=(q_t,p_t)$ from above is th
 
 The equation is solvable by the requirement  $\mathrm{range}(D(\cdot))\perp \mathrm{ker}(\sigma^{T})$, which, if $\sigma$ has full rank, means that $D(\cdot)$ must be invertible almost everywhere. Hence the linear response formula (\ref{lr-alt})  becomes
 \begin{equation}\label{lr-alt2}
-\lim_{\eps\to 0}\frac{\bE_{\rho^{\eps}}[f] - \bE_{\rho^{0}}[f]}{\eps} =  \bE_{\rho^{\eps}}\left[f(\{(q_{t},p_{t})_{0\le t\le T}\})\int_{0}^{T}(\sigma^{-1}D(q_{s})\,\delta u_{s})\cdot dB_{s} \right]\,
+\lim_{\eps\to 0}\frac{\bE_{\rho^{\eps}}[f] - \bE_{\rho^{0}}[f]}{\eps} =  \bE_{\rho^{0}}\left[f(\{(q_{t},p_{t})_{0\le t\le T}\})\int_{0}^{T}(\sigma^{-1}D(q_{s})\,\delta u_{s})\cdot dB_{s} \right]\,
 \end{equation}
 or, in other words: 
 \begin{equation}\label{eqn:neq-response}
-\bE_{\rho^{\eps}}[f] \approx \bE[f] + \eps\bE\left[f(\{q_{t},p_{t}\}_{0\le t\le T})\int_{0}^{T}(\sigma^{-1}D(q_{s})\,\delta u_{s})\cdot dB_{s} \right]\,.
+\bE_{\rho^{\eps}}[f] \approx \bE_{\rho^0}[f] + \eps\bE_{\rho^0}\left[f(\{q_{t},p_{t}\}_{0\le t\le T})\int_{0}^{T}(\sigma^{-1}D(q_{s})\,\delta u_{s})\cdot dB_{s} \right]\,.
 \end{equation}
 Here, as before, the expectation on the right is over all realizations of (\ref{eqn:langevin-1d}) for $\eps=0$ with arbitrary initial conditions (fixed or distributed); see also the remark below on the choice of initial conditions. 
 
@@ -324,7 +323,7 @@ dp_t & =  -\nabla_q H(q_t,p_t)dt - \gamma \nabla_p H(q_t,p_t)dt + D(q_t)u_{t} dt
 \end{equation}
 where 
 \begin{equation}\label{ocp2}
-I(u) = \bE\left[\int_{0}^{T}\left\{\ell (q_{s}) - \frac{1}{2}|u_{s}|^{2}\right\}\,dt + L(q_{T}) \right]
+I(u) = \bE_{\rho^0}\left[\int_{0}^{T}\left\{\ell (q_{s}) - \frac{1}{2}|u_{s}|^{2}\right\}\,dt + L(q_{T}) \right]
 \end{equation}
 and $\cU$, the space of admissible controls, consists of all bounded controls 
 \begin{equation}\label{admissible}
@@ -355,14 +354,14 @@ denote the direction along which we want to differentiate, where $\delta a=(\del
 \end{aligned}
 \end{equation*} 
 provided that the limit exists. The above iteration therefore is equivalent to
-\[
+\begin{equation}\label{gd}
 a_{k}^{(n+1)} = a_{k}^{(n)} + \tau_{n}\left.\frac{\partial I}{\partial a_{k}}\right|_{a_{k}=a_{k}^{(n)}}\,,
-\]
+\end{equation}
 with
-\[
-\frac{\partial I}{\partial a_{k}} = \bE\left[f\int_{0}^{T}(\sigma^{-1}D(q_{s})\Phi_{k}(s))\cdot dB_{s} \right]\,.
-\]
-and $\bE[\cdot]$ being the expectation over all realization of (\ref{eqn:langevin-1d}) with $\eps=0$ and $u=u^{(n)}$ being the current iterate; note that we can compute all partial derivatives $\partial I/\partial a_k$, $k=1,\ldots,K$ from just one ensemble of nonequilibrium paths of $(q_{t},p_{t})$. Further note that, in general, the updated coefficient $a^{(n+1)}$ and hence the updated control $u^{(n+1)}$ will depend on the distribution of the initial conditions at the $n$-th iteration stage; in particular, if the controls are computed on-the-fly, the controls will actually be feedback controls depending on the current state.    
+\begin{equation}\label{dida}
+\frac{\partial I}{\partial a_{k}} = \bE_{\rho^0}\left[f\int_{0}^{T}(\sigma^{-1}D(q_{s})\Phi_{k}(s))\cdot dB_{s} \right]\,.
+\end{equation}
+and $\bE_{\rho^0}[\cdot]$ being the expectation over all realization of (\ref{eqn:langevin-1d}) with $\eps=0$ and $u=u^{(n)}$ being the current iterate; note that we can compute all partial derivatives $\partial I/\partial a_k$, $k=1,\ldots,K$ from just one ensemble of nonequilibrium paths of $(q_{t},p_{t})$. Further note that, in general, the updated coefficient $a^{(n+1)}$ and hence the updated control $u^{(n+1)}$ will depend on the distribution of the initial conditions at the $n$-th iteration stage; in particular, if the controls are computed on-the-fly, the controls will actually be feedback controls depending on the current state.    
 
 
 
@@ -370,17 +369,17 @@ and $\bE[\cdot]$ being the expectation over all realization of (\ref{eqn:langevi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Numerical tests}
+\section{Numerical Experiments}
 
-\subsection{The metastability of a single-well potential}
+\subsection{Splitting a single-well potential}
 
 \begin{figure}
   \centering
   \includegraphics[width=0.4\textwidth]{figs/fig-split-pot.eps}
-  \caption{The single-well potential with splitting splitting drving
-    force at time $T = 20$ ps.  Since the drving force is
-    conservative ($ D( q) = -\nabla_{q}V( q)$),
-    we plot the non-equilibrium drving energy of the system.  The red,
+  \caption{The single-well potential with  splitting driving
+    force. Time $T = 20$ ps.  Since the driving force is
+    of gradient form, $ D( q) = -\nabla_{q}V( q)$,
+    we plot the non-equilibrium driving energy of the system.  The red,
     green and blue lines are the potential energy without
     non-equilibrium driving, with non-equilibrium driving and
     the non-equilibrium driving perturbed by $\eps\delta u(t)$,
@@ -389,8 +388,8 @@ and $\bE[\cdot]$ being the expectation over all realization of (\ref{eqn:langevi
 \end{figure}
 
 We use the idea of non-equilibrium linear response to investigate the
-nonequilibrium phase space probability density distribution, denoted by $f(q, p, t)$, of a one-dimensional model system: one particle in a
-splitting single-well potential.  For convenience, we let the mass of
+nonequilibrium phase space probability density distribution, denoted by $\rho^\eps(q, p, t)$, of a one-dimensional model system: one particle in a
+splitting single-well potential as shown in Fig.~\ref{fig:tmp4}.  For convenience, we let the mass of
 the particle to be 1~\textsf{amu}, and the friction coefficient to be
 $1\,\textsf{ps}^{-1}$.
 The temperature is the
@@ -407,9 +406,9 @@ with potential
 Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^2)$.
 See the red line in Fig.~\ref{fig:tmp4} for the  potential $U$.
 %$\textsf{kJ} / (\textsf{mol nm}^4)}$
-The non-equilibrium driving $ D$ is given by a conservative force:
+The non-equilibrium driving $ D$ is given by a force of gradient form:
 \begin{align}
-   D( q) = -\nabla_{ q} V( q) 
+   D( q) = -\nabla_{ q} V( q) ,
 \end{align}
 where the driving potential $V( q)$ has a Gaussian profile:
 \begin{align}
@@ -420,54 +419,55 @@ we use $\sigma = 0.16$~\textsf{nm}.  The strength of non-equilibrium
 driving $u(t)$ is set to be linearly growing, i.e. $ u(t) = k_e\cdot t/T$,
 where $k_e$ is a unitless constant.
 We
-consider the perturbation to the system given by $\eps\delta u(t) = \eps \cdot t/T$.
+consider the perturbation to the system given by $\eps\delta u(t) = \eps k_e \cdot t/T$.
 We consider the following parameters: end time $T = 20$~\textsf{ps}, 
 $k_e = 1$ and $\eps = 1$, see Fig.~\ref{fig:tmp4}
 for the non-equilibrium driving potential and perturbed
-potential at time $t = T$. The initial distribution $f(q, p, 0)$ is set to
+potential at time $t = T$. The initial distribution $\rho^0(q, p, 0)$ is set to
 be equilibrium distribution of the unperturbed system.
 
 \begin{figure}
   \centering
   \includegraphics[width=0.95\textwidth]
   {figs/fig-split-str2-2d-distrib-no2nd.eps}
-  \caption{ The plot of $ f(q,p,t)$ in the phase
-    space under perturbed non-equilibrium driving. From left to right the columns present results at time $t =
-    0$, 5, 10 and 20~\textsf{ps}.  The 1st row: the brute force
-    non-equilibrium simulation. The 2nd row: the results of
-    traditional equilibrium linear response theory. In this case we
-    effectivly consider an equilibrium system free of driving, and the perturbation $\eps$ is set to 2.  The 3rd row: the
-    non-equilibrium linear response result.  }
+  \caption{ The plot of $ \rho^\eps(q,p,t)$ in  phase
+    space under the perturbed non-equilibrium driving described in the text. From left to right the columns present results at times $t =
+    0$, 5, 10 and 20~\textsf{ps}.  First row: Results of a brute force
+    non-equilibrium simulation. Second row: Results of
+    classical equilibrium linear response theory. In this case we
+    effectively consider an equilibrium system free of driving, and the perturbation $\eps$ is set to 2.  Third row: Results using the
+    nonequilibrium linear response result.  }
   \label{fig:tmp6}
 \end{figure}
 
-Fig.~\ref{fig:tmp6} presents the numerical results of the phase space probability distribution for the splitting
-single-well potential. From left to right the four rows presents the
+Fig.~\ref{fig:tmp6} presents the numerical results for  the phase space probability distribution for the splitting
+single-well potential. From left to right the four columns present the
 distribution of the system at time $t = 0$, 5, 10 and 20~\textsf{ps}. The first
-row presents the brute force non-equilibrium simulation.  It is clear
-that at the beginning, the distribution has only one peak,
-i.e. arount $q = 0$ and $p = 0$. As the time evolves, an energy barrier develops
-in the center of the simulation region, therefore, the single peak
+row presents the result of a brute force non-equilibrium simulation.  It is clear
+that at the beginning the distribution has only one peak around $q = 0$ and $p = 0$. As  time evolves, an energy barrier develops
+in the center of the simulation region and, therefore, the single peak
 splits into two equally sized peaks.  In the end, the two
-peaks are entirly seperated.  This brute force non-equilibrium
-simulation serves as the precise result that the response theory
-should compare with. The second row shows the result of the
+peaks are entirely seperated.  The brute force non-equilibrium
+simulation serves as the precise result to which the response theory
+should be compared. The second row shows the result of the
 traditional equilibrium linear response theory.  Please notice that in
-this case, since the reference simulation is in equilibrium, so 
-the effective perturbation is of strength $\eps = 2$.  At $t \leq
+this case, since the reference simulation is in equilibrium, we set the perturbation to
+\[
+\eps v_t = D(q) (u_t+\eps\delta u_t)=2\eps D(q)k_e\cdot t/T=2\eps D(q)\delta u_t,
+\] 
+so that the effective perturbation is of strength $2\eps = 2$.  At $t \leq
 15$~\textsf{ps}, the accuracy of the equilibrium linear response is
 perfect. At $t =
 20$~\textsf{ps}, magnitude of the peaks are relatively too strong,
-and the gap between them is actually negative.
+and in the gap between them the distribution is actually negative.
 Since the probability distribution is always positive, the
 numerical solution of the equilibrium linear response is qualitatively wrong.
 The poor accuracy is due to the fact that the strength of perturbation is no
-longer small so that the preliminary assumption of the reponse theory
-is not well fulfilled.  On the third row of Fig.~\ref{fig:tmp6},
-we present the linear response starting from a non-equilibrium driving
-of $u(t)$.  The numerical results is satisfactorily consistent with
-the brute force non-equilibrium simulation, because the perturbation
-($\eps = 1$) is so small that the linear perturbation theory achieves
+longer small so that the preliminary assumption of the classical reponse theory ("small perturbation")
+is not satisfied.  
+
+The third row of Fig.~\ref{fig:tmp6} presents the results computed using the novel nonequilibrium  linear response formula: we first start form the equilibrium distribution, apply  $u(t)$, arrive at a nonequilibrium distribution and then, in a second step, compute the effect of the non-equilibrium driving $\delta u(t)$.  The numerical results are satisfactorily consistent with
+the brute force non-equilibrium simulation, because the perturbation is still  small enough and the novel linear response theory achieves
 good accuracy.
 
 % Fig.~\ref{fig:tmp6} presents the numerical results of perturbation $\eps =
@@ -584,22 +584,23 @@ good accuracy.
 % % equilibrium state.
 
 
-
-
 \subsection{Optimal tilting of a double-well potential}
 \begin{figure}
   \centering
   \includegraphics[]{figs/fig-ctr-stat-2.eps}
-  \caption{The optimal forcing.  In this plot, $T=20$ ps.  The red
-    color indicates $\eta = 0.01$ and the green color indicates $\eta
-    = 0.05$.  In the upper plot, the solid lines present the magnitude
-    of the control $F_e(t)$, which is calculated on a family of
-    piecewise linear ansatz functions. The time interval of a linear
-    piece is 1 ps.  The blue insertions show the shape of the
-    non-equilibrium driving potential $U( q) + F_e(t)V(
-    q)$ at time indicated by the black arrow.  In the lower plot, the
-    dashed lines display the value of $P( X_t)$ as the time
-    evolves.  The solid lines present $O[F_e](t)$.  }\label{fig:tmp7}
+  \caption{Illustration of the optimal control for tilting the potential.  
+    In this plot, $T=9$ ps.  In the gradient descent search, the
+    red lines  calculate
+    the gradient by the non-equilibrium linear respect theory, while
+    the green lines calculates by the central finite difference scheme.
+ In the upper plot, the solid lines present the magnitude
+    of the optimal control $u_t$ as calculated based on a family of
+    piecewise linear ansatz functions with time interval 1~ps.
+    The blue insertions show the shape of the
+    nonequilibrium driving potential $U( q) + u_t V(
+    q)$ at the time indicated by the black arrow.  In the lower plot, the
+    dashed lines display the value of $P(q_t)$ as the time
+    evolves,  and the solid lines present $\eta I$.  }\label{fig:tmp7}
 \end{figure}
 
 In this section, we consider the following double well potential:
@@ -610,43 +611,58 @@ Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^4)$, and $ a = 1\
 \textsf{nm}$.  See the leftmost blue insertion of Fig.~\ref{fig:tmp7} for
 the shape of the potential.
 %$\textsf{kJ} / (\textsf{mol nm}^4)}$
-The perturbation is given by a conservative tilting to $U( q)$:
+The perturbation is given by a gradient form tilting of $U( q)$ by means of
 \begin{align}
-   D( q) = -\nabla_{ q} V( q) = 1
+   D( q) = -\nabla_{ q} V( q) = 1,
 \end{align}
-Here $V( q) = - q$. We want to
+with $V( q) = - q$. We want to
 optimally design the tilting such that the probability
 of being in the right well is as high as possible 
-at the end time of the process. That is equal to consider the 
+at the end time of the process under a constraint on the energy used for the control in the sense of
 the following optimal forcing problem:
 \begin{align}
-  O_{\max}(T)& = \max_{F_e\in\mathcal F} O[F_e](T) 
+  I & = \max_{u_t \in\mathcal F} \bE_{\rho^0}\left[ -\int_{0}^{T} \frac{1}{2}|u_{s}|^{2}\,dt + L(q_T) \right],
 \end{align}
-with
-\begin{align}
-  O[F_e](T) &= P( X_T) -
-  \eta\,
-  \big\langle \int_0^T\vert F_e(t) D( q)\vert^2\, dt\,
-  \big\rangle
-\end{align}
-where $P( X_T)$ is probability of the end point of the trajectory
-$ X_T$ being in the right well.  It is
-clear that for an unbiased double-well, $P( X_T)$
-is 0.5.  The integral is the ``cost'' of the control and $\eta$ is a
-positive constant that indicates the relative magnitude of the
-cost. We consider the ansatz function family $\mathcal F$ of piecewise
-linear functions on $[0, T]$.
+with $L(q_T)=\chi_{[a-\delta,a+\delta]}(q_T)/\eta$ representing the probability of the end point of the trajectory, $ q_T$, being in the right well ($\chi_I$ denotes the indicator function of the interval $I$) with $\eta$ being a weighting constant, ${\mathcal F}$ denoting the space of function that are piecewise linear  on $[0, T]$ in uniform intervals of length 1 ps, and $\rho^0$ being the non-equilibrium distribution for $u_t$. With $P(T) =  \bE_{\rho^0}(L(q_T))$, we thus have
+\[
+  \eta I = \max_{u_t \in\mathcal F} \Big[ P(T) -
+  \frac{\eta}{2}\,
+   \int_0^T |u_t|^2\, dt\Big],
+\]
+where $P(T)$ is probability of the end point of the trajectory
+$ q_T$ being in the right well.  It is
+clear that for an unbiased double-well, $P(T)$
+is 0.5.  The integral is the ``cost'' of the control and $\eta$  indicates the relative magnitude of the
+cost. 
 
-Fig.~\ref{fig:tmp7} presents the numerical result. The magnitude of
-control $F_e(t)$ is shown in the upper plot, and the value of
-optimization target $O[F_e](T)$ and the value of $P( X_T)$ are
+Fig.~\ref{fig:tmp7} presents the numerical results of $\eta = 0.01$.
+Starting from an initial guess of linear-incremental control from $u_0 = 0$ to
+$u_T = 1$,
+the gradient search~\eqref{gd} converges at the 22nd step, when the
+maximum increment of the control coefficient $\max_k\vert \delta a_k\vert$
+is smaller than $0.02$.
+The magnitude of the optimal
+control $u_t$ is presented in the upper plot,
+with blue insertions showing the shape of the controlled potential 
+$U(q) + u_tV(q)$ (tilted double-well potential). 
+The maximized $\eta I$ and the corresponding probability in the right well
+$P( X_T)$ are
 given in the lower plot by the solid and dashed lines, respectively.
-The plot shows that with a smaller $\eta$ (the relative magnitude of
-the cost of the control is smaller), a stronger control is calculated
-from the optimization, and the optimized value of $O[F_e](T)$ and
-$P( X_T)$ are bigger, which means the end position of $ X_t$
-is more biased towards the right well. This observation is consistent
-with intuition.  When $t<10$~ps, the magnitude of the control is
+The red lines in the figure are produced by the non-equilibrium
+linear response theory developed in this work, i.e. using~\eqref{dida},
+and the green lines are reference simulations with the left-hand-side
+partial derivatives in~\eqref{dida} calculated by the central
+finite difference scheme.
+The good agreement between the red and green line demonstrates that 
+the linear response theory computes the gradient correctly,
+Please note that the calculate gradient, the finite difference scheme
+needs to do $2K$ non-equilibrium simulations
+($K$ is the number of degrees of freedom of the control,
+in this example $K = 10$). By contrast, the non-equilibrium response theory
+only needs one ensemble non-equilibrium simulation, which is much cheaper than
+the finite difference scheme.
+
+When $t<8$~ps, the magnitude of the control is
 almost 0.  Near the end time $T$, the magnitude of the control firstly
 quickly goes up, and then falls down a little bit.  This implies some
 interesting information.  If the system were able to immediately relax
@@ -664,6 +680,7 @@ that as the control goes up, the population in the right well actually
 does not have enough time to go as high as it could be, so when the
 control decreases, it continues going up rather than following the
 decreasing control.
+
 
 
 

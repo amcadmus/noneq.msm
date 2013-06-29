@@ -27,7 +27,7 @@ set xtics 1
 set mxtics 2
 set ytics 0.1
 set mytics 5
-set ylabel "O[F_e](t)"
+set ylabel "{/Symbol h}I and P(q_t)"
 set format y "%.2f"
 set key at 4.5, 0.77 
 
@@ -48,7 +48,7 @@ set format x  ""
 set ytics 1
 set mytics 2
 unset xlabel
-set ylabel "F_e(t)"
+set ylabel "u(t)"
 set key at -0.5,3.5
 
 set style arrow 1 head filled size screen 0.015,20,20 ls 02
