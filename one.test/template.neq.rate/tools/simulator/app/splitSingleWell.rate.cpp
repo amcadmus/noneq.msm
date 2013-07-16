@@ -202,7 +202,7 @@ int main(int argc, char * argv[])
 	Dofs dw = noneqInte.getDw ();
 	traj.push_back (branchXX);
 	// if ( int((ttNoneq + 1.5 * dt) / dt) % int ( (rateLag+0.5 * dt) / dt) == 0){
-	//   printf ("tt: %f posi is %.16f\n", ttNoneq+dt, branchXX.xx[0]);
+	//   printf ("tt: %f posi is %.16f   %.16f\n", ttNoneq+dt, branchXX.xx[0], branchXX_old.xx[0]);
 	// }
 	resInfo.depositMainTraj (traj, inteSigma, dw);
       }
