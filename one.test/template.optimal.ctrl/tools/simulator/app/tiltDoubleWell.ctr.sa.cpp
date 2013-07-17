@@ -274,7 +274,7 @@ int main(int argc, char * argv[])
     double changeSize;
     if (rank == 0){
       changeII = int(RandomGenerator_MT19937::genrand_real2() * nTimeFrame);
-      while ( (changeSize = RandomGenerator_MT19937::gaussian() * saSigma) < saChangeMin ) {
+      while ( fabs(changeSize = (RandomGenerator_MT19937::gaussian() * saSigma)) < saChangeMin ) {
       }
     }
     COMM_WORLD.Bcast (&changeII, 1, MPI_INT, 0);

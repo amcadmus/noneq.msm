@@ -22,7 +22,7 @@ init_ctr="ctr.init.out"
 
 # simulated annealing parameters
 saTmax=1.0
-saNst=200
+saNst=1000
 saSigma=0.2
 saChangeMin=0.03
 
