@@ -72,7 +72,6 @@ int main(int argc, char * argv[])
   unsigned branchNumFeq;
   double x0, x1;
   int order;
-  double beta;
   string sfile, lfile;
   string ifile;
   double rateLag;
@@ -87,7 +86,6 @@ int main(int argc, char * argv[])
   desc.add_options()
       ("help,h", "print this message")
       ("dt,d", po::value<double > (&dt)->default_value(0.0001), "time step [ps]")
-      ("beta,b", po::value<double > (&beta)->default_value(1.0), "the punishment constant, unknown unit...")
       ("nst,n", po::value<double > (&nst)->default_value(10000), "number of time step")
       ("print-feq,p", po::value<unsigned > (&nstprint)->default_value(10000), "print frequency")
       ("gamma,g", po::value<double > (&gamma)->default_value(1.), "gamma [ps^-1]")
@@ -100,7 +98,7 @@ int main(int argc, char * argv[])
       ("pert-strength0",po::value<double > (&pertSt0)->default_value(1.0), "perturbation strength 0 [kJ/(mol nm)]")
       ("pert-strength1",po::value<double > (&pertSt1)->default_value(1.0), "perturbation strength 1 [kJ/(mol nm)]")
       ("warm-time", po::value<double > (&warmTime)->default_value(100.), "warm up time of perturbation [ps]")
-      ("order", po::value<int > (&order)->default_value(2), "order of response")
+      ("order", po::value<int > (&order)->default_value(1), "order of response")
       ("save-corr", po::value<string > (&sfile), "save correlation")
       ("load-corr", po::value<string > (&lfile), "load saved correlation")
       ("rate-lag", po::value<double > (&rateLag)->default_value(1.0), "lag of rate calculation")
@@ -139,6 +137,8 @@ int main(int argc, char * argv[])
     std::cout << "###################################################" << std::endl;  
   }
 
+  unsigned numNoneqCheck = int((noneqTime + 0.5 * noneqCheckFeq) / noneqCheckFeq) + 1;
+
   sw_total.start();
 
   // initial sets
@@ -171,45 +171,54 @@ int main(int argc, char * argv[])
   Traj traj (nTrajRecord);
     
   NoneqResponseInfo resInfo;
-  resInfo.reinit (beta, x0, x1, dt, noneqTime, noneqCheckFeq, pert);
+  resInfo.reinit (x0, x1, dt, noneqTime, noneqCheckFeq, pert);
 
-  for (double ii = 0.; ii < nst+0.1; ii += 1.){
-    // sw_eq.start();
-    inte.step (xx, 0.);
-    // sw_eq.stop();
-    count ++;
-    countBranch ++;
-    time += dt;
-    if (int(nstprint) == count && rank == 0){
-      count = 0;
-      printf ("# %f %f %f    \r", time, xx.xx[0], xx.vv[0]);
-      fflush (stdout);
-    }
-    if (countBranch == int(branchNumFeq)){
-      countBranch = 0;
-      Dofs branchXX (xx);
-      Dofs branchXX_old (xx);
-      traj.clear ();
-      traj.push_back (xx);
-      resInfo.newTraj ();
-      // branching
-      for (double ttNoneq = 0.; ttNoneq < noneqTime-0.5*dt; ttNoneq += dt){
-	// printf ("%f %d %d\n", ttNoneq, countNoneqCheck, noneqCheckNumFeq);
-	branchXX_old = branchXX;
-	// sw_noneq.start();
-	noneqInte.step (branchXX, ttNoneq);
-	// sw_noneq.stop();
-	Dofs dw = noneqInte.getDw ();
-	traj.push_back (branchXX);
-	// if ( int((ttNoneq + 1.5 * dt) / dt) % int ( (rateLag+0.5 * dt) / dt) == 0){
-	//   printf ("tt: %f posi is %.16f   %.16f\n", ttNoneq+dt, branchXX.xx[0], branchXX_old.xx[0]);
-	// }
-	resInfo.depositMainTraj (traj, inteSigma, dw);
+  if (!vm.count("load-corr")){
+    for (double ii = 0.; ii < nst+0.1; ii += 1.){
+      // sw_eq.start();
+      inte.step (xx, 0.);
+      // sw_eq.stop();
+      count ++;
+      countBranch ++;
+      time += dt;
+      if (int(nstprint) == count && rank == 0){
+	count = 0;
+	printf ("# %f %f %f    \r", time, xx.xx[0], xx.vv[0]);
+	fflush (stdout);
+      }
+      if (countBranch == int(branchNumFeq)){
+	countBranch = 0;
+	Dofs branchXX (xx);
+	Dofs branchXX_old (xx);
+	traj.clear ();
+	traj.push_back (xx);
+	resInfo.newTraj ();
+	// branching
+	for (double ttNoneq = 0.; ttNoneq < noneqTime-0.5*dt; ttNoneq += dt){
+	  // printf ("%f %d %d\n", ttNoneq, countNoneqCheck, noneqCheckNumFeq);
+	  branchXX_old = branchXX;
+	  // sw_noneq.start();
+	  noneqInte.step (branchXX, ttNoneq);
+	  // sw_noneq.stop();
+	  Dofs dw = noneqInte.getDw ();
+	  traj.push_back (branchXX);
+	  // if ( int((ttNoneq + 1.5 * dt) / dt) % int ( (rateLag+0.5 * dt) / dt) == 0){
+	  //   printf ("tt: %f posi is %.16f   %.16f\n", ttNoneq+dt, branchXX.xx[0], branchXX_old.xx[0]);
+	  // }
+	  resInfo.depositMainTraj (traj, inteSigma, dw);
+	}
       }
     }
+    resInfo.average ();
+    resInfo.collect ();
+    
+    if (vm.count("save-corr")){
+      if (rank == 0) resInfo.save (sfile);
+    }
   }
-  resInfo.average ();
-  resInfo.collectLast ();
+  else {
+    resInfo.load (lfile);
+  }  
     
   if (rank == 0){
     char tmpfilename[1024];
@@ -222,7 +231,19 @@ int main(int argc, char * argv[])
     }
     fclose (fp);
   }
-  
+  if (rank == 0){
+    char tmpfilename[1024];
+    sprintf (tmpfilename, "state.resp.out");
+    FILE *fp = fopen (tmpfilename, "w");
+    for (unsigned ii = 0; ii < numNoneqCheck; ++ii){
+      double nowTime = ii * noneqCheckFeq;
+      double rate;
+      resInfo.calculate (nowTime, pert1, rate, order);
+      fprintf (fp, "%e   %e\n",
+	       nowTime, rate);
+    }
+    fclose (fp);
+  }
 
   sw_total.stop();
 

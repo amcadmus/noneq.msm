@@ -13,8 +13,6 @@ using namespace std;
 class NoneqResponseInfo 
 {
   double x0, x1;
-
-  double beta;
   
   double dt;
   double noneqTime;
@@ -40,8 +38,7 @@ public:
   NoneqResponseInfo ();
   // ~NoneqResponseInfo ();
 public:
-  void reinit (const double & beta,
-	       const double & x0,
+  void reinit (const double & x0,
 	       const double & x1,
 	       const double & dt,
 	       const double & noneqTime,
@@ -54,15 +51,17 @@ public:
 			const double & sigma,
 			const Dofs & dw);
   void average ();
-  void collectLast () ;
+  void collect () ;
 public:
-  // void calculate (const double & time,
-  // 		  const Perturbation & pert1,
-  // 		  double & dist,
-  // 		  double & quench_dist,
-  // 		  const int order = 2);
+  void calculate (const double & time,
+		  const Perturbation & pert1,
+		  double & rate,
+		  const int order = 1);
   const vector<double > &	   get_order0 () const {return order0;}
   const vector<vector<double > > & get_order1 () const {return order1;}
+public:
+  void save (const string & filename) const;
+  void load (const string & filename);
 }
     ;
 
