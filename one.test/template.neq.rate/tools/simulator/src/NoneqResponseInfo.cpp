@@ -131,9 +131,9 @@ depositMainTraj (const Traj & traj,
   }
   for (int jj = 0; jj < numMode; ++jj){
     Gj[jj] += 1./sigma * modes[jj] * tmp0;
-    // for (int kk = 0; kk < numMode; ++kk){
-    //   Hjk[jj][kk] += 1./(sigma*sigma) * modes[jj] * modes[kk] * tmp1 * dt;
-    // }
+    for (int kk = 0; kk < numMode; ++kk){
+      Hjk[jj][kk] += 1./(sigma*sigma) * modes[jj] * modes[kk] * tmp1 * dt;
+    }
   }
 
   countNoneq ++;
@@ -147,9 +147,9 @@ depositMainTraj (const Traj & traj,
     order0[countNoneqSeg] += trajObservable (traj);
     for (int jj = 0; jj < numMode; ++jj){
       order1[countNoneqSeg][jj] +=  trajObservable(traj) * Gj[jj];
-      // for (int kk = 0; kk < numMode; ++kk){
-      // 	order2[countNoneqSeg][jj][kk] = trajObservable(traj) * (Gj[jj] * Gj[kk] - Hjk[jj][kk]);
-      // }
+      for (int kk = 0; kk < numMode; ++kk){
+      	order2[countNoneqSeg][jj][kk] = trajObservable(traj) * (Gj[jj] * Gj[kk] - Hjk[jj][kk]);
+      }
     }
   }
 }
@@ -163,9 +163,9 @@ average ()
     order0[tt]				/= double(ntraj);
     for (int jj = 0; jj < numMode; ++jj){
       order1[tt][jj]			/= double(ntraj);
-      // for (int kk = 0; kk < numMode; ++kk){
-      // 	order2[tt][jj][kk]		/= double(ntraj);
-      // }
+      for (int kk = 0; kk < numMode; ++kk){
+      	order2[tt][jj][kk]		/= double(ntraj);
+      }
     }
   }
 }
@@ -209,6 +209,30 @@ collect ()
   
   free (tmporder1s);
   free (tmporder1r);
+
+
+  double * tmporder2s = (double *) malloc (sizeof(double) * numCheck * numMode * numMode);
+  double * tmporder2r = (double *) malloc (sizeof(double) * numCheck * numMode * numMode);
+
+  for (int ii = 0; ii < numCheck; ++ii){
+    for (int jj = 0; jj < numMode; ++jj){
+      for (int kk = 0; kk < numMode; ++kk){ 
+	tmporder2s[ii*numMode*numMode + jj*numMode + kk] = order2[ii][jj][kk];
+      }
+    }
+  }
+  COMM_WORLD.Allreduce (tmporder2s, tmporder2r, numCheck * numMode * numMode, MPI_DOUBLE, SUM);
+  for (int ii = 0; ii < numCheck; ++ii){
+    for (int jj = 0; jj < numMode; ++jj){
+      for (int kk = 0; kk < numMode; ++kk){ 
+	order2[ii][jj][kk] = tmporder2r[ii*numMode*numMode + jj*numMode + kk] / double(size);
+      }
+    }
+  }
+  
+  free (tmporder2s);
+  free (tmporder2r);
+
 }
 
 void NoneqResponseInfo::
@@ -248,13 +272,13 @@ calculate (const double & time,
     }
   }
   // order 2
-  // if (order >= 2){
-  //   for (int jj = 0; jj < numMode; ++jj){
-  //     for (int kk = 0; kk < numMode; ++kk){
-  // 	dist.add (0.5 * pref1[jj] * pref1[kk], order2[index][jj][kk]);
-  //     }
-  //   }
-  // }
+  if (order >= 2){
+    for (int jj = 0; jj < numMode; ++jj){
+      for (int kk = 0; kk < numMode; ++kk){
+  	rate += 0.5 * pref1[jj] * pref1[kk] * order2[index][jj][kk];
+      }
+    }
+  }
 }
 
 
