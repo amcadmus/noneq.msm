@@ -1,8 +1,8 @@
-dt=1e-4
+dt=1e-3
 nst=1e8
 branch_feq=10.0
 noneq_check_feq=1.0
-noneq_time=25.0
+noneq_time=30.0
 warm_time=20.0
 rate_lag=1.0
 refe_strength=1.0
@@ -12,7 +12,7 @@ project_name=splitSingleWell
 #project_name=tiltDoubleWell
 
 load_saved_resp=no
-saved_resp_dir=~/study/noneq.msm/one.test/saved.corr
+saved_resp_dir=~/study/noneq.msm/one.test/saved.corr.result5
 
 gamma=1.0
 temperature=300.0
