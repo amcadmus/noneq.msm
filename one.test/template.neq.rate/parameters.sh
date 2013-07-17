@@ -1,32 +1,24 @@
 dt=1e-4
 nst=1e8
+branch_feq=10.0
 noneq_check_feq=1.0
-noneq_time=20.0
-time_resolution=1.0
-beta=0.01
-gd_step=10
-finiteDiff_step=0.5
-pert_strength=1.0
+noneq_time=25.0
+warm_time=20.0
+rate_lag=1.0
+refe_strength=1.0
+pert_strength=2.0
 resp_order=1
-branch_feq=10
+project_name=splitSingleWell
+#project_name=tiltDoubleWell
+
+load_saved_resp=no
+saved_resp_dir=~/study/noneq.msm/one.test/saved.corr
+
 gamma=1.0
 temperature=300.0
 x0=-2.0
 x1=2.0
-v0=-8.0
-v1=8.0
-nx=30
-nv=30
 seed=`date +%s`
-init_ctr="ctr.init.out"
-
-# simulated annealing parameters
-saTmax=1.0
-saNst=200
-saSigma=0.2
-saChangeMin=0.03
-
-project_name=tiltDoubleWell
 
 # tilt double well parameters
 double_well_k=8.0
