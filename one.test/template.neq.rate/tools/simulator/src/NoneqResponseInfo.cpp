@@ -116,18 +116,14 @@ depositMainTraj (const Traj & traj,
   double nowTime = countNoneq * dt;
   Dofs pvalue;
   ppert->operator () (oldx, pvalue);
-  Dofs pvalueTime;
-  ppert->operator () (oldx, nowTime, pvalueTime);
   std::vector<double > modes;
   ppert->FeMode (nowTime, modes);
   
   double tmp0 = 0.;
   double tmp1 = 0.;
-  double tmp2 = 0.;
   for (unsigned dd = 0; dd < NUMDOFS; ++dd){
     tmp0 += pvalue.vv[dd] * dw.vv[dd];
     tmp1 += pvalue.vv[dd] * pvalue.vv[dd];
-    tmp2 += pvalueTime.vv[dd] * pvalueTime.vv[dd];
   }
   for (int jj = 0; jj < numMode; ++jj){
     Gj[jj] += 1./sigma * modes[jj] * tmp0;
@@ -148,7 +144,7 @@ depositMainTraj (const Traj & traj,
     for (int jj = 0; jj < numMode; ++jj){
       order1[countNoneqSeg][jj] +=  trajObservable(traj) * Gj[jj];
       for (int kk = 0; kk < numMode; ++kk){
-      	order2[countNoneqSeg][jj][kk] = trajObservable(traj) * (Gj[jj] * Gj[kk] - Hjk[jj][kk]);
+      	order2[countNoneqSeg][jj][kk] += trajObservable(traj) * (Gj[jj] * Gj[kk] - Hjk[jj][kk]);
       }
     }
   }
