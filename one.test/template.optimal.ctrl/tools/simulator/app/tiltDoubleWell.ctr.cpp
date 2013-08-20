@@ -302,11 +302,12 @@ int main(int argc, char * argv[])
       sprintf (tmpfilename, "ctr.step%03d.out", iter+1);
       FILE * fp = fopen (tmpfilename, "w");
       for (unsigned ii = 0; ii < nTimeFrame; ++ii){
-	fprintf (fp, "%e %e   %e %e\n",
+	fprintf (fp, "%e %e   %e %e   %e\n",
 		 tt[ii],
 		 ttvalue[ii],
 		 resInfo.get_order1().back()[ii],
-		 2. * sqrt(resInfo.get_order1error().back()[ii] - resInfo.get_order1().back()[ii] * resInfo.get_order1().back()[ii])
+		 2. * sqrt(resInfo.get_order1error().back()[ii] - resInfo.get_order1().back()[ii] * resInfo.get_order1().back()[ii]),
+		 resInfo.get_order1().back()[ii] + order1punish[ii]
 	    );
       }
       fclose (fp);
