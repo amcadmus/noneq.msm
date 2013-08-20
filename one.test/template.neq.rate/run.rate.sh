@@ -3,6 +3,7 @@
 source parameters.sh
 
 make -C tools/simulator makedir &> make.log
+make -C tools/simulator clean &> make.log
 make -C tools/simulator -j8 &>> make.log
 
 rm -f run.rate.log
@@ -74,7 +75,7 @@ fi
 # --pert-strength0 $refe_strength --pert-strength1 $pert_strength"
 
 echo "# run on `hostname`" &>> run.rate.log
-echo "# command is $command" &>> run.rate.log
-$command > output.resp 2> error.resp &
+echo "# command is mpirun -np 8 $command" &>> run.rate.log
+mpirun -np 8 $command > output.rate 2> error.rate
 echo "# pid is $!" &>> run.rate.log
 
