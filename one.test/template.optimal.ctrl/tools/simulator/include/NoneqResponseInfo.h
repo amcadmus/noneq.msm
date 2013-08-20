@@ -28,7 +28,9 @@ class NoneqResponseInfo
   int numMode;
   
   vector<double >				order0;		// time
+  vector<double >				order0error;	// time
   vector<vector<double > >			order1;		// time x vec
+  vector<vector<double > >			order1error;	// time x vec
   vector<vector<vector<double > > >		order2;		// time x mat  
   vector<double >				order0punish;	// time
   
@@ -60,6 +62,7 @@ public:
 			const Dofs & dw);
   void average ();
   void collectLast () ;
+  void collect () ;
 public:
   // void calculate (const double & time,
   // 		  const Perturbation & pert1,
@@ -67,8 +70,10 @@ public:
   // 		  double & quench_dist,
   // 		  const int order = 2);
   const vector<double > &	   get_order0 () const {return order0;}
+  const vector<double > &	   get_order0error () const {return order0error;}
   const vector<double > &	   get_order0punish () const {return order0punish;}
   const vector<vector<double > > & get_order1 () const {return order1;}
+  const vector<vector<double > > & get_order1error () const {return order1error;}
 }
     ;
 

@@ -37,12 +37,15 @@ reinit (const double & beta_,
   checkNumFeq = int((noneqCheckFeq + 0.5 * dt) / dt);
   
   order0.resize(numCheck);
+  order0error.resize(numCheck);
   order0punish.resize(numCheck);
   order1.resize(numCheck);
+  order1error.resize(numCheck);
   order2.resize(numCheck);
   
   for (int jj = 0; jj < numCheck; ++jj){
     order1[jj].resize (numMode);
+    order1error[jj].resize (numMode);
     order2[jj].resize (numMode);
     for (int kk = 0; kk < numMode; ++kk){
       order2[jj][kk].resize (numMode);
@@ -51,9 +54,11 @@ reinit (const double & beta_,
 
   for (int tt = 0; tt < numCheck; ++tt){
     order0[tt] = 0.;
+    order0error[tt] = 0.;
     order0punish[tt] = 0.;
     for (int jj = 0; jj < numMode; ++jj){
       order1[tt][jj] = 0.;
+      order1error[tt][jj] = 0.;
       for (int kk = 0; kk < numMode; ++kk){
 	order2[tt][jj][kk] = 0.;
       }
@@ -105,6 +110,7 @@ depositMainTraj (const Dofs & oldx,
 {
   if (countNoneq == 0){
     order0[0] += (-inSet(oldx));
+    order0error[0] += (-inSet(oldx)) * (-inSet(oldx));
     // countNoneq ++;
     // return;
   }
@@ -144,10 +150,12 @@ depositMainTraj (const Dofs & oldx,
     }
     // order0[countNoneqSeg] += (- inSet(newx) + punish);
     order0[countNoneqSeg] += (- inSet(newx));
+    order0error[countNoneqSeg] += (- inSet(newx)) * (- inSet(newx));
     order0punish[countNoneqSeg] += (punish);
     for (int jj = 0; jj < numMode; ++jj){
       // order1[countNoneqSeg][jj] +=  (- inSet(newx) + punish) * Gj[jj];
       order1[countNoneqSeg][jj] +=  (- inSet(newx)) * Gj[jj];
+      order1error[countNoneqSeg][jj] +=  (- inSet(newx)) * Gj[jj] * (- inSet(newx)) * Gj[jj];
       // for (int kk = 0; kk < numMode; ++kk){
       // 	order2[countNoneqSeg][jj][kk] = (- inSet(newx) + punish) * (Gj[jj] * Gj[kk] - Hjk[jj][kk]);
       // }
@@ -162,9 +170,11 @@ average ()
 {
   for (int tt = 0; tt < numCheck; ++tt){
     order0[tt]				/= double(ntraj);
+    order0error[tt]			/= double(ntraj);
     order0punish[tt]			/= double(ntraj);
     for (int jj = 0; jj < numMode; ++jj){
       order1[tt][jj]			/= double(ntraj);
+      order1error[tt][jj]		/= double(ntraj);
       // for (int kk = 0; kk < numMode; ++kk){
       // 	order2[tt][jj][kk]		/= double(ntraj);
       // }
@@ -194,6 +204,87 @@ collectLast ()
   
   free (tmporder1s);
   free (tmporder1r);
+}
+
+
+void NoneqResponseInfo::
+collect () 
+{
+  double * tmporder0s = (double *) malloc (sizeof(double) * numCheck);
+  double * tmporder0r = (double *) malloc (sizeof(double) * numCheck);
+
+  for (int ii = 0; ii < numCheck; ++ii){
+    tmporder0s[ii] = order0[ii];
+  }
+  COMM_WORLD.Allreduce (tmporder0s, tmporder0r, numCheck, MPI_DOUBLE, SUM);
+  int size = COMM_WORLD.Get_size();
+  for (int ii = 0; ii < numCheck; ++ii){
+    order0[ii] = tmporder0r[ii] / double(size);
+  }
+  for (int ii = 0; ii < numCheck; ++ii){
+    tmporder0s[ii] = order0error[ii];
+  }
+  COMM_WORLD.Allreduce (tmporder0s, tmporder0r, numCheck, MPI_DOUBLE, SUM);
+  size = COMM_WORLD.Get_size();
+  for (int ii = 0; ii < numCheck; ++ii){
+    order0error[ii] = tmporder0r[ii] / double(size);
+  }
+  
+  free (tmporder0s);
+  free (tmporder0r);
+
+  double * tmporder1s = (double *) malloc (sizeof(double) * numCheck * numMode);
+  double * tmporder1r = (double *) malloc (sizeof(double) * numCheck * numMode);
+
+  for (int ii = 0; ii < numCheck; ++ii){
+    for (int jj = 0; jj < numMode; ++jj){
+      tmporder1s[ii*numMode + jj] = order1[ii][jj];
+    }
+  }
+  COMM_WORLD.Allreduce (tmporder1s, tmporder1r, numCheck * numMode, MPI_DOUBLE, SUM);
+  for (int ii = 0; ii < numCheck; ++ii){
+    for (int jj = 0; jj < numMode; ++jj){
+      order1[ii][jj] = tmporder1r[ii*numMode + jj] / double(size);
+    }
+  }
+  for (int ii = 0; ii < numCheck; ++ii){
+    for (int jj = 0; jj < numMode; ++jj){
+      tmporder1s[ii*numMode + jj] = order1error[ii][jj];
+    }
+  }
+  COMM_WORLD.Allreduce (tmporder1s, tmporder1r, numCheck * numMode, MPI_DOUBLE, SUM);
+  for (int ii = 0; ii < numCheck; ++ii){
+    for (int jj = 0; jj < numMode; ++jj){
+      order1error[ii][jj] = tmporder1r[ii*numMode + jj] / double(size);
+    }
+  }
+  
+  free (tmporder1s);
+  free (tmporder1r);
+
+
+  double * tmporder2s = (double *) malloc (sizeof(double) * numCheck * numMode * numMode);
+  double * tmporder2r = (double *) malloc (sizeof(double) * numCheck * numMode * numMode);
+
+  for (int ii = 0; ii < numCheck; ++ii){
+    for (int jj = 0; jj < numMode; ++jj){
+      for (int kk = 0; kk < numMode; ++kk){ 
+	tmporder2s[ii*numMode*numMode + jj*numMode + kk] = order2[ii][jj][kk];
+      }
+    }
+  }
+  COMM_WORLD.Allreduce (tmporder2s, tmporder2r, numCheck * numMode * numMode, MPI_DOUBLE, SUM);
+  for (int ii = 0; ii < numCheck; ++ii){
+    for (int jj = 0; jj < numMode; ++jj){
+      for (int kk = 0; kk < numMode; ++kk){ 
+	order2[ii][jj][kk] = tmporder2r[ii*numMode*numMode + jj*numMode + kk] / double(size);
+      }
+    }
+  }
+  
+  free (tmporder2s);
+  free (tmporder2r);
+
 }
 
 
