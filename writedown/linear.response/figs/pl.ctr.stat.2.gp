@@ -27,7 +27,8 @@ set xtics 1
 set mxtics 2
 set ytics 0.1
 set mytics 5
-set ylabel "{/Symbol h}I and P(q_t)"
+# set ylabel "{/Symbol h}I and P(q_t)"
+set ylabel "I and P"
 set format y "%.2f"
 set key at 4.5, 0.77 
 

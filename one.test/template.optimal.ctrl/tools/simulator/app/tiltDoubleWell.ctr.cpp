@@ -302,18 +302,21 @@ int main(int argc, char * argv[])
       char tmpfilename[1024];
       sprintf (tmpfilename, "ctr.step%03d.out", iter+1);
       FILE * fp = fopen (tmpfilename, "w");
+      fprintf (fp, "# ntraj is %d\n", resInfo.get_ntraj());
       for (unsigned ii = 0; ii < nTimeFrame; ++ii){
-	fprintf (fp, "%e %e   %e %e   %e\n",
+	fprintf (fp, "%e %e   %e %e %e   %e\n",
 		 tt[ii],
 		 ttvalue[ii],
 		 resInfo.get_order1().back()[ii],
-		 2. * sqrt(resInfo.get_order1error().back()[ii] - resInfo.get_order1().back()[ii] * resInfo.get_order1().back()[ii]) / sqrt(resInfo.get_ntraj() * double(size)),
-		 resInfo.get_order1().back()[ii] + order1punish[ii]
+		 order1punish[ii],
+		 resInfo.get_order1().back()[ii] + order1punish[ii],
+		 2. * sqrt(resInfo.get_order1error().back()[ii] - resInfo.get_order1().back()[ii] * resInfo.get_order1().back()[ii]) / sqrt(resInfo.get_ntraj() * double(size))
 	    );
       }
       fclose (fp);
       sprintf (tmpfilename, "state.step%03d.out", iter+1);
       fp = fopen (tmpfilename, "w");
+      fprintf (fp, "# ntraj is %d\n", resInfo.get_ntraj());
       for (unsigned ii = 0; ii < resInfo.get_order0().size(); ++ii){
 	fprintf (fp, "%e   %e %e %e   %e\n",
 		 noneqCheckFeq * ii,
