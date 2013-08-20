@@ -68,6 +68,7 @@ void cal_order1punish (const double & beta,
 double runTraj (const vector<double > & tt,		// size num mode
 		const vector<double > & ttvalue,
 		vector<double > & order0,		// size noneq check
+		vector<double > & order0error,		// size noneq check
 		vector<double > & order0punish,		// size noneq check
 		const DoubleWell & dw,
 		const double & dt,
@@ -140,6 +141,7 @@ double runTraj (const vector<double > & tt,		// size num mode
   noneqInfo.collectLast ();
   
   order0 = noneqInfo.get_order0();
+  order0error = noneqInfo.get_order0error();
   order0punish = noneqInfo.get_order0punish();
   if (rank == 0) printf ("\n# rank: %d order0: %e\n", rank, order0.back());
 
@@ -273,13 +275,13 @@ int main(int argc, char * argv[])
 
   for (unsigned iter = 0; iter < 100 ; ++iter){    
     double thisvalue;
-    vector<double > order0, order0punish;
-    vector<double > order1, order1punish;
+    vector<double > order0, order0error, order0punish;
+    vector<double > order1, order1error1, order1error2, order1punish;
     
     cal_order1punish (beta, tt, ttvalue, order1punish);
 
     thisvalue = runTraj (tt, ttvalue,
-			 order0, order0punish,
+			 order0, order0error, order0punish,
 			 dw, dt, gamma, kT, nst, x0, x1, beta, noneqTime, noneqCheckFeq, branchFeq, nstprint, seed);    
     if (rank == 0) printf ("# finish value at the point				\n");
     
@@ -289,31 +291,37 @@ int main(int argc, char * argv[])
       sprintf (tmpfilename, "state.step%03d.out", iter+1);
       fp = fopen (tmpfilename, "w");
       for (unsigned ii = 0; ii < order0.size(); ++ii){
-    	fprintf (fp, "%e   %e %e %e\n",
+    	fprintf (fp, "%e   %e %e %e   %e\n",
     		 noneqCheckFeq * ii,
     		 order0[ii],
     		 order0punish[ii],
-    		 order0[ii] + order0punish[ii]);
+    		 order0[ii] + order0punish[ii],
+		 2. * sqrt(order0error[ii] - order0[ii] * order0[ii])
+	    );
       }
       fclose (fp);
     }
     
     order1.resize(nTimeFrame);
+    order1error1.resize(nTimeFrame);
+    order1error2.resize(nTimeFrame);
     for (unsigned ii = nTimeFrame - 1; ii > 0; --ii){
       if (rank == 0) printf ("# cal %d th grad					\n", ii);
-      vector<double > order0a, order0punisha;
-      vector<double > order0b, order0punishb;
+      vector<double > order0a, order0errora, order0punisha;
+      vector<double > order0b, order0errorb, order0punishb;
       vector<double > ttvaluea (ttvalue);
       vector<double > ttvalueb (ttvalue);
       ttvaluea[ii] += finiteDiffStep;
       ttvalueb[ii] -= finiteDiffStep;
       runTraj (tt, ttvaluea,
-	       order0a, order0punisha,
+	       order0a, order0errora, order0punisha,
 	       dw, dt, gamma, kT, nst, x0, x1, beta, noneqTime, noneqCheckFeq, branchFeq, nstprint, seed);
       runTraj (tt, ttvalueb,
-	       order0b, order0punishb,
+	       order0b, order0errorb, order0punishb,
 	       dw, dt, gamma, kT, nst, x0, x1, beta, noneqTime, noneqCheckFeq, branchFeq, nstprint, seed);
-      order1[ii] = (order0a.back() - order0b.back()) / (2 * finiteDiffStep);
+      order1[ii] = (order0a.back() - order0b.back()) / (2. * finiteDiffStep);
+      order1error1[ii] = order0errora.back() - order0a.back() * order0a.back();
+      order1error2[ii] = order0errorb.back() - order0b.back() * order0b.back();
       if (rank == 0) printf ("order1[%d] = %e ,  order1punish[%d] = %e\n", ii, order1[ii], ii, order1punish[ii]);
     }
 
@@ -323,12 +331,16 @@ int main(int argc, char * argv[])
       char tmpfilename[2000];
       sprintf (tmpfilename, "order1.step%03d.out", iter+1);
       fp = fopen (tmpfilename, "w");
-      fprintf (fp, "# time   order1   order1punish\n");
+      fprintf (fp, "# time   order1   order1punish   error1 error2\n");
       for (unsigned ii = 0; ii < order1.size(); ++ii){
-    	fprintf (fp, "%e   %e   %e\n",
+    	fprintf (fp, "%e   %e   %e   %e %e %e\n",
     		 tt[ii],
     		 order1[ii],
-    		 order1punish[ii]);
+    		 order1punish[ii],
+		 2. * sqrt(order1error1[ii]),
+		 2. * sqrt(order1error2[ii]),
+		 2. * sqrt(order1error1[ii] + order1error2[ii]) / (2. * finiteDiffStep)
+	    );
 	  }
       fclose (fp);
     }

@@ -29,10 +29,12 @@ reinit (const double & beta_,
   checkNumFeq = int((noneqCheckFeq + 0.5 * dt) / dt);
   
   order0.resize(numCheck);
+  order0error.resize(numCheck);
   order0punish.resize(numCheck);
 
   for (int tt = 0; tt < numCheck; ++tt){
     order0[tt] = 0.;
+    order0error[tt] = 0.;
     order0punish[tt] = 0.;
   }
 
@@ -72,6 +74,7 @@ depositMainTraj (const Dofs & oldx,
 {
   if (countNoneq == 0){
     order0[0] += (-inSet(oldx));
+    order0error[0] += (-inSet(oldx)) * (-inSet(oldx));
     // countNoneq ++;
     // return;
   }
@@ -95,6 +98,7 @@ depositMainTraj (const Dofs & oldx,
       exit (1);
     }
     order0[countNoneqSeg] += (- inSet(newx));
+    order0error[countNoneqSeg] += (- inSet(newx)) * (- inSet(newx));
     order0punish[countNoneqSeg] += (punish);
   }
 }
@@ -106,6 +110,7 @@ average ()
 {
   for (int tt = 0; tt < numCheck; ++tt){
     order0[tt]				/= double(ntraj);
+    order0error[tt]			/= double(ntraj);
     order0punish[tt]			/= double(ntraj);
   }
 }
@@ -118,6 +123,7 @@ collectLast ()
 {
   double* tmporder0s = (double *) malloc (sizeof(double) * numCheck);
   double* tmporder0r = (double *) malloc (sizeof(double) * numCheck);
+  
   for (int ii = 0; ii < numCheck; ++ii) {
     tmporder0s[ii] = order0[ii];
   }
@@ -125,6 +131,14 @@ collectLast ()
   int size = COMM_WORLD.Get_size();
   for (int ii = 0; ii < numCheck; ++ii) {
     order0[ii] = tmporder0r[ii] / double(size);
+  }
+  for (int ii = 0; ii < numCheck; ++ii) {
+    tmporder0s[ii] = order0error[ii];
+  }
+  COMM_WORLD.Allreduce (tmporder0s, tmporder0r, numCheck, MPI_DOUBLE, SUM);
+  size = COMM_WORLD.Get_size();
+  for (int ii = 0; ii < numCheck; ++ii) {
+    order0error[ii] = tmporder0r[ii] / double(size);
   }
   
   free (tmporder0r);

@@ -27,6 +27,7 @@ class NoneqInfo
   int numMode;
   
   vector<double >				order0;		// time
+  vector<double >				order0error;	// time
   vector<double >				order0punish;	// time
   
   double					punish;
@@ -52,6 +53,7 @@ public:
   void collectLast () ;
 public:
   const vector<double > &	   get_order0 () const {return order0;}
+  const vector<double > &	   get_order0error () const {return order0error;}
   const vector<double > &	   get_order0punish () const {return order0punish;}
 }
     ;
