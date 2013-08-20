@@ -74,6 +74,7 @@ public:
   const vector<double > &	   get_order0punish () const {return order0punish;}
   const vector<vector<double > > & get_order1 () const {return order1;}
   const vector<vector<double > > & get_order1error () const {return order1error;}
+  const int & get_ntraj () const {return ntraj;}
 }
     ;
 

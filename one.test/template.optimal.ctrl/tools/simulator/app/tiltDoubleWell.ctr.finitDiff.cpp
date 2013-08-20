@@ -70,6 +70,7 @@ double runTraj (const vector<double > & tt,		// size num mode
 		vector<double > & order0,		// size noneq check
 		vector<double > & order0error,		// size noneq check
 		vector<double > & order0punish,		// size noneq check
+		int & ntraj,
 		const DoubleWell & dw,
 		const double & dt,
 		const double & gamma,
@@ -143,6 +144,7 @@ double runTraj (const vector<double > & tt,		// size num mode
   order0 = noneqInfo.get_order0();
   order0error = noneqInfo.get_order0error();
   order0punish = noneqInfo.get_order0punish();
+  ntraj = noneqInfo.get_ntraj();
   if (rank == 0) printf ("\n# rank: %d order0: %e\n", rank, order0.back());
 
   return order0.back() + order0punish.back();
@@ -154,6 +156,8 @@ int main(int argc, char * argv[])
 {
   MPI::Init (argc, argv);
   int rank = COMM_WORLD.Get_rank();  
+  int size = COMM_WORLD.Get_size();
+  int ntraj;
   
   double gamma;
   double kT;
@@ -281,7 +285,7 @@ int main(int argc, char * argv[])
     cal_order1punish (beta, tt, ttvalue, order1punish);
 
     thisvalue = runTraj (tt, ttvalue,
-			 order0, order0error, order0punish,
+			 order0, order0error, order0punish, ntraj,
 			 dw, dt, gamma, kT, nst, x0, x1, beta, noneqTime, noneqCheckFeq, branchFeq, nstprint, seed);    
     if (rank == 0) printf ("# finish value at the point				\n");
     
@@ -296,7 +300,7 @@ int main(int argc, char * argv[])
     		 order0[ii],
     		 order0punish[ii],
     		 order0[ii] + order0punish[ii],
-		 2. * sqrt(order0error[ii] - order0[ii] * order0[ii])
+		 2. * sqrt(order0error[ii] - order0[ii] * order0[ii]) / sqrt(ntraj * size)
 	    );
       }
       fclose (fp);
@@ -314,10 +318,10 @@ int main(int argc, char * argv[])
       ttvaluea[ii] += finiteDiffStep;
       ttvalueb[ii] -= finiteDiffStep;
       runTraj (tt, ttvaluea,
-	       order0a, order0errora, order0punisha,
+	       order0a, order0errora, order0punisha, ntraj,
 	       dw, dt, gamma, kT, nst, x0, x1, beta, noneqTime, noneqCheckFeq, branchFeq, nstprint, seed);
       runTraj (tt, ttvalueb,
-	       order0b, order0errorb, order0punishb,
+	       order0b, order0errorb, order0punishb, ntraj,
 	       dw, dt, gamma, kT, nst, x0, x1, beta, noneqTime, noneqCheckFeq, branchFeq, nstprint, seed);
       order1[ii] = (order0a.back() - order0b.back()) / (2. * finiteDiffStep);
       order1error1[ii] = order0errora.back() - order0a.back() * order0a.back();
@@ -337,9 +341,9 @@ int main(int argc, char * argv[])
     		 tt[ii],
     		 order1[ii],
     		 order1punish[ii],
-		 2. * sqrt(order1error1[ii]),
-		 2. * sqrt(order1error2[ii]),
-		 2. * sqrt(order1error1[ii] + order1error2[ii]) / (2. * finiteDiffStep)
+		 2. * sqrt(order1error1[ii]) / sqrt(ntraj * size),
+		 2. * sqrt(order1error2[ii]) / sqrt(ntraj * size),
+		 2. * sqrt(order1error1[ii] + order1error2[ii]) / (2. * finiteDiffStep) / sqrt(ntraj * size)
 	    );
 	  }
       fclose (fp);

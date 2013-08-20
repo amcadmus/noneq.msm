@@ -52,6 +52,7 @@ int main(int argc, char * argv[])
 {
   MPI::Init (argc, argv);
   int rank = COMM_WORLD.Get_rank();  
+  int size = COMM_WORLD.Get_size();
   
   double gamma;
   double kT;
@@ -306,7 +307,7 @@ int main(int argc, char * argv[])
 		 tt[ii],
 		 ttvalue[ii],
 		 resInfo.get_order1().back()[ii],
-		 2. * sqrt(resInfo.get_order1error().back()[ii] - resInfo.get_order1().back()[ii] * resInfo.get_order1().back()[ii]),
+		 2. * sqrt(resInfo.get_order1error().back()[ii] - resInfo.get_order1().back()[ii] * resInfo.get_order1().back()[ii]) / sqrt(resInfo.get_ntraj() * double(size)),
 		 resInfo.get_order1().back()[ii] + order1punish[ii]
 	    );
       }
@@ -319,7 +320,7 @@ int main(int argc, char * argv[])
 		 resInfo.get_order0()[ii],
 		 resInfo.get_order0punish()[ii],
 		 resInfo.get_order0()[ii] + resInfo.get_order0punish()[ii],
-		 2. * sqrt(resInfo.get_order0error()[ii] - resInfo.get_order0()[ii] * resInfo.get_order0()[ii])
+		 2. * sqrt(resInfo.get_order0error()[ii] - resInfo.get_order0()[ii] * resInfo.get_order0()[ii]) / sqrt(resInfo.get_ntraj() * double(size))
 	    );
       }
       fclose (fp);

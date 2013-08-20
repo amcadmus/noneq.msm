@@ -55,6 +55,7 @@ public:
   const vector<double > &	   get_order0 () const {return order0;}
   const vector<double > &	   get_order0error () const {return order0error;}
   const vector<double > &	   get_order0punish () const {return order0punish;}
+  const int & get_ntraj () const {return ntraj;}
 }
     ;
 
