@@ -70,7 +70,7 @@
 \maketitle
 
 \begin{abstract}
-  In this paper, we propose a straightforward generalization of linear response theory on a finite time-horizon to systems in nonequilibrium that are subject to external forcing driving.  We briefly revisit the standard linear response result for equilibrium systems, where we consider Langevin dynamics as a special case, and then give an alternative derivation using a change-of-measure argument that does not rely on any stationarity or reversibility assumption. This procedure easily enables us to calculate the second order correction to the linear response formula (which may or may not be useful in practice). Furthermore, we outline how the novel nonequilibrium linear response formula can be used to compute optimal controls of molecular systems for cases in which one wants to steer the system to maximize a certain target expectation value. We illustrate our approach with simple numerical examples. 
+  In this paper, we propose a straightforward generalization of linear response theory on a finite time-horizon to systems in nonequilibrium that are subject to external forcing.  We briefly revisit the standard linear response result for equilibrium systems, where we consider Langevin dynamics as a special case, and then give an alternative derivation using a change-of-measure argument that does not rely on any stationarity or reversibility assumption. This procedure easily enables us to calculate the second order correction to the linear response formula (which may or may not be useful in practice). Furthermore, we outline how the novel nonequilibrium linear response formula can be used to compute optimal controls of molecular systems for cases in which one wants to steer the system to maximize a certain target expectation value. We illustrate our approach with simple numerical examples. 
 \end{abstract}
 
 
@@ -78,11 +78,11 @@
 
 Standard molecular dynamics simulations are dealing with systems in thermal equilibrium; in this case they are tuned to the canonial or Boltzmann distribution in the sense that either (1) if one starts from this distribution it remains invariant under the dynamics or (2) if one generates a very long trajectory it samples state space with respect this distribution, that is, every possible state of the molecular system under consideration is visited according to the probability given by it.  Obviously, this allows to compute equilibrium expectation values with respect to the  canonical distribution simply be computing long trajectories. 
 
-Often, however, one is interested in knowing about the response of the molecular system to perturbation out of equilibrium. The standard linear response formula allows to answer this question, at least partially. In the standard setting it gives us the first order of the change to an equilibrium expectation value as resulting from the nonequilibrium perturbation. Here, first order means first order in the size of the perturbation. This linear response formula has a long history of extensions and generalizations; see, e.g., \cite{marconi2008,ruelle2009} and the references therein. In some sense it has become one of the cornerstones of modern statistical physics since it can be related to the fluctuation dissipation theorem (FDT) which roughly states that for appropriate systems in statistical equilibrium, the average response to small external perturbations can be calculated through the knowledge of suitable correlation functions of the unperturbed statistical system. Linear response formulae on the infinite time-horizon have been shown to hold under rather mild assumptions and for nonequilibrium systems with a unique invariant measure \cite{hairer2008}. 
+Often, however, one is interested in knowing about the response of the molecular system to perturbation out of equilibrium. The standard linear response formula allows to answer this question, at least partially. In the standard setting it gives us the first order of the change to an equilibrium expectation value as resulting from the nonequilibrium perturbation. Here, first order means first order in the size of the perturbation. This linear response formula has a long history of extensions and generalizations; see, e.g., \cite{marconi2008,ruelle2009} and the references therein. In some sense it has become one of the cornerstones of modern statistical physics since it can be related to the fluctuation dissipation theorem (FDT) which roughly states that for appropriate systems in statistical equilibrium, the average response to small external perturbations can be calculated through the knowledge of suitable correlation functions of the unperturbed statistical system. Linear response formulae on the infinite time-horizon have been shown to hold under rather mild assumptions even for nonequilibrium systems that possess a unique invariant measure \cite{hairer2008}. 
 
-There is an increasing number of articles in the literature that report on applications of molecular dynamics to nonequilibrium settings. There are many generalization to so-called nonequilibrium steady states based on the generality of the FDT \cite{Seifert}, but despite its wide use, we are not aware of a linear response formula, even for nonequilibrium (i.e.~irreversible) systems, that does not rely on any kind of stationarity assumption. We will provide such a formula for the case that the underlying dynamics can be described by Langevin dynamics that may not have an invariant measure. Furthermore, we will provide a formula for the second order response of a nonequilibrium Langevin system subject to a small perturbation.
+There is an increasing number of articles in the literature that report on applications of molecular dynamics to nonequilibrium settings. There are many generalization to so-called nonequilibrium steady states based on the generality of the FDT \cite{Seifert}, but despite its wide use, we are not aware of a linear response formula for equilibrium or nonequilibrium (i.e.~irreversible) systems that does not rely on any kind of stationarity assumption. We will provide such a formula for the case that the underlying dynamics can be described by Langevin dynamics that may not have an invariant measure. Furthermore, we will provide a formula for the second order response of a nonequilibrium Langevin system subject to a small perturbation.
 
-Instead of applying this theory to a molecular system we will go one step further. We will outline how the novel nonequilibrium linear response formula can be used to compute the optimal control of molecular systems. In optimal control one seeks the optimal way to perturb a molecular system such that a certain target expectation value (e.g. population of certain states) is maximized under constraints on the energy of the control. In general the control drives the molecular system under control out of equilibrium. Thus, the nonequilibrium linear response formula can be used to find the optimal correction of the present control regarding the expectation value of interest. 
+Instead of applying this theory to a molecular system we will go one step further. We will outline how the novel nonequilibrium linear response formula can be used to compute the optimal control of molecular systems. In optimal control one seeks the optimal way to perturb a molecular system, such that a certain target expectation value (e.g. population of certain states) is maximized under constraints on the energy of the control. In general, the control drives the molecular system under control out of equilibrium. Thus, the nonequilibrium linear response formula can be used to find the optimal correction of the present control regarding the expectation value of interest. 
 
 The outline of the article is as follows: First, we will review the derivation of finite time-horizon linear response formulae for general diffusion processes and diffusions of Langevin type. Next, we will show how to derive first and second order response formulas for genuine nonequilibrium systems and how to apply these formula to the computation of optimal controls. Finally, we will validate the nonequilibrium linear response formula and its use for optimal control for simple test cases. This numerical experiments will also outline that the use of the linear response formula is imperative for numerical efficiency and allows to extend the applicability of linear response theory to stronger perturbations. 
 
@@ -96,7 +96,7 @@ In this section, we first want to give a simple and formal derivation of the lin
 \begin{equation}\label{sde}
 dX_{t} = (b(X_{t},t) + \eps v_{t})dt +a(X_{t})dB_{t}\,,\quad t\ge 0\,,
 \end{equation}
-where $X_{t}\in\R^{d}$, $b(\cdot,\cdot)$ is a smooth time-dependent vector field, $a(\cdot)$ a smooth field of $d\times n$ matrices and $B_{t}$ is standard Brownian motion in $\R^{n}$. Here $v_{t}\in\R^{d}$ is any given driving force applied to the system, typically an affine function of the form $v_{t}=B(X_{t})u(t)$, with $B(\cdot)\in\R^{d\times k}$ and a bounded measurable function $u\colon[0,\infty)\to\R^{k}$ such that (\ref{sde}) has a strong solution for all $t> 0$ whenever $\eps>0$ is sufficiently small. When (\ref{sde}) without the perturbation $\eps v$ is considered, we write
+where $X_{t}\in\R^{d}$, $b(\cdot,\cdot)$ is a smooth time-dependent vector field, $a(\cdot)$ a smooth field of $d\times n$ matrices and $B_{t}$ is standard Brownian motion in $\R^{n}$. Here $v_{t}\in\R^{d}$ is any given driving force applied to the system, typically an affine function of the form $v_{t}=c(X_{t})u(t)$, with $c(\cdot)\in\R^{d\times k}$ and a bounded measurable function $u\colon[0,\infty)\to\R^{k}$ such that (\ref{sde}) has a strong solution for all $t> 0$ whenever $\eps>0$ is sufficiently small. When (\ref{sde}) without the perturbation $\eps v$ is considered, we write
 \begin{equation}\label{sdewo}
 dx_{t} = b(x_{t},t)dt +a(x_{t})dB_{t}\,,\quad t\ge 0\,. 
 \end{equation}
@@ -107,7 +107,7 @@ dx_{t} = b(x_{t},t)dt +a(x_{t})dB_{t}\,,\quad t\ge 0\,.
 
 
 
-\subsection{Small perturbations from equilibrium: Langevin dynamics}
+\subsection{Small perturbations from equilibrium: Langevin dynamics}\label{ssec:equiLRT}
 
 We consider the equilibrium and nonequilibrium case separately and start with the equilibrium case (see, e.g., \cite{kubo1957,tuckerman2010statistical}). To begin with, we assume that the perturbation-free part of the infinitesimal generator
 \[
@@ -156,25 +156,25 @@ R = \left ( \begin{array}{cc}
 \]
 for $\gamma\in\R^{n\times n}$ symmetric positive definite, and 
 \[
-H\colon\R^{2n}\to\R\,,\quad H(x) = \frac{1}{2}|x_{2}|^{2} + V(x_{1})
+H\colon\R^{2n}\to\R\,,\quad H(x) = \frac{1}{2}|p|^{2} + U(q) \quad (x=(q,p))
 \] 
-the Hamiltonian of the system. We assume that the potential $V$ is bounded from below. Then, under some mild growth conditions on $V$ for $|x_{1}|\to\infty$ (see, e.g., \cite{mattingly2002}), the unperturbed dynamics has a unique invariant measure with density 
+the Hamiltonian of the system. We assume that the potential $U$ is bounded from below. Then, under some mild growth conditions on $U$ for $|q|\to\infty$ (see, e.g., \cite{mattingly2002}), the unperturbed dynamics has a unique invariant measure with density 
 \[
 \rho_{\infty}(x) = \frac{1}{Z}\exp(-\beta H(x))\,,\quad  Z=\int_{\R^{2n}}  \exp(-\beta H(x))\,dx\,.
 \] 
-In this case, the linear response result (\ref{lr}) can be recast in form of the better known Green-Kubo formula \cite{risken1996}. Assuming that the forcing is of the form $v_{t}=Bu(t)$ with $u\colon[0,\infty)\to\R^{n}$ and $B\in\R^{2n\times n}$ being any given time-dependent function, the above expression can be recast as 
+In this case, the linear response result (\ref{lr}) can be recast in form of the better known Green-Kubo formula \cite{risken1996}. Assuming that the forcing is of the form $v_{t}=Cu(t)$ with $u\colon[0,\infty)\to\R^{n}$ and $C\in\R^{2n\times n}$ being any suitable given time-dependent function, the above expression can be recast as 
 \begin{equation}\label{GreenKubo}
 \lim_{\eps\to 0}\frac{\bE_{\rho^{\eps}}[f] - \bE_{\rho^{0}}[f]}{\eps} = \beta\int_{0}^{t}F(t-s)u(s)\,ds
 \end{equation}
 where 
 \[
-F(t) = - \int_{\R^{2n}}\bE_{x}[f(x_{t})] B^{T}\nabla H(x)\rho_{\infty}(x)\,dx
+F(t) = - \int_{\R^{2n}}\bE_{x}[f(x_{t})] C^{T}\nabla H(x)\rho_{\infty}(x)\,dx
 \]
 is the response function and the expectation under the integral is taken over all realization of the equilibrium process (\ref{sdewo}) starting from $x_{0}=x$. In other words: 
 \[
 \bE_{\rho^{\eps}}[f] \approx \bE_{\rho_{\infty}}[f] + \eps\beta\int_{0}^{t}F(t-s)u(s)\,ds\,,
 \]
-where we have used the fact that $\rho^{0}(x,t)\to \rho_{\infty}(x)$ uniformly on $\R^{2n}\times[0,\infty)$. 
+where we have used the fact that $\rho^{0}(x,t)= \rho_{\infty}(x)$ for all $t\ge 0$. 
  
 \paragraph*{Remark.}
 It is possible to extend the above framework to the case of observables that are functionals of the path, i.e.~to functions the form 
@@ -222,9 +222,9 @@ which allows us to rewrite (\ref{sde2-2}) as
 \begin{equation}\label{sde2-3}
 dX_{t} = b(X_{t},t)dt +a(X_{t})dW_{t} 
 \end{equation}
-It follows from the Girsanov theorem \cite[Thm.~8.6.8]{oksendal2003stochastic}, sometimes also called \emph{Cameron-Martin-Girsanov theorem} \cite{stroock2006}, that $W_{t}$ is again a Brownian motion under a new probability measure that has a density \wrt the Gaussian probability measure that is generated by the Brownian motion $B_{t}$. Specifically, let $\nu$ denote the law of the Brownian motion $B_{t}$ and define a new probability measure $\mu$ on the space of continuous trajectories by 
+It follows from the Girsanov theorem \cite[Thm.~8.6.8]{oksendal2003stochastic}, sometimes also called \emph{Cameron-Martin-Girsanov theorem} \cite{stroock2006}, that $W_{t}$ is again a Brownian motion under a new probability measure that has a density \wrt the Gaussian probability measure that is generated by the Brownian motion $B_{t}$. Specifically, let $P$ denote the law of the Brownian motion $B_{t}$ and define a new probability measure $Q$ on the space of continuous trajectories by 
 \[
-d\mu=M_{T}d\nu
+dQ=M_{T}dP
 \]
 with 
 \begin{equation}\label{likelihood}
@@ -234,15 +234,15 @@ Technical details aside, the Girsanov theorem implies that $W_{t}$  for any func
 \[
 \varphi(\omega)=\int_{0}^{T}f((X_{s}(\omega))\,ds + g(X_{T}(\omega))
 \] 
-that is integrable \wrt $\nu$, we have the identity\footnote{One of the omitted technical details is Novikov's condition \cite[pp.~162]{oksendal2003stochastic} that guarantees that $(M_{t})_{0\le t\le T}$ is a Martingale, which by $\bE_{\mu}[1]=\bE_{\nu}[M_{T}]=1$ implies normalizability of the new probability measure $\mu$.}
+that is integrable \wrt $\nu$, we have the identity\footnote{One of the omitted technical details is Novikov's condition \cite[pp.~162]{oksendal2003stochastic} that guarantees that $(M_{t})_{0\le t\le T}$ is a Martingale, which by $\bE_{Q}[1]=\bE_{P}[M_{T}]=1$ implies normalizability of the new probability measure $Q$.}
 \[
-\bE_{\nu}[\varphi] := \int_{\Omega} \varphi(\omega)\, d\nu(\omega) = \int_{\Omega} \varphi(\omega) M_{T}^{-1}(\omega)\,d\mu(\omega) =: \bE_{\mu}[M^{-1}_{T}\varphi]\,.
+\bE_{P}[\varphi] := \int_{\Omega} \varphi(\omega)\, dP(\omega) = \int_{\Omega} \varphi(\omega) M_{T}^{-1}(\omega)\,dQ(\omega) =: \bE_{Q}[M^{-1}_{T}\varphi]\,.
 \]
 where 
 \[
 M_{T}^{-1} = \exp\left(\eps\int_{0}^{T}\xi_{s}\cdot dW_{s} - \frac{\eps^{2}}{2}\int_{0}^{T}|\xi_{s}|^{2}ds\right)
 \]
-is the density of $\nu$ relative to $\mu$. Note that the expectation on the right hand side corresponds to the unperturbed dynamics, because $W_{t}$ is a standard Brownian motion under $\mu$, and the expectation is over all realizations of (\ref{sde2-3}) starting from either any given initial condition $X_{0}=x$ or an arbitrary initial distribution. On the other hand, $X_{t}$ under $\nu$ corresponds to the perturbed dynamics, which should become clear upon comparing equations (\ref{sde2-2}) and (\ref{sde2-3}). 
+is the density of $P$ relative to $Q$. Note that the expectation on the right hand side corresponds to the unperturbed dynamics, because $W_{t}$ is a standard Brownian motion under $Q$, and the expectation is over all realizations of (\ref{sde2-3}) starting from $X_{0}=x$. On the other hand, $X_{t}$ under $P$ corresponds to the perturbed dynamics, which should become clear upon comparing equations (\ref{sde2-2}) and (\ref{sde2-3}). 
 
 
 \paragraph*{Remark.} 
@@ -258,19 +258,19 @@ A quick-and-dirty derivation of the above change-of-measure formula can be easil
 
 Linearization of $M_{T}^{-1}$ about $\eps=0$, assuming that the control has bounded variance, yields the alternative linear response formula 
 \begin{equation}\label{lr-alt}
-\lim_{\eps\to 0}\frac{\bE_{\rho_{x}^{\eps}}[\varphi] + \bE_{\rho_{x}^{0}}[\varphi]}{\eps} = \bE_{\rho_{x}^{0}}\left[\varphi \int_{0}^{T}\xi_{s}\cdot dB_{s} \right]\,,
+\lim_{\eps\to 0}\frac{\bE_{P_{x}^{\eps}}[\varphi] + \bE_{P_{x}^{0}}[\varphi]}{\eps} = \bE_{P_{x}^{0}}\left[\varphi \int_{0}^{T}\xi_{s}\cdot dB_{s} \right]\,,
 \end{equation}
-where, in accordance with the previous linear response formula, $\rho_{x}^{\eps}$ and $\rho_{x}^{0}$ denote the path probability distributions of perturbed and unperturbed processes (\ref{sde2-2}) and (\ref{sde2-1}) with deterministic initial condition. On the right hand side of the last equation $\varphi$ is understood as a functional of $(x_{t})_{0\le t\le T}$, the solution to (\ref{sde2-1}) with initial condition $x_{0}=x$, and $\xi_{t}$ is the solution to $a(x_{t})\xi_{t}=v_{t}$. By averaging the the initial values $x$ on both sides of (\ref{lr-alt}) over any given initial distribution, one obtains an analogous formula for distributed initial conditions.  
+where, in analogy with the previous linear response formula, $P_{x}^{\eps}$ and $P_{x}^{0}$ denote the path probability measures of perturbed and unperturbed paths---i.e.~the trajectories obtained from (\ref{sde2-2}) and (\ref{sde2-1})---with deterministic initial condition. The path measure $P^{\eps}_{x}$ should not be confused with the phase space density $\rho^{\eps}(x,t)$ in Section \ref{ssec:equiLRT} that solves the Fokker Planck equation. Note moreover that $\varphi$ on the right hand side of (\ref{lr-alt}) is understood as a functional of $(x_{t})_{0\le t\le T}$, i.e.~the solution to (\ref{sde2-1}) with initial condition $x_{0}=x$, with $\xi_{t}$ being the solution to $a(x_{t})\xi_{t}=v_{t}$. 
 
-Note that $\varphi$ and $B_{t}$ are not independent, hence the product of $\varphi$ and the integral over the Brownian motion does not average to zero in general. 
+By averaging the the initial values $x$ on both sides of (\ref{lr-alt}) over any given initial distribution, one obtains an analogous formula for distributed initial conditions. Note that $\varphi$ and $B_{t}$ are not independent, hence the product of $\varphi$ and the integral over the Brownian motion does not average to zero in general. 
 
 
 \paragraph*{Remark.} 
 By formally expanding $M^{-1}_T$ up to second order we get an analogous second order response formula: 
 \begin{equation}\label{2nd}
 \begin{aligned}
-\bE_{\rho_{x}^{\eps}}[f] & \approx \bE_{\rho_{x}^{0}}[\varphi]  + \eps \bE_{\rho_{x}^{0}}\left[\varphi\int_{0}^{T}\xi_{s}\cdot dB_{s} \right]\\  
-& + \frac{\eps^{2}}{2} \bE_{\rho_{x}^{0}}\left[\varphi\left\{\left(\int_{0}^{T}\xi_{s}\cdot dW_{s}\right)^2 -\int_0^T |\xi_s|^2\,ds\right\} \right].
+\bE_{P_{x}^{\eps}}[f] & \approx \bE_{P_{x}^{0}}[\varphi]  + \eps \bE_{P_{x}^{0}}\left[\varphi\int_{0}^{T}\xi_{s}\cdot dB_{s} \right]\\  
+& + \frac{\eps^{2}}{2} \bE_{P_{x}^{0}}\left[\varphi\left\{\left(\int_{0}^{T}\xi_{s}\cdot dW_{s}\right)^2 -\int_0^T |\xi_s|^2\,ds\right\} \right].
 \end{aligned}
 \end{equation}
 
@@ -282,32 +282,32 @@ By formally expanding $M^{-1}_T$ up to second order we get an analogous second o
 
 We now link our previous considerations with the previous case and consider a nonequilibrium Langevin equation. Specifically, we add a non-gradient perturbation to the drift (\ref{eqn:langevin-1}) of the previous Langevin equation, i.e., we set 
 \begin{equation}\label{eqn:langevin-1b}
-b(x,t) = (J-R)\nabla H(x) +  B(x) u(t)\,,\quad a(x) = \sqrt{2\beta^{-1}}R^{1/2}
+b(x,t) = (J-R)\nabla H(x) +  c(x) u(t)\,,\quad a(x) = \sqrt{2\beta^{-1}}R^{1/2}
 \end{equation}
-with the definitions of $J,R$ and $H$ unchanged, $u\in\R^{n}$ being some control variable, and $B(\cdot)\in\R^{2n\times n}$ given by 
+with the definitions of $J,R$ and $H$ unchanged, $u\in\R^{n}$ being some bounded measurable control, and $c(\cdot)\in\R^{2n\times n}$ given by 
 \[
-B(x) = \left( \begin{array}{c}
+c(x) = \left( \begin{array}{c}
 0 \\ D(x) \end{array}\right)
 \]
-The matrix $D(\cdot)\in\R^{n\times n}$ must be chosen such that $B$ satisfies the Fredholm alternative $\mathrm{range}(B(\cdot))\perp \mathrm{ker}((a(\cdot))^{T})$, where $\mathrm{ker}(a^T)$ denotes the kernel of $a^T$. 
+The matrix $D(\cdot)\in\R^{n\times n}$ must be chosen such that $c$ satisfies the Fredholm alternative $\mathrm{range}(c(\cdot))\perp \mathrm{ker}((a(\cdot))^{T})$, where $\mathrm{ker}(a^T)$ denotes the kernel of $a^T$. 
 
 We are interested in the dynamics under a small perturbation $\delta u$ of the control $u$, Specifically, we assume that $v$ in (\ref{sde2}) is of the form 
 \begin{equation}\label{eqn:langevin-1c}
-v_{t} = B(X_{t})\delta u(t)
+v_{t} = c(X_{t})\delta u(t)
 \end{equation}
 so that equation (\ref{xi}) that determines the change of measure in terms of the auxiliary control variable $\xi$ (and thus the linear response) reads 
 \[
-\sqrt{2\beta^{-1}}R^{1/2} \xi_{t} = D(X_{t})\,\delta u_{t}\,.
+\sqrt{2\beta^{-1}}R^{1/2} \xi_{t} = D(X_{t})\,\delta u(t)\,.
 \]
 Hence the equation for $\xi_{t}$ is solvable if and only if $\mathrm{range}(D(\cdot))\perp \mathrm{ker}(R^{1/2})$, which, since $R$ has full rank, means that $D(\cdot)$ must be invertible almost everywhere.
 
-To be more explicit, the equation we are considering has the form
+To be more specific, the equation we are considering has the form
 \begin{equation}\label{eqn:langevin-1d}
-dX_t =  (J-R)\nabla H(X_{t})dt + B(X_t)(u(t)+\eps \delta u(t))dt+a\, dB_t\,.
+dX_t =  (J-R)\nabla H(X_{t})dt + c(X_t)(u(t)+\eps \delta u(t))dt+a\, dB_t\,.
 \end{equation}
 In this case the linear response formula (\ref{lr-alt})  becomes
 \begin{equation}\label{lr-alt2}
-\lim_{\eps\to 0}\frac{\bE_{\rho_{x}^{\eps}}[\varphi] - \bE_{\rho_{x}^{0}}[\varphi]}{\eps} =  \bE_{\rho_{x}^{0}}\left[\varphi\int_{0}^{T}(\sigma^{-1}D(x_{s})\,\delta u_{s})\cdot dB_{s} \right]\,
+\lim_{\eps\to 0}\frac{\bE_{P_{x}^{\eps}}[\varphi] - \bE_{P_{x}^{0}}[\varphi]}{\eps} =  \bE_{P_{x}^{0}}\left[\varphi\int_{0}^{T}(\sigma^{-1}D(x_{s})\,\delta u(s))\cdot dB_{s} \right]\,
 \end{equation}
 with the shorthands $\sigma=\sqrt{2\beta^{-1}}R^{1/2}$ and 
 \[
@@ -315,19 +315,19 @@ with the shorthands $\sigma=\sqrt{2\beta^{-1}}R^{1/2}$ and
 \]
 In other words: 
 \begin{equation}\label{eqn:neq-response}
-\bE_{\rho_{x}^{\eps}}[\varphi] \approx \bE_{\rho_{x}^0}[\varphi] + \eps\bE_{\rho_{x}^0}\left[\varphi\int_{0}^{T}(\sigma^{-1}D(x_{s})\,\delta u_{s})\cdot dB_{s} \right]\,.
+\bE_{P_{x}^{\eps}}[\varphi] \approx \bE_{P_{x}^0}[\varphi] + \eps\bE_{P_{x}^0}\left[\varphi\int_{0}^{T}(\sigma^{-1}D(x_{s})\,\delta u(s))\cdot dB_{s} \right]\,.
 \end{equation}
 Here, as before, the expectation on the right hand side of the linear response formula is over all realizations of (\ref{eqn:langevin-1d}) for $\eps=0$ starting at $x$; see also the remark below on the choice of initial conditions. 
 
 \subsubsection*{Numerical realization}
 
-As one can easily get lost in the various transformations and changes of measure, involving $\nu$, $\mu$, $\rho_{x}^{\eps}$, $\rho^{0}_{x}$ etc. it may be helpful to understand how the linear response formulas (\ref{lr-alt}) or (\ref{lr-alt2}) can be realized algorithmically. To this end, let $(x_0,\,x_{1},\,x_{2},\,x_{3},\ldots)$ with $x_{k}$ be the numerical realization of (\ref{sde2-1}). Let us further suppose that the initial value $x_{0}=x$ is fixed. The simplest possible numerical discretization would be the Euler scheme 
+As one can easily get lost in the various transformations, involving path measures $P$, $Q$, $P_{x}^{\eps}$, $P^{0}_{x}$ or phase space densities $\rho^{\eps}$, $\rho^{0}$, $\rho_{\infty}$, it may be helpful to understand how the linear response formulas (\ref{lr-alt}) or (\ref{lr-alt2}) can be realized algorithmically. To this end, let $(x_0,\,x_{1},\,x_{2},\,x_{3},\ldots)$ with $x_{k}$ be the numerical realization of (\ref{sde2-1}). Let us further suppose that the initial value $x_{0}=x$ is fixed. The simplest possible numerical discretization would be the Euler scheme 
 \[
 x_{n+1} = x_{n} + \Delta t\, b(x_{n},t_{n}) + \sqrt{\Delta t}\,a(x_{n})\eta_{n+1}\,,\quad x_{0}=x\,, 
 \]
 with time step $\Delta t=t_{k+1}-t_{k}$ and $\eta_{k}$ i.i.d.~Gaussian random variables with mean 0 and unit covariance. (For a Langevin equation such as (\ref{eqn:langevin-1d}) the Euler scheme is not recommended, but the basic idea stays the same.) Now a simple unbiased estimator of the linear response---i.e. the right hand side in (\ref{lr-alt})---would be 
 \begin{equation}\label{lr-est}
-\hat{R} = \frac{1}{M}\sum_{i=1}^{M}\left\{f(\{x_{k}(\omega_{i})\}_{0\le k\le N})\sum_{j=0}^{N-1}\hat{\xi}_{i}(\omega_{i})\cdot \eta_{j+1}(\omega_{i})\right\}
+\hat{R} = \frac{1}{M}\sum_{i=1}^{M}\left\{\varphi(\{x_{k}(\omega_{i})\}_{0\le k\le N})\sum_{j=0}^{N-1}\hat{\xi}_{i}(\omega_{i})\cdot \eta_{j+1}(\omega_{i})\right\}
 \end{equation}
 with $N=\lfloor T/\Delta t\rfloor$ and $x_{k}(\omega_{i})$ denoting the $i$-th realization of $x_{k}$, that is generated by the $i$-th realization $(\eta_{1}(\omega_{i}),\ldots,\eta_{k}(\omega_{i}))$ of the Gaussian noise sequence $(\eta_{k})_{k\in\N}$. The time-discrete control variable is given by  
 \[
@@ -343,12 +343,12 @@ for any given perturbation $v\colon[0,T]\to\R^{m}$.
   response to the reference nonequilibrium process (driven by $u_t$ with $\eps=0$).  From (\ref{2nd}) we can also get the second order response term. The latter is bounded if the controls have bounded second moment, which is a typical requirement in optimal control applications. Higher order moments need not exist. 
 
 \item[(ii)] In the above derivation, we have tacitly assumed that the reference and the perturbed nonequilibrium processes start from the same initial value or
-  have the same initial distribution. For fixed initial values (i.e.~points) this assumption cannot be relaxed (because otherwise $d\nu/d\mu$ does not exist). For distributed initial values, however, there is no problem for the unperturbed and perturbed dynamics to have different initial distribution as long as both distributions are strictly positive almost everywhere. In this case one can apply a similar reweighing approach between the initial distribution as we used it for the trajectory ensemble.  
+  have the same initial distribution. For fixed initial values (i.e.~points) this assumption cannot be relaxed (because otherwise $dP/dQ$ and $dQ/dP$ do not exist). For distributed initial values, however, there is no problem for the unperturbed and perturbed dynamics to have different initial distribution as long as both distributions are strictly positive almost everywhere. In this case one can apply a similar reweighing approach between the initial distribution as we used it for the trajectory ensemble.  
 
-\item[(iii)] If one wants to calculate the same expectation value for a family of nonequilibrium perturbations $\delta u_t$ then 
+\item[(iii)] If one wants to calculate the same expectation value for a family of nonequilibrium perturbations $\delta u$ then 
 one does not need to repeat the calculations of \eqref{eqn:neq-response} for every member of the family. 
   If it is possible to
-  express different $\delta u_t$ in the same basis, then the responses must only be
+  express different $\delta u$ in the same basis, then the responses must only be
   calculated for the single basis functions. Then with a linear combination of the responses on basis functions, one can derive
   the responses for the whole family. This feature will be used below when discussing optimal control as an application of the linear response formula. 
   
@@ -363,36 +363,36 @@ one does not need to repeat the calculations of \eqref{eqn:neq-response} for eve
 
 \section{Application of the nonequilibrium response formula: optimal control}
 
-The nonequilibrium linear response formula can be used for solving certain optimal control problems. To this end, let us remain in the setting of equations (\ref{eqn:langevin-1d})--(\ref{eqn:neq-response}) and assume that we are interested choosing the nonequilibrium forcing $u$, such that the expected value $\bE[f]$ of some utility function 
+The nonequilibrium linear response formula can be used for solving certain optimal control problems. To this end, let us remain in the setting of equations (\ref{eqn:langevin-1d})--(\ref{eqn:neq-response}) and assume that we are interested choosing the nonequilibrium forcing $u$, such that the expected value $I=\bE[\psi]$ of some utility function 
 \[
-f(u) = \int_{0}^{T}\left\{\ell (q_{s}) - \frac{1}{2}|u_{s}|^{2}\right\}\,dt + L(q_{T}) 
+\psi(u) = \int_{0}^{T}\left\{f(x_{s}) - \frac{1}{2}|u(s)|^{2}\right\}\,dt + g(x_{T}) 
 \]
-is maximized where $q_{t}$ is the solution to the controlled Langevin equation (\ref{eqn:langevin-1d}) for $\eps=0$; the functions $\ell$ and $L$ are the running cost and the terminal cost, which are assumed to be continuous and bounded from above; without loss of generality, $\ell$ and $L$ are assumed to depend only on the positions. The quadratic term is a penalization that makes sure that the controls do not go through the roof \cite{schuette2012,hartmann2012}. Let us moreover assume that the controls are open-loop (i.e. without feedback) and can be represented by 
+is maximized where $x_{t}$ is the solution to the controlled Langevin equation (\ref{eqn:langevin-1d}) for $\eps=0$; the functions $f$ and $g$ are the running cost and the terminal cost, which are assumed to be continuous and bounded from above; without loss of generality, $f$ and $g$ are assumed to depend only on the positions $q:=x_{1}$ and not on the momenta $p:=x_{2}$. The quadratic term is a penalization that makes sure that the optimal control remains bounded \cite{schuette2012,hartmann2012}. Let us moreover assume that the controls are open-loop (i.e. without feedback) and can be represented by 
 \[
-u_{t} = \sum_{k=1}^K a_k \Phi_k(t)\,,\quad a_{k}\in \R\,,
+u(t) = \sum_{k=1}^K a_k \Phi_k(t)\,,\quad a_{k}\in \R\,,
 \]
 with suitably chosen time dependent, bounded and Lipschitz continuous vector fields $\Phi_k\colon[0,T]\to\R^{n}$, $k=1,\ldots,K$. %In principle we could even go for closed-loop (i.e.~feedback) controls by making $\Phi_{k}$ state dependent. 
-We want to solve the optimal control problem
+Specifically, we want to solve the optimal control problem of the following standard form: 
 \begin{equation}\label{ocp1}
 \begin{aligned}
  \max_{u\in\cU} \,& I(u)\quad \textrm{s.t.}\\
 dq_t & =  \nabla_p H(q_t,p_t)dt\\
-dp_t & =  -\nabla_q H(q_t,p_t)dt - \gamma \nabla_p H(q_t,p_t)dt + D(q_t)u_{t} dt+\sigma dB_t\,.
+dp_t & =  -\nabla_q H(q_t,p_t)dt - \gamma \nabla_p H(q_t,p_t)dt + D(q_t)u(t) dt+\sigma dB_t\,.
 \end{aligned}
 \end{equation}
 where 
 \begin{equation}\label{ocp2}
-I(u) = \bE_{\rho^0}\left[\int_{0}^{T}\left\{\ell (q_{s}) - \frac{1}{2}|u_{s}|^{2}\right\}\,dt + L(q_{T}) \right]
+I(u) = \bE\left[\int_{0}^{T}\left\{f(q_{s}) - \frac{1}{2}|u(s)|^{2}\right\}\,dt + g(q_{T}) \right]\,,
 \end{equation}
-and $\cU$, the space of admissible controls, consists of all bounded controls 
+with the expectation being over all realizations of the controlled Langevin dynamics in (\ref{ocp1}) with any prescribed initial distribution. Here, the space of admissible controls $\cU$ consists of all bounded controls of the form 
 \begin{equation}\label{admissible}
-u_{t} = \sum_{k=1}^K a_k \Phi_k(t)\,,\quad a_{k}\in \R\,,
+u(t) = \sum_{k=1}^K a_k \Phi_k(t)\,,\quad a_{k}\in \R\,,
 \end{equation}
 
 
 \subsubsection*{Gradient method from linear response}
 
-In principle optimal control problems such as (\ref{ocp1})--(\ref{ocp2}) can be solved by dynamic programming, i,e., by solving the corresponding Hamilton-Jacobi-Bellman PDE \cite{fleming2006}. Expect for very simple, essentially one-dimensional systems, solving Hamilton-Jacobi-Bellman equations is not an easy task, so we pursue a different strategy here. The idea is to use that we have restricted our space of admissible controls to functions of the form (\ref{admissible}) with given basis vector fields and that we can a gradient search in the unknown coefficients $a_{k}$, using the iteration
+In principle, optimal control problems such as (\ref{ocp1})--(\ref{ocp2}) can be solved by dynamic programming, i.e.~by solving the corresponding Hamilton-Jacobi-Bellman PDE \cite{fleming2006}. Expect for very simple, essentially one-dimensional systems, solving Hamilton-Jacobi-Bellman equations is not an easy task, so we pursue a different strategy here. The idea is to use that we have restricted our space of admissible controls to functions of the form (\ref{admissible}) with given basis vector fields and that we can a gradient search in the unknown coefficients $a_{k}$, using the iteration
 \[
 u^{(n+1)} = u^{(n)} + \tau_{n}\nabla I(u^{(n)})\,,
 \]
@@ -400,6 +400,7 @@ with $\tau_{n}>0$ being an adjustable parameter that determines the length of ea
 \begin{equation*}
 \frac{\delta I}{\delta u} = \left.\frac{d}{d\eps}\right|_{\eps=0} I(u+\eps v) = \langle\nabla I(u),v\rangle\,,
 \end{equation*} 
+For existence of the functional derivative \wrt general It\^o stochastic processes, we refer to \cite{bell2006}.  
 Now the idea is to use that we have restricted our space of admissible controls to functions of the form (\ref{admissible}) with given basis vector fields and do a gradient search in the unknown coefficients $a_{k}$. This requires to compute the gradient \wrt the coefficients. Let the vector  
 \[
 \delta u = \sum_{k=1}^K \delta a_k \Phi_k(t)
@@ -409,7 +410,7 @@ denote the direction along which we want to differentiate where $\delta a_{1},\l
 \begin{aligned}
 \frac{\delta I}{\delta u} & = \left.\frac{d}{d\eps}\right|_{\eps=0} I(u+\eps \delta u)\\
 & = \left(\lim_{\eps\to 0}\frac{I(u+\eps\delta u) - I(u)}{\eps}\right)\cdot \delta u\\
-& = \left(\lim_{\eps\to 0}\frac{\bE_{\rho^{\eps}}[f(u+\eps \delta u)] - \bE_{\rho^{0}}[f(u)]}{\eps}\right)\cdot\delta u\\
+& = \left(\lim_{\eps\to 0}\frac{\bE_{P^{\eps}}[\psi(u+\eps \delta u)] - \bE_{P^{0}}[\psi(u)]}{\eps}\right)\cdot\delta u\\
 \end{aligned}
 \end{equation*} 
 provided that the limit exists. The above iteration therefore is equivalent to
@@ -418,9 +419,13 @@ a_{k}^{(n+1)} = a_{k}^{(n)} + \tau_{n}\left.\frac{\partial I}{\partial a_{k}}\ri
 \end{equation}
 with
 \begin{equation}\label{dida}
-\frac{\partial I}{\partial a_{k}} = \bE_{\rho^0}\left[f\int_{0}^{T}(\sigma^{-1}D(q_{s})\Phi_{k}(s))\cdot dB_{s} + \int_{0}^{T}u_{s}\cdot\Phi_{k}(s)\,ds \right] \,
+\frac{\partial I}{\partial a_{k}} = \bE_{P^0}\left[\psi\int_{0}^{T}(\sigma^{-1}D(q_{s})\Phi_{k}(s))\cdot dB_{s} + \int_{0}^{T}u(s)\cdot\Phi_{k}(s)\,ds \right] \,
 \end{equation}
-and $\bE_{\rho^0}[\cdot]$ being the expectation over all realization of (\ref{eqn:langevin-1d}) with $\eps=0$ and $u=u^{(n)}$ being the current iterate; note that we can compute all partial derivatives $\partial I/\partial a_k$, $k=1,\ldots,K$ from just one ensemble of nonequilibrium paths of $(q_{t},p_{t})$. Further note that, in general, the updated coefficient $a^{(n+1)}$ and hence the updated control $u^{(n+1)}$ will depend on the distribution of the initial conditions at the $n$-th iteration stage; in particular, if the controls are computed on-the-fly, the controls will actually be feedback controls depending on the current state.    
+and $\bE_{P^0}[\cdot]$ being the expectation over all realizations of (\ref{eqn:langevin-1d}) with $\eps=0$ and $u=u^{(n)}$ being the current iterate and arbitrary initial conditions $x=(q,p)$, e.g., 
+\[
+\bE_{P^{0}}[\psi] = \int_{\R^{2n}}\bE_{P^{0}_{x}}[\psi]\,d\mu_{\infty}(x) \,,
+\]
+with $P_{x}^{0}$ denoting the corresponding path measure with deterministic initial condition. Note that we can compute all partial derivatives $\partial I/\partial a_k$, $k=1,\ldots,K$ from just one ensemble of nonequilibrium paths of $(q_{t},p_{t})$. Further note that, in general, the updated coefficient $a^{(n+1)}$ and hence the updated control $u^{(n+1)}$ will depend on the distribution of the initial conditions at the $n$-th iteration stage; in particular, if the controls are computed on-the-fly, the controls will actually be feedback controls depending on the current state and the time elapsed since $t=0$.    
 
 
 
@@ -447,7 +452,7 @@ and $\bE_{\rho^0}[\cdot]$ being the expectation over all realization of (\ref{eq
 \end{figure}
 
 We use the idea of nonequilibrium linear response to investigate the
-nonequilibrium phase space probability density distribution, denoted by $\rho^\eps(q, p, t)$, of a one-dimensional model system: one particle in a
+nonequilibrium phase space probability density, denoted by $\rho^\eps(q, p, t)$, of a one-dimensional model system: one particle in a
 splitting single-well potential as shown in Fig.~\ref{fig:tmp4}.  For convenience, we let the mass of
 the particle to be 1~\textsf{amu}, and the friction coefficient to be
 $1\,\textsf{ps}^{-1}$.
@@ -486,10 +491,10 @@ potential at time $t = T$. The initial distribution $\rho^0(q, p, 0)$ is set to
 be equilibrium distribution of the unperturbed system.
 \recheck{
   We use Euler scheme with time step of $10^{-4}$ to discretize the
-  Langevin equation. The inital configurations for nonequilibrium
+  Langevin equation. The initial configurations for nonequilibrium
   simulation are generated by taking configurations
   from an equilibrium simulation of $10^6$~\textsf{ps} at an 1~\textsf{ps} time interval.
-  Then starting with these inital configurations,  the nonequilibrium
+  Then starting with these initial configurations according to $\rho_{\infty}\propto\exp(-\beta H)$,  the nonequilibrium
   Langevin equation is integrated until 20~\textsf{ps} with the same numerical
   scheme and time step.
 }
@@ -517,10 +522,10 @@ splits into two equally sized peaks.  In the end, the two
 peaks are entirely seperated.  The brute force nonequilibrium
 simulation serves as the precise result to which the response theory
 should be compared. The second row shows the result of the
-traditional equilibrium linear response theory.  Please notice that in
-this case, since the reference simulation is in equilibrium, we set the perturbation to
+traditional equilibrium linear response theory. In
+this case, the reference simulation is in equilibrium and we have set the perturbation to
 \[
-\eps v_t = D(q) (u_t+\eps\delta u_t)=2\eps D(q)k_e\cdot t/T=2\eps D(q)\delta u_t,
+\eps v_t = D(q_{t}) (u(t)+\eps\delta u(t))=2\eps D(q_{t})k_e\cdot t/T=:2\eps D(q_{t})\delta u(t),
 \] 
 so that the effective perturbation is of strength $2\eps = 2$.  At $t \leq
 15$~\textsf{ps}, the accuracy of the equilibrium linear response is
@@ -661,7 +666,7 @@ good accuracy.
 
 In this section, we consider the following double well potential:
 \begin{align}
-  U( q) = \frac12 k ( q^2 - a^2)^2
+  U(q) = \frac12 k ( q^2 - a^2)^2
 \end{align}
 Here $k = 8$~$\textsf{kJ} / (\textsf{mol nm}^4)$, and $ a = 1\
 \textsf{nm}$.  See the leftmost blue insertion of Fig.~\ref{fig:tmp7} for
@@ -676,28 +681,26 @@ optimally design the tilting such that the probability
 of being in the right well is as high as possible 
 at the end time of the process under a constraint on the energy used for the control in the sense of
 the following optimal forcing problem:
-\begin{align}
-  \tilde{I} & = \max_{u_t \in\mathcal F} \bE_{\rho^0}\left[ -\int_{0}^{T} \frac{1}{2}|u_{s}|^{2}\,dt + L(q_T) \right],
-\end{align}
-with $L(q_T)=\chi_{[a-\delta,a+\delta]}(q_T)/\eta$ representing the probability of the end point of the trajectory, $ q_T$, being in the right well ($\chi_I$ denotes the indicator function of the interval $I$) with $\eta$ being a weighting constant, ${\mathcal F}$ denoting the space of function that are piecewise linear  on $[0, T]$ in uniform intervals of length 1 ps, and $\rho^0$ being the
-\recheck{initial nonequilibrium distribution $\rightarrow$ nonequilibrium distribution under control $u_t$}. With $P(T) = \eta \bE_{\rho^0}(L(q_T))$, the probability of ending up in the right well at time $T$, and $I=\eta \tilde{I}$ we thus have
 \[
-  I = \max_{u \in\mathcal F} F(u),\quad F(u)= P(T) -
-  \frac{\eta}{2}\,
-   \int_0^T |u_t|^2\, dt\,.
+ \max_{u\in{\mathcal U}_{L}}I(u)\,,\quad I(u) = \bE\left[ -\int_{0}^{T} \frac{1}{2}|u(s)|^{2}\,dt + g(q_T) \right],
+\]
+with $g(q_T)=\chi_{[a-\delta,a+\delta]}(q_T)/\eta$ representing the probability of the end point of the trajectory, $ q_T$, being in the right well ($\chi_I$ denotes the indicator function of the interval $I$) with $\eta$ being a weighting constant, ${\mathcal U}_{L}$ denoting the space of function that are piecewise linear  on $[0, T]$ in uniform intervals of length 1 \textsf{ps}. Then
+\[
+\bP[q_{T}\in[a-\delta,a+\delta] ] = \eta \bE[g(q_T)]
+\]
+is the probability of being in the right well at time $T$. It is therefore convenient to scale the cost functional according to $I\mapsto\eta I$ and redefine $I$ as follows: 
+\[
+ I(u) = \bP[q_{T}\in[a-\delta,a+\delta] ] - \frac{\eta}{2}\,
+   \int_0^T |u(s)|^2\, ds\,.
    \]
-   \recheck{shall we use $I(u)$ instead of $F(u)$?, so that the
-     notation is consistent with  Sec. 3.}
- It is
-clear that for an unbiased double-well, $P(T)$
-is 0.5 if we choose $\rho^0=\rho_0$ as initial distribution.  The integral is the ``cost'' of the control and $\eta$  indicates the relative magnitude of the
+It is clear that for an unbiased double-well, the probability to be in the right well at any time $T$ is 0.5 if we choose $\rho_{\infty}$ to be the initial distribution. The remaining integral term in $I$ denotes the ``cost'' of the control and $\eta$  indicates the relative magnitude of this
 cost. 
 
 \recheck{ In all our numerical tests for the optimal control problem, the
   Langevin dyanmics Eq.~\eqref{ocp1} is discretized by the Euler
   scheme with a time step of $10^{-3}$~\textsf{ps}.
-  The initial distribution $\rho^0(q,p,0)$ is also set to be the
-  equilibrium distribution $\rho_0$ of the unperturbed system.
+  The initial distribution is set to be the
+  equilibrium distribution $\rho_\infty\propto\exp(-\beta H)$ of the unperturbed system.
   Therefore, an equilibrium simulation of $10^6$~\textsf{ps} is firstly performed (with
   the same numerical scheme and time step), and
   configurations are saved every 10~\textsf{ps} (in total $10^5$
@@ -716,30 +719,28 @@ cost.
 }
 
 Fig.~\ref{fig:tmp7} presents the numerical results of $\eta = 0.01$.
-Starting from an initial guess of linear control from $u_0 = 0$ to
-$u_T = 1$,
-the gradient search~\eqref{gd} \recheck{uses a constant $\tau_n = 30$ and} converges at the 22nd step, when the
+Starting from an initial guess of a linearly interpolated control between $u_0 = 0$ and
+$u_T = 1$, the gradient search~\eqref{gd} \recheck{uses a constant $\tau_n = 30$ and} converges at the 22nd step, when the
 maximum increment of the control coefficient $\max_k\vert \delta a_k\vert$
 is smaller than $0.02$, the termination threshold.
-The magnitude of the optimal
-control 
+The magnitude of the optimal control 
 \[
-o_t = \textrm{argmax}_{u_t \in\mathcal F} F(u_t)
+o(\cdot) = \mathop{\rm argmax}_{u \in{\mathcal U}_{L}} I(u)
 \] 
 is presented in the upper panel of Fig.~\ref{fig:tmp7},
 with blue insertions showing the shape of the time-dependent optimal control potential 
-$U(q) + o_t V(q)$ (optimally tilted double-well potential). 
+$U(q) + o(t) V(q)$ (optimally tilted double-well potential). 
 The maximum $I$ and the corresponding optimal probability to end up in the right well are
 given as functions of time in the lower plot by the solid and dashed lines, respectively.
 The red lines in the figure are produced by the nonequilibrium
 linear response theory developed in this work, i.e., using~\eqref{dida},
-and the green lines represent the brute force reference simulations that has been performed as follows: The optimal control from ${\mathcal F}$ is calculated by a gradient descent based optimization method in which the gradient of the functional with respect to the control is computed by numerical differentiation (central finite differences) in each step.
+and the green lines represent the brute force reference simulations that has been performed as follows: The optimal control from ${\mathcal U}_{L}$ is calculated by a gradient descent based optimization method in which the gradient of the functional with respect to the control is computed by numerical differentiation (central finite differences) in each step.
 % : \redc{$\partial I / \partial a_k \approx (I^+ - I^-) / (a_k^+ - a_k^-)$}
 The good agreement between the red and green lines demonstrates that 
 the linear response theory computes the gradient correctly.
-Please note that in order to calculate the gradient by the finite difference scheme, one
+Note that in order to calculate the gradient by the finite difference scheme, one
 needs to do $2K$ nonequilibrium simulations
-(where $K$ is the dimension of ${\mathcal F}$; here $K = 10$). In contrast, the nonequilibrium response theory only needs one nonequilibrium simulation.
+(where $K$ is the dimension of ${\mathcal U}_{L}$; here $K = 10$). In contrast, the nonequilibrium response theory only needs one nonequilibrium simulation.
 
 
 When $t<8$~\textsf{ps}, the magnitude of the control is still small.  Near the end time $T$, the magnitude of the control firstly
@@ -754,7 +755,7 @@ time scale of quasi-equilibration of the system, so the system does not have eno
 fully relax. Therefore, the observed phenomenon is truly
 nonequilibrium, and our nonequilibrium linear response theory is a
 tool that facilitates the investigation of this optimal forcing
-problem in the nonequilibrium setting. The fact that the optimal control is decreasing at the end of the interval is understandable since the population in the right well needs time to be build and increasing the control till the very end would be a waste of energy without corresponding gain in population.
+problem in the nonequilibrium setting. The fact that the optimal control is decreasing at the end of the interval is understandable since the population in the right well needs time to be build and increasing the control until $t=T$ would be a waste of control without leading to a significant population gain.
 
  
 % Intuitively, one concludes
