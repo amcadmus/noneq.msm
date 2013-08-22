@@ -1,0 +1,255 @@
+\documentclass[]{revtex4-1}
+
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb,amsthm}
+
+\newcommand{\fwg}{{\mathcal A}}
+
+\begin{document}
+
+\subsection*{The scientific issues from referee 1}
+
+\emph{
+The abstract and the general tones of the introduction and conclusion do not make justice to
+the content of the paper. Whether the approach proposed by the authors generalizes standard
+linear response theory as described in Section 2.1 is (at best) unclear to me. In fact, I think
+that most of the material from Section 2.1 could be omitted. If the authors decide to keep the
+material, they should more precisely compare (4) and (10), and show how (10) generalizes (4).
+}
+
+\emph{
+One trouble is that I do not understand (4). As far as I understand, the equation before (4)
+is (denoting by $\fwg$ the generator)
+\begin{align*}
+  \textbf{E}_{\rho^\varepsilon}[f] = \int f\rho^\varepsilon = \int e^{t\fwg} f\rho_0 = \mathbb{E}_{\rho_0}(f(X_t))
+\end{align*}
+where the latter expectation is over all initial conditions $X_0\sim\rho_0$ and over all realizations of
+the dynamics (1). Is $f$ a functional of the trajectory or a given static observable? Is $t$ fixed
+or is it taken to the limit $t \rightarrow+\infty$? Is the expectation $\textbf{E}_{\rho^\varepsilon}$
+an expectation over all initial
+conditions and all realizations of the dynamics? Assuming that the limit $t \rightarrow\infty$ is taken,
+\begin{align*}
+  \textbf{E}_{\rho^\varepsilon}[f] = \int f\mu_\varepsilon
+\end{align*}
+where $\mu_\varepsilon = \lim_{t\rightarrow+\infty}\rho^{\varepsilon}(t)$ is the (assumed) unique invariant measure of the dynamics. To
+obtain (4), a linear response result on $\mu_{\varepsilon}$ is needed, as given by (3.19) in Ref. [5]. I would however rather write $\textbf{E}_{\rho_0}$ on the right hand side of (4), and emphasize that this is a static
+average (no time dependence; compare with (10)). The authors should also make clear that
+$\rho_0 (t) = e^{t\fwg^\ast} = \rho_0$ is in fact independent of $t$. Unless the authors mean something else with
+$\rho_0$? (see the last equation of Section 2.1).
+}
+
+\emph{
+I am also not very satisfied by the discussion at the beginning of Section 2.2. It seems
+that the authors say that they can tackle cases uncovered by standard linear response theory
+-- namely degeneracy of the invariant measure, absence of spectral gap, etc. But again, their
+approach is a finite time perturbation theory, so I do not see why the discussion on the
+limitation of standard perturbation theory (on invariant measures) is relevant.
+}\\
+
+We have rewritten Sec. 2.1, and restricted the discussion of the
+equilibrium response theory (3) only in the finite-time
+horizon, so that it is comparable to the the nonequilibrium response theory (10), which is also
+developed in the finite-time horizon. Our work
+can be treated as a
+generalization of the equilibrium response theory in the sense that the
+reference process is not assumed to be in equilibrium nor in stationary.
+The introduction and conclusion are revised accordingly.
+
+The notations we used for the probability measures (both for
+trajectory ensemble and initial condition ensemble) were misleading.
+In the updated manuscript, we adopt the following convention:
+$\rho^\varepsilon = \rho^\varepsilon(x,t)$ is now used only in the equilibrium
+response theory part (Sec.~2.1). It denotes the probability density of
+perturbed stochastic process $X_t$ (governed by SDE (1))
+being at position $x$ at time $t$,
+and is also the solution to the corresponding perturbed Fokker-Planck
+equation. 
+$\rho^0 = \rho^0(x, t)$
+is the solution to the unperturbed Fokker-Planck that corresponds
+to SDE (2). $\rho_\infty$ denotes the unique invariant measure of the
+unperturbed Langevin dynamics.
+If the initial distribution is assumed to be
+$\rho^0(x, 0) = \rho_\infty$, it is obvious
+that $\rho^0(x, t) = \rho_\infty(x)$ for any $t\geq 0$.
+In the section 2.2 of nonequilibrium response theory, we adopt the new notation
+$P_x^\varepsilon$ that denotes the trajectory probability density for the
+perturbed process that starts with initial condition $X_0 = x$.
+Correspondingly, $P_x^0$ denotes the probability density of
+unperturbed trajectories with initial condition of $x_0 = x$.
+We further
+comment on the fact that if one starts the nonequilibrium process 
+from a certain initial distribution (rather than the above fixed point
+initial condition),
+the response formula (10) can
+be straightforwardly extend by averaging both sides of the equation over
+the initial probability measure.
+% We remind the reader about the difference
+% between $P_x^\varepsilon$ and $\rho^\varepsilon$ under Eq.(10).
+Under this setting, the $\phi$ on the r.h.s.~of (10) is understood
+as a functional of the trajectory $(x_t)_{0\leq t\leq T}$. 
+\\
+
+
+% With the improved manuscript, we believe the referee is now clear
+% on the fact 
+% that do NOT want to discuss the infinite-time scenario, 
+% the degeneracy of the inital distribution, nor the existence and uniqueness
+% of the staionary probability distribution in this paper.
+% In our finite-time nonequilibrium response theory,
+% we do NOT presume neither the equilibrium of the system,
+% nor the exsistence of a invarient (nor staionary) measure.
+% % In our finite time setting,
+% % The nonequilibrium dynamics is fully discribed by the trajectory
+% % probability density $P^\varepsilon_x$ and the initial distribution
+% % (provided that these distributions are well-defined), and the
+% % Girsanov transformation used to derive the response theory
+% % is valid under mild restrictions.
+% % We do not touch the issue of the inifite time convergence of the probability
+% % distribution.
+% Therefore, when compareing the finite-time  equilibrium response theory with our
+% nonequilibrium response theory, we conclude that our research overcomes the
+% limitations 
+% is a generalization of the equilibrium version.
+
+\emph{
+  The auxiliary process $\xi_t$ is not unique. This should be emphasized. Is there an optimal
+choice, allowing for instance to reduce the variance of the estimator for the linear response
+(e.g. (10) or (17))?
+}\\
+
+As far as we concerned, we do not have a clear answer to this question
+in the most general case.
+However, in this paper, we deal with  the Langevin dynamics.
+The friction
+matrix is positive definite, so the auxiliary process $\xi_t$ is uniquely
+solvable.
+\\
+
+\emph{
+Why do the authors use a gradient method, rather than, say, a
+conjugate gradient? How is the increment $\tau_n$ chosen in last equation of
+page 8: fixed or optimized by a line search for instance? This is
+never mentioned... Besides, I do not understand the final discussion
+at the end of Section 3. I understand (22) (except for the above
+remarks on who is $\rho^0$ , and whether this expectation means generating
+initial conditions according to $\rho^0 (0, q, p)$ and evolving according to
+some reference dynamics such as (18)). But I do not understand the
+discussion on the feedback controls. In particular, how do the authors
+make sure that the initial conditions are always distributed according
+to the same measure? Or do the distributions of these initial
+conditions convergence to some (a priori unknown) measure?
+}\\
+
+In the second numerical example (Sec.4.2), our aim is to verify the
+application of nonequilibrium response theory (Eq.(22)) to the
+optimization problem, but not to dig out the most efficient numerical
+method for solving this optimization problem.  We prefer the
+gradient descent method with a fixed increment, because firstly it
+works and converges in only 22 steps of iterations. Secondly,
+it is simple and easy to implement. Therefore, the gradient descent
+method is eligible to illustrate the power of the response theory, and
+at the same time keeps the story as simple as possible.
+
+The confusing notations used in the old manuscript was clarified
+in the updated manuscript, see the previous discussions.
+The initial condition of the optimization problem is subject to
+a prescribed distribution that is invariant with respect
+to steps of iterations. The form of the initial distribution
+depends on how the question is raised, for example, in Example 2,
+we want to  calculate the optimal way of driving the
+equilibrium distribution towards the right well of the potential.
+Therefore, the initial distribution is naturally chosen as the
+equilibrium distribution $\rho_\infty$.
+At each step of iteration, we numerically solve the
+equilibrium Langevin equation,
+and take the configurations along the trajectory as initial conditions
+for the nonequilibrium simulation.
+These discussions have been added to the manuscript.
+\\
+
+\emph{ More details on the numerical simulations are needed to make
+  them reproducible: which integrator is used to approximate the time
+  evolution, what is the time step, what is the number of realizations
+  M in (17), how are the initial conditions sampled (iid or
+  subsampling of a long Langevin trajectory), etc. These elements may
+  be trivial/standard, and I certainly do not want the authors to
+  write more than a short paragraph about it; but I certainly want to
+  read this paragraph. Moreover, on page 13, the optimization
+  procedure may be documented more precisely (number of realizations,
+  convergence of the estimator for the derivative and statistical
+  error, etc). In the central finite difference, is some variance
+  reduction technique used? Such as using the same realization of the
+  random noise for the two dynamics with different forcings (a control
+  variate method, as in J. B. Goodman and K. K. Lin, Coupling control
+  variates for Markov chain Monte Carlo, J. Comput. Phys., 228,
+  (2009), 7127–7136).  From what I understand, I would say ``yes''.  }\\
+
+We have added all detailed information the referee asked to the updated
+manuscript. Regarding the finite difference scheme, we did not used
+the technique described in the literature by Goddman and Lin.
+However, we have numerical checked the accuracy of the finite
+difference scheme, and its convergence.  The finite-difference step
+was 0.4, and $10^5$ trajectories were used to calculate one
+partial derivative (one component of the gradient), and in total
+10 partial derivative were calculated at each step of iterations.
+The statistical uncertainty of the
+partial derivative was roughly
+$5\times 10^{-3}$.  This value is 5 times larger than the
+response result, so we observe that the optimal control calculated
+by the finite-difference displays larger oscillations
+larger than that calculated
+by the response formula. We have also compared the result with 
+different finite-difference step sizes:  Step 0.2 with
+statistical uncertainty $3\times 10^{-3}$ 
+and step 1.0 with statistical uncertainty
+$1\times 10^{-3}$.
+All the results are in good consistency, which means
+that the finite-difference method used  in the paper for comparison with
+the response theory is reliable.\\
+
+\emph{
+On a final note, especially since this is a tribute to Giovanni Ciccotti: this work reminds
+me of the subtraction technique (G. Ciccotti and G. Jacucci, Direct computation of dynamical
+response by molecular dynamics - mobility of a charged Lennard-Jones particle, Phys. Rev.
+Lett., 35, 789792, 1975), with a underlying nonequilibrium/driven dynamics rather than an
+equilibrium one. Could the authors comment on the analogy?
+}\\
+
+In the paper by Giovanni and Jacucci, the authors use direct
+nonequilibrium molecular dynamics simulation to 
+calculate the \emph{equilibrium response}, i.e. the mobility of the charged
+Lennard-Jones particle, and show that
+the nonequilibrium approach has the advantage of smaller statistical error over
+the Green-Kubo formula. Our  nonequilibrium simulations,
+in comparison, calculate the
+\emph{nonequilibrium response}.
+As far as the authors concern, the method presented in the paper is new and
+has never been studied.
+
+
+
+\subsection*{The minor scientific comments from referee 1}
+
+We have revised the paper according to the referee's comments. \\
+
+\emph{
+(29) page 11, line 28: Do I understand correctly that $\varepsilon$ for the “standard” linear response is
+not small at all? The approach then seems doomed from the beginning, and would be
+worse and worse as the forcing $u_t$ in the reference driven dynamics increases.
+}\\
+
+The answer is yes. We calculate the time-dependent probability density of
+the perturbed driven system. If one wants to calculate it  under the
+framework of the equilibrium response theory, then the effective perturbation
+(to the equilibrium system) is in fact the driving plus the perturbation, as
+indicated by the equation on page. 12. Therefore, when the driving 
+becomes larger, the effective perturbation to the equilibrium also increases, so the
+accuracy of the traditional response theory becomes worse.
+
+
+
+\subsection*{The typo corrections from referee 2}
+
+All the typos pointed out by the referee 2 have been corrected in the new manuscript.
+
+\end{document}
