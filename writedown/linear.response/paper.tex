@@ -174,8 +174,18 @@ is the response function and the expectation under the integral is taken over al
 \[
 \bE_{\rho^{\eps}}[f] \approx \bE_{\rho_{\infty}}[f] + \eps\beta\int_{0}^{t}F(t-s)u(s)\,ds\,,
 \]
-where we have used the fact that $\rho^{0}(x,t)= \rho_{\infty}(x)$ for all $t\ge 0$. 
- 
+where we have used the fact that $\rho^{0}(x,t)= \rho_{\infty}(x)$ for
+all $t\ge 0$.
+
+\paragraph*{Remark.}
+\recheck{Ciccotti and Jacucci have pointed out that
+  the equilibrium linear response
+can also be calculated by a direct nonequilibrium simulation of the
+perturbed process, and  the nonequilibrium
+approach has a smaller statistical uncertainty in comparison with the
+standard Green-Kubo fomula~\cite{ciccotti1975direct}.
+}
+
 \paragraph*{Remark.}
 It is possible to extend the above framework to the case of observables that are functionals of the path, i.e.~to functions the form 
 \[
@@ -210,7 +220,7 @@ for $T<\infty$ and deterministic initial conditions
 \[
 x_{0}(\omega) = X_{0}(\omega) = x\quad\textrm{(almost surely)}\,.
 \]
-Suppose that there exists an auxiliary stochastic process \redc{ $\xi_{t}\in\R^{n}$} such that 
+Suppose that there exists an auxiliary stochastic process $\xi_{t}\in\R^{n}$ such that 
 \begin{equation}\label{xi}
 a(X_{t})\xi_{t} = v_{t}\,.
 \end{equation}
@@ -297,9 +307,9 @@ v_{t} = c(X_{t})\delta u(t)
 \end{equation}
 so that equation (\ref{xi}) that determines the change of measure in terms of the auxiliary control variable $\xi$ (and thus the linear response) reads 
 \[
-\sqrt{2\beta^{-1}}\recheck{\gamma}^{1/2} \xi_{t} = D(X_{t})\,\delta u(t)\,.
+\sqrt{2\beta^{-1}}{\gamma}^{1/2} \xi_{t} = D(X_{t})\,\delta u(t)\,.
 \]
-\recheck{Hence the equation for $\xi_{t}$ is solvable if and only if $\mathrm{range}(D(\cdot))\perp \mathrm{ker}(\gamma^{1/2})$, which, since $\gamma$ has full rank, means no restriction on $D(\cdot)$.}
+Hence the equation for $\xi_{t}$ is solvable if and only if $\mathrm{range}(D(\cdot))\perp \mathrm{ker}(\gamma^{1/2})$, which, since $\gamma$ has full rank, means no restriction on $D(\cdot)$.
   % means that $D(\cdot)$ must be invertible almost everywhere.}
 
 To be more specific, the equation we are considering has the form
@@ -381,11 +391,11 @@ dq_t & =  \nabla_p H(q_t,p_t)dt\\
 dp_t & =  -\nabla_q H(q_t,p_t)dt - \gamma \nabla_p H(q_t,p_t)dt + D(q_t)u(t) dt+\sigma dB_t\,,
 \end{aligned}
 \end{equation}
-\redc{with $(q_0, p_0)$ being subject to a given initial distribution $\mu$, and}
+with $(q_0, p_0)$ being subject to a given initial distribution $\mu$, and
 \begin{equation}\label{ocp2}
 I(u) = \bE\left[\int_{0}^{T}\left\{f(q_{s}) - \frac{1}{2}|u(s)|^{2}\right\}\,dt + g(q_{T}) \right]\,,
 \end{equation}
-with the expectation being over all realizations of the controlled Langevin dynamics in (\ref{ocp1}) with \recheck{the} prescribed initial distribution. Here, the space of admissible controls $\cU$ consists of all bounded controls of the form 
+with the expectation being over all realizations of the controlled Langevin dynamics in (\ref{ocp1}) with the prescribed initial distribution. Here, the space of admissible controls $\cU$ consists of all bounded controls of the form 
 \begin{equation}\label{admissible}
 u(t) = \sum_{k=1}^K a_k \Phi_k(t)\,,\quad a_{k}\in \R\,,
 \end{equation}
@@ -424,10 +434,11 @@ with
 \end{equation}
 and $\bE_{P^0}[\cdot]$ being the expectation over all realizations of (\ref{eqn:langevin-1d}) with $\eps=0$ and $u=u^{(n)}$ being the current iterate and arbitrary initial conditions $x=(q,p)$, e.g., 
 \[
-\bE_{P^{0}}[\psi] = \int_{\R^{2n}}\bE_{P^{0}_{x}}[\psi]\,d\recheck{\mu}(x) \,,
+\bE_{P^{0}}[\psi] = \int_{\R^{2n}}\bE_{P^{0}_{x}}[\psi]\,d\mu(x) \,,
 \]
-with $P_{x}^{0}$ denoting the corresponding path measure with deterministic initial condition,
-\redc{and $\mu$ is the prescribed initial distribution.}
+with $P_{x}^{0}$ denoting the corresponding path measure with deterministic initial condition, and $\mu$ is the prescribed initial distribution.
+\recheck{A related result on computing the parameter sensitivity can be found
+  in Ref.~\cite{warren2012malliavin}.}
 Note that we can compute all partial derivatives $\partial I/\partial a_k$, $k=1,\ldots,K$ from just one ensemble of nonequilibrium paths of $(q_{t},p_{t})$. Further note that, in general, the updated coefficient $a^{(n+1)}$ and hence the updated control $u^{(n+1)}$ will depend on the distribution of the initial conditions at the $n$-th iteration stage; in particular, if the controls are computed on-the-fly, the controls will actually be feedback controls depending on the current state and the time elapsed since $t=0$.    
 
 
@@ -778,11 +789,13 @@ problem in the nonequilibrium setting. The fact that the optimal control is decr
 % We derived  first and second order response formulas for molecular dynamics (driven Langevin dynamics) starting from general nonequilibrium distributions. For the special case of the initial distribution being the equilibrium distribution of the unperturbed dynamics, the novel linear response formula simplifies to the well-known standard formula. We validated the  formula in numerical experiments in comparison to brute-force nonequilibrium simulations. There, we demonstrated that the nonequilibrium linear response formula allows to extend the algorithmic use of linear response theory to significantly stronger perturbutions of the system since it permits intermediate steps based on partially propagated nonequilibrium distributions. 
 
 \recheck{
-We derived linear response formulas for nonequilibrium molecular
+  We derived the first and second order
+  response formulas for nonequilibrium molecular
 dynamics (driven Langevin dynamics), which is a generalization of the
-standard finite-time equilibrium response theory.  The novel response theory
-dose not rely on any assumption on the existence of the invariant
-measure nor stationary state. We validated the formula in numerical
+standard finite-time equilibrium linear response theory.
+The novel nonequilibrium response theory
+does not rely on any reversibility or stationarity assumption on the dynamics.
+We validated the formula in numerical
 experiments in comparison to brute-force nonequilibrium
 simulations. There, we demonstrated that the nonequilibrium linear
 response formula allows to extend the algorithmic use of linear

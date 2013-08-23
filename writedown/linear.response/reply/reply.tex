@@ -48,11 +48,12 @@ limitation of standard perturbation theory (on invariant measures) is relevant.
 
 We have rewritten Sec. 2.1, and restricted the discussion of the
 equilibrium response theory (3) only in the finite-time
-horizon, so that it is comparable to the the nonequilibrium response theory (10), which is also
+horizon, so that it is comparable to the nonequilibrium response theory (10), which is also
 developed in the finite-time horizon. Our work
 can be treated as a
 generalization of the equilibrium response theory in the sense that the
-reference process is not assumed to be in equilibrium nor in stationary.
+reference process is not assumed to be in equilibrium.
+Being more general, our theory does not assume the existence of nonequilibrium steady state.
 The introduction and conclusion are revised accordingly.
 
 The notations we used for the probability measures (both for
@@ -117,12 +118,20 @@ choice, allowing for instance to reduce the variance of the estimator for the li
 (e.g. (10) or (17))?
 }\\
 
-As far as we concerned, we do not have a clear answer to this question
-in the most general case.
-However, in this paper, we deal with  the Langevin dynamics.
-The friction
+% As far as we concerned, we do not have a clear answer to this question
+% in the most general case.
+In this paper, when we deal with  the Langevin dynamics, 
+the friction
 matrix is positive definite, so the auxiliary process $\xi_t$ is uniquely
 solvable.
+If the matrix in front of the noise does not have full rank, then
+there are some components of the driving Brownian motion in the SDE
+that are uncorrelated from $X_t$, in which case the extra terms are
+independent of $\varphi$ that depends only on $(X_t)$. Hence the
+corresponding 1st and 2nd order linear response expressions vanish
+because of the Martingale property $\textbf{E}[\int \xi^{extra}\cdot dB^{extra}]=0$
+and the Ito isometry $\textbf{E}[(\int \xi^{extra}\cdot dB^{extra})^2]= \textbf{E} [\int
+|\xi^{extra}|^2dt]$.
 \\
 
 \emph{
@@ -224,8 +233,8 @@ the Green-Kubo formula. Our  nonequilibrium simulations,
 in comparison, calculate the
 \emph{nonequilibrium response}.
 As far as the authors concern, the method presented in the paper is new and
-has never been studied.
-
+has never been studied. The citation and discussion to Giovanni and Jacucci's
+work have been added to the manuscript.
 
 
 \subsection*{The minor scientific comments from referee 1}
