@@ -93,7 +93,7 @@
 
 
 \begin{document}
-\title[Response theory for nonequilibrium MD]{
+\title[Response theory for nonequilibrium system]{
   Linear response theory and optimal control for a molecular system under nonequilibrium conditions
 }
 %
@@ -441,24 +441,224 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
   \item<2-> where
     \bluec{
       \begin{align*}
-        G[\vect x_s] & = \frac 1\sigma\int_0^t\delta\fe(s)\,\vect D(\vect q_s)\cdot \dd\vect W_s\\
-        H[\vect x_s] & = \frac 1{\sigma^2}\int_0^t\delta\fe^2(s)\,\vect D^2(\vect q_s)\cdot \dd s
+        G[\vect x_s] & = \int_0^t\frac 1\sigma\,\delta\fe(s)\,\vect D(\vect q_s)\cdot \dd\vect W_s\\
+        H[\vect x_s] & = \int_0^t\frac 1{\sigma^2}\,\delta\fe^2(s)\,\vect D^2(\vect q_s)\cdot \dd s
     \end{align*}
     }
   \end{itemize}
 \end{frame}
 
 
-\begin{frame}{Linear response thoery for nonequilibrium system}
-  Exnternal vedio
+\begin{frame}{Numerical example: splitting single well potentialu}
+  \begin{itemize}
+  \item<1-> Single well Hamiltonian:
+    \bluec{
+      \begin{align*}
+        H(\vect q, \vect p) = \frac12\vert \vect p\vert^2 + \frac12 k\vert \vect q\vert^2
+      \end{align*}
+    }
+  \item<2-> External drive:
+    \bluec{
+      \begin{align*}
+        u(t)\vect D(\vect q) = - k_e \frac{t}{T}\cdot
+        \nabla_{\vect q}
+        \Big[
+        \frac{1}{\sqrt{2\pi \Sigma^2}} \exp\Big\{-\frac{ q^2}{2\Sigma^2}\Big\}
+        \Big]
+      \end{align*}
+    }
+  \item<3-> Perturbation:
+    \bluec{
+      \begin{align*}
+        \eps\delta u(t)\vect D(\vect q) = - \eps\cdot k_e \frac{t}{T}\cdot
+        \nabla_{\vect q}
+        \Big[
+        \frac{1}{\sqrt{2\pi \Sigma^2}} \exp\Big\{-\frac{ q^2}{2\Sigma^2}\Big\}
+        \Big]        
+      \end{align*}
+    }
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Numerical example: splitting single well potential}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-10.eps}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Numerical example: splitting single well potential}
+  \addtocounter{framenumber}{-1}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-01.eps}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Numerical example: splitting single well potential}
+  \addtocounter{framenumber}{-1}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-02.eps}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Numerical example: splitting single well potential}
+  \addtocounter{framenumber}{-1}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-10.eps}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Numerical example: splitting single well potential}
+  \addtocounter{framenumber}{-1}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-11.eps}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Numerical example: splitting single well potential}
+  \addtocounter{framenumber}{-1}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-12.eps}
+  \end{figure}  
+\end{frame}
+
+
+
+
+\begin{frame}{Numerical example: splitting single well potential}
+  The probability density on the phase space: Exnternal vedio
   \begin{figure}[ht]
-    \includemovie[poster,autoplay,externalviewer]{}{}{/home/wanghan/study/noneq.msm/writedown/linear.response/figs/tilt.warm020.str6.0.nst1e09.smallgrid/fig-2d-tog.avi}
+    \includemovie[poster,autoplay,externalviewer]{}{}{figs/movie/fig-2d-tog.mp4}
   \end{figure}
  % \flashmovie[engine=flv-player,auto=1,controlbar=0]{/home/wanghan/study/noneq.msm/writedown/linear.response/figs/tilt.warm020.str6.0.nst1e09.smallgrid/fig-2d-tog.flv}
   % /home/wanghan/study/noneq.msm/writedown/linear.response/figs/tilt.warm020.str6.0.nst1e09.smallgrid/fig-2d-tog.mp4
 \end{frame}
 
+\begin{frame}{Numerical example: splitting single well potential}
+  \begin{figure}
+    \includegraphics[width=0.7\textwidth]{figs/movie/fig-2d-tog-00020.pdf}
+  \end{figure}  
+\end{frame}
 
+
+\begin{frame}
+  \frametitle{{Optimal control of a nonequilibrium system}}
+  The optimal control problem
+  \bluec{
+    \begin{align*}
+      \max_{u\in\mathcal U} \ I&(u) = \langle\, \psi (u) \,\rangle_{\pathmeas^0}\\
+      \textbf{s.t.} \quad&
+        \dot{\vect q}  = \nabla_{\vect p}\mh(\vect q,\vect p), \\
+        &\dot{\vect p}  =- \nabla_{\vect q}\mh(\vect q,\vect p)
+        + \fe(t)\, \vect D(\vect q)
+        - \gamma\vect p
+        + \sigma\dot{\vect W},      
+    \end{align*}
+  }
+  where:
+  \bluec{
+    \begin{align*}
+      \psi(u) =
+      \int_0^T
+      \Big\{ f(q_s) - \frac12\vert u(s)\vert^2\Big\}\, \dd t + g(q_T)\,
+    \end{align*}
+  }
+  \bluec{$f$} and \bluec{$g$} are the running cost and the terminal cost.
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Optimal control of a nonequilibrium system}
+  \begin{itemize}
+  \item<1-> 
+    Assuming the forcing is presented by:
+    \bluec{
+      \begin{align*}
+        u(t) = \sum_{k = 1}^K a_k\Phi_k(t), \quad a_k\in \mathbb R
+      \end{align*}
+    }
+  \item<2-> The gradient descent searching:
+    \bluec{
+      \begin{align*}
+        u^{(n+1)} = u^{(n)} + \tau_n \,\nabla I\,(u^{(n)})
+      \end{align*}
+    }
+  \item<3-> In the space spanned the ansatz functions:
+    \bluec{
+      \begin{align*}
+        a_k^{(n+1)}   = a_k^{(n)} +
+        \tau_n \,\frac{\partial I}{\partial a_k} \bigg\vert_{a_k = a_k^{(n)}}
+      \end{align*}
+    }
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Optimal control of a nonequilibrium system}
+  \begin{itemize}
+  \item<1-> With the response theory we have
+    \bluec{
+      \begin{align*}
+        \frac{\partial I}{\partial a_k} =
+        \bigg\langle
+        \psi \int_0^T\frac1\sigma\,\Phi_k(s)\,\vect D(q_s)\cdot \dd W_s
+        +
+        \int_0^T u(s)\,\Phi_k(s)\,\dd s
+        \bigg\rangle_{\pathmeas^0}
+      \end{align*}
+    }
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Optimal tilting of a double-well potential}
+  \begin{itemize}
+  \item<1-> 
+    \begin{minipage}[t]{0.6\linewidth}
+      The 1-D double-well potential:
+      \bluec{
+        \begin{equation*}
+          U(q) = \frac k2\, (q^2 - a^2)^2
+        \end{equation*}
+      }
+      with tilting:
+      \bluec{
+        \begin{align*}
+          D(q) = -\nabla_q V(q) = 1
+        \end{align*}
+      }
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.350\linewidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=1.0\textwidth]{figs/double.well/potential.eps}
+      \end{figure}
+    \end{minipage}
+    \hfill
+  \item<2-> The optimal forcing problem:
+    \bluec{
+      \begin{align*}
+        I = \max_{u\in\mathcal U} I(u), \quad
+        I(u) =
+        \bigg\langle
+        \chi(q_T\in [0,+\infty)) - \frac\eta 2\int_0^T\vert u(s)\vert^2\,\dd s
+        \bigg\rangle_{\pathmeas^0}
+      \end{align*}
+    }
+  \item<3-> \bluec{$\Phi_k(t)$}: piecewise linear function.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Optimal tilting of a double-well potential}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{figs/fig-ctr-stat-2.eps}
+  \end{figure}
+\end{frame}
 
 
 
