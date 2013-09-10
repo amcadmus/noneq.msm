@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source env.sh
 source parameters.sh
 source functions.sh
 
@@ -17,14 +18,10 @@ if test ! -f $pert_equi_result/equi.frame ; then
     echo "no file $pert_equi_result/equi.frame, exit"
     exit
 fi
-if test ! -d $gro_dir; then
-    echo "no dir $gro_dir, exit"
-    exit
-fi
 #rm -f angle.name
 #rm -f gxs.name
 #rm -f success.dir.name
-touch angle.name gxs.name success.dir.name
+touch success.dir.name
 
 targets=`awk '{print $1}' $pert_equi_result/equi.frame | head -n $pert_num_conf_use`
 
@@ -46,7 +43,11 @@ do
 	fi
     fi
     echo "# doing in dir $my_dir"
-    cp -a $gro_dir $my_dir
+    mkdir $my_dir
+    cp $pert_equi_result/conf.gro	$my_dir
+    cp $pert_equi_result/grompp.mdp	$my_dir
+    cp $pert_equi_result/topol.top	$my_dir
+    cp $pert_equi_result/angle.ndx	$my_dir
     cd $my_dir
     rm -f run.log
     set_parameters_pert grompp.mdp
@@ -62,12 +63,13 @@ do
 	echo "failed at mdrun exit"; exit
     fi
 
-    echo 3 14 | trjconv -center -pbc whole
-    mv -f trajout.xtc alanine.xtc
-    $cwd/tools/angles/evolve -f alanine.xtc -s angle.dat &> angle.log
-    if [ $? -ne 0 ]; then
-	echo "failed at evolve exit"; exit
-    fi
+    echo 2 2 | trjconv -center -pbc whole
+    mv -f trajout.xtc butane.xtc
+    # $cwd/tools/angles/evolve -f alanine.xtc -s angle.dat &> angle.log
+    # if [ $? -ne 0 ]; then
+    # 	echo "failed at evolve exit"; exit
+    # fi
+    g_angle -type dihedral -od angdist.xvg  -ov angaver.xvg -xvg none 
 
     tmpid=`echo "$count - $pert_parallel_num_pro" | bc -l`
     echo "tmpid is $tmpid"
@@ -77,9 +79,7 @@ do
     rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log
     
     cd $cwd
-    sleep 1
-    echo "$my_dir/angle.dat" >> angle.name
-    echo "$my_dir/gxs.out" >> gxs.name
+    sleep .1
     echo "$my_dir" >> success.dir.name
     sync
 done
