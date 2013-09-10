@@ -25,7 +25,7 @@ do
 	exit
     fi
     rm -f Mtot.xvg
-    echo 2 | g_dipoles -n $backup_dir/index.ndx  -f butane.xtc -s $backup_dir//topol.tpr -nice 0 &> /dev/null
+    echo 2 | g_dipoles -f butane.xtc -s $backup_dir//topol.tpr -nice 0 &> /dev/null
     rm -f epsilon.xvg aver.xvg dipdist.xvg
     cd - &>/dev/null
     echo $pert_main_dir/$i/Mtot.xvg >> dipole.name

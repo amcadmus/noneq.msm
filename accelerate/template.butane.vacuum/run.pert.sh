@@ -46,10 +46,16 @@ do
     mkdir $my_dir
     cp $pert_equi_result/conf.gro	$my_dir
     cp $pert_equi_result/grompp.mdp	$my_dir
-    cp $pert_equi_result/topol.top	$my_dir
     cp $pert_equi_result/angle.ndx	$my_dir
+    cp $pert_equi_result/template.top	$my_dir
+    cp $pert_equi_result/interaction.parameter	$my_dir
+    source $pert_equi_result/insert.param.sh    
     cd $my_dir
     rm -f run.log
+    source interaction.parameter
+    set_interaction interaction.parameter
+    source interaction.parameter
+    insert_param template.top topol.top    
     set_parameters_pert grompp.mdp
     start_time=`grep $count $pert_equi_result/equi.frame | awk '{print $2}'`
     echo "# run with command `which grompp`" &> run.log
