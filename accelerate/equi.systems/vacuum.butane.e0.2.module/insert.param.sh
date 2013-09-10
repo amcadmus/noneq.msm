@@ -2,6 +2,7 @@
 
 function insert_param () {
     file=$1
+    outfile=$2
     sed -e "s/param_nb_ch2_c06/$param_nb_ch2_c06/g" $file |\
     sed -e "s/param_nb_ch2_c12/$param_nb_ch2_c12/g" |\
     sed -e "s/param_nb_ch3_c06/$param_nb_ch3_c06/g" |\
@@ -33,6 +34,5 @@ function insert_param () {
     sed -e "s/param_charge_h/$param_charge_h/g" |\
     sed -e "s/param_bond_c_c_k/$param_bond_c_c_k/g" |\
     sed -e "s/param_angle_c_c_c_k/$param_angle_c_c_c_k/g" |\
-    sed -e "s/param_dihedral_c_c_c_c_k/$param_dihedral_c_c_c_c_k/g" > tmp.tmp.tmp
-    mv -f tmp.tmp.tmp $file
+    sed -e "s/param_dihedral_c_c_c_c_k/$param_dihedral_c_c_c_c_k/g" > $outfile
 }
