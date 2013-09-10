@@ -12,7 +12,6 @@ pert_time=1600			# ps
 pert_frame_feq=0.5		# ps
 pert_dt=0.002			# ps
 pert_taut=0.1			# ps
-pert_noSdRange=1.0		# nm
 pert_barostat=no		# Parrinello-Rahman or no
 pert_taup=2.0			# ps
 pert_parallel_num_pro=1		# n

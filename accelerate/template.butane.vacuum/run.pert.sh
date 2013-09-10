@@ -69,7 +69,7 @@ do
     # if [ $? -ne 0 ]; then
     # 	echo "failed at evolve exit"; exit
     # fi
-    g_angle -type dihedral -od angdist.xvg  -ov angaver.xvg -xvg none 
+    g_angle -type dihedral -od angdist.xvg  -ov angaver.xvg -xvg none &> run.log
 
     tmpid=`echo "$count - $pert_parallel_num_pro" | bc -l`
     echo "tmpid is $tmpid"
@@ -79,8 +79,7 @@ do
     rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log
     
     cd $cwd
-    sleep .1
     echo "$my_dir" >> success.dir.name
-    sync
+#    sync
 done
 
