@@ -58,7 +58,7 @@ butane  3
 
 [ dihedrals ] 
 ; ai	aj	ak	al	funct	param
-1	2	3	4	1	0.000       param_dihedral_c_c_c_c_k=5          3  ;ref 1 et 43A2
+1	2	3	4	1	0.000       param_dihedral_c_c_c_c_k          3  ;ref 1 et 43A2
 
 [ moleculetype ]
 ; molname	nrexcl
