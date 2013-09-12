@@ -122,7 +122,7 @@ up (const double & rr) const
 {
   if (rr < rc) {
     return
-	- 1. / (er * rr) 
+	- 1. / (er * rr * rr) 
 	* ( 1. + (erf - er) / (2. * erf + er) * rr * rr * rr / rc3 )
 	+ 1. / (er * rr)
 	* ( (erf - er) / (2. * erf + er) * 3. * rr * rr / rc3 );
@@ -167,7 +167,8 @@ int main(int argc, char * argv[])
   double rc;
   double ext = 1.2;
   double dr;
-  double scaleStart, scaleEnd;
+  double scaleEleStart, scaleEleEnd;
+  double scaleVdwStart, scaleVdwEnd;
   double scale;
   
   po::options_description desc ("Allow options");
@@ -179,8 +180,10 @@ int main(int argc, char * argv[])
       ("table-ext", po::value<double > (&ext)->default_value (1.2), "table extention")
       ("dr", po::value<double > (&dr)->default_value (0.002), "table step")
       ("scale", po::value<double > (&scale)->default_value (1.0), "scale")
-      ("scale-start", po::value<double > (&scaleStart)->default_value (0.1), "scale start r")
-      ("scale-end", po::value<double > (&scaleEnd)->default_value (0.18), "scale end r")
+      ("scale-ele-start", po::value<double > (&scaleEleStart)->default_value (0.1), "scale start r")
+      ("scale-ele-end", po::value<double > (&scaleEleEnd)->default_value (0.18), "scale end r")
+      ("scale-vdw-start", po::value<double > (&scaleVdwStart)->default_value (0.3), "scale start r")
+      ("scale-vdw-end", po::value<double > (&scaleVdwEnd)->default_value (0.6), "scale end r")
       ("output,o", po::value<std::string > (&ofile)->default_value ("table.xvg"), "the output table of potential");
   
   po::variables_map vm;
@@ -194,7 +197,8 @@ int main(int argc, char * argv[])
   ReactionField prf (er, erf, rc);
   C6 pc6;
   C12 pc12;
-  SwitchFunction psf (scaleStart, scaleEnd);
+  SwitchFunction psf1 (scaleEleStart, scaleEleEnd);
+  SwitchFunction psf2 (scaleVdwStart, scaleVdwEnd);
 
   double rup = rc + ext;
   int nn = rup / dr + 1;
@@ -209,12 +213,12 @@ int main(int argc, char * argv[])
     else {
       fprintf (fout, "%f  %f %f  %f %f  %f %f\n",
 	       rr,
-	       (scale - 1) * psf.u(rr) * prf.u(rr) + prf.u(rr),
-	       - ( (scale - 1) * (psf.up(rr) * prf.u(rr) + psf.u(rr) * prf.up(rr)) + prf.up(rr)),
-	       - (scale - 1) * psf.u(rr) * pc6.u(rr) + pc6.u(rr),
-	       ( (scale - 1) * (psf.up(rr) * pc6.u(rr) + psf.u(rr) * pc6.up(rr)) + pc6.up(rr)),
-	       (scale - 1) * psf.u(rr) * pc12.u(rr) + pc12.u(rr),
-	       - ( (scale - 1) * (psf.up(rr) * pc12.u(rr) + psf.u(rr) * pc12.up(rr)) + pc12.up(rr))
+	       (scale - 1) * psf1.u(rr) * prf.u(rr) + prf.u(rr),
+	       - ( (scale - 1) * (psf1.up(rr) * prf.u(rr) + psf1.u(rr) * prf.up(rr)) + prf.up(rr)),
+	       - ((scale - 1) * psf2.u(rr) * pc6.u(rr) + pc6.u(rr)),
+	       ( (scale - 1) * (psf2.up(rr) * pc6.u(rr) + psf2.u(rr) * pc6.up(rr)) + pc6.up(rr)),
+	       (scale - 1) * psf2.u(rr) * pc12.u(rr) + pc12.u(rr),
+	       - ( (scale - 1) * (psf2.up(rr) * pc12.u(rr) + psf2.u(rr) * pc12.up(rr)) + pc12.up(rr))
 	  );
     }
   }

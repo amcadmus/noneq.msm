@@ -42,7 +42,7 @@ function set_parameters_pert () {
     pert_xtcout_feq=`echo "$pert_frame_feq / $pert_dt" | bc -l | cut -d '.' -f 1`
     pert_xvout_feq=$pert_xtcout_feq
     pert_energy_feq=$pert_xtcout_feq
-    pert_strength_r=`echo "$pert_strength * $pert_rescale_sqrt" | bc -l`
+    pert_strength_r=`echo "$pert_strength * $pert_rescale" | bc -l`
     pert_warm_time_r=`echo "$pert_warm_time / $pert_rescale" | bc -l`
     pert_taut_r=`echo "$pert_taut / $pert_rescale" | bc -l`
     sed -e "/^dt/s/=.*/= $pert_dt/g" $file |\
@@ -58,6 +58,10 @@ function set_parameters_pert () {
     sed -e "/^nstenergy/s/=.*/= $pert_energy_feq/g" |\
     sed -e "/^userreal1/s/=.*/= $pert_noSdRange/g" |\
     sed -e "/^userreal4/s/=.*/= $pert_rescale/g" |\
+    sed -e "/^rlist /s/=.*/= $pert_rcut/g" |\
+    sed -e "/^rcoulomb /s/=.*/= $pert_rcut/g" |\
+    sed -e "/^rvdw /s/=.*/= $pert_rcut/g" |\
+    sed -e "/^epsilon_rf /s/=.*/= $pert_erf/g" |\
     sed -e "/^E-x /s/=.*/= 1 $pert_strength_r 0.0/g" |\
     sed -e "/^ld-seed/s/=.*/= `date +%s`/g" |\
     sed -e "/^gen_vel /s/=.*/= no/g" |\
@@ -102,25 +106,26 @@ function set_interaction () {
     param_angle_c_c_c_k_r=`echo "$param_angle_c_c_c_k * $pert_rescale" | bc -l`
     param_dihedral_c_c_c_c_k=`echo "$param_dihedral_c_c_c_c_k * $pert_rescale" | bc -l`
     
-    sed -e "/^param_nb_ch2_c06/s/=.*/=$param_nb_ch2_c06_r/g" $file |\
-    sed -e "/^param_nb_ch3_c06/s/=.*/=$param_nb_ch3_c06_r/g" |\
-    sed -e "/^param_nb_ow_c06/s/=.*/=$param_nb_ow_c06_r/g" |\
-    sed -e "/^param_nb_ch2_ow_c06/s/=.*/=$param_nb_ch2_ow_c06_r/g" |\
-    sed -e "/^param_nb_ch3_ow_c06/s/=.*/=$param_nb_ch3_ow_c06_r/g" |\
-    sed -e "/^param_nb_ch3_ch2_c06/s/=.*/=$param_nb_ch3_ch2_c06_r/g" |\
-    sed -e "/^param_pair_ow_ow_c06/s/=.*/=$param_pair_ow_ow_c06_r/g" |\
-    sed -e "/^param_pair_ch2_ch2_c06/s/=.*/=$param_pair_ch2_ch2_c06_r/g" |\
-    sed -e "/^param_pair_ch3_ch3_c06/s/=.*/=$param_pair_ch3_ch3_c06_r/g" |\
-    sed -e "/^param_pair_ch2_ow_c06/s/=.*/=$param_pair_ch2_ow_c06_r/g" |\
-    sed -e "/^param_pair_ch3_ow_c06/s/=.*/=$param_pair_ch3_ow_c06_r/g" |\
-    sed -e "/^param_pair_ch3_ch2_c06/s/=.*/=$param_pair_ch3_ch2_c06_r/g" |\
-    sed -e "/^param_charge_ch2/s/=.*/=$param_charge_ch2_r/g" |\
-    sed -e "/^param_charge_ch3a/s/=.*/=$param_charge_ch3a_r/g" |\
-    sed -e "/^param_charge_ch3b/s/=.*/=$param_charge_ch3b_r/g" |\
-    sed -e "/^param_charge_ow/s/=.*/=$param_charge_ow_r/g" |\
-    sed -e "/^param_charge_h/s/=.*/=$param_charge_h_r/g" |\
-    sed -e "/^param_angle_c_c_c_k/s/=.*/=$param_angle_c_c_c_k_r/g" |\
+    sed -e "/^param_angle_c_c_c_k/s/=.*/=$param_angle_c_c_c_k_r/g" $file |\
     sed -e "/^param_dihedral_c_c_c_c_k/s/=.*/=$param_dihedral_c_c_c_c_k/g" > tmp.tmp.tmp
+
+    # sed -e "/^param_nb_ch2_c06/s/=.*/=$param_nb_ch2_c06_r/g" $file |\
+    # sed -e "/^param_nb_ch3_c06/s/=.*/=$param_nb_ch3_c06_r/g" |\
+    # sed -e "/^param_nb_ow_c06/s/=.*/=$param_nb_ow_c06_r/g" |\
+    # sed -e "/^param_nb_ch2_ow_c06/s/=.*/=$param_nb_ch2_ow_c06_r/g" |\
+    # sed -e "/^param_nb_ch3_ow_c06/s/=.*/=$param_nb_ch3_ow_c06_r/g" |\
+    # sed -e "/^param_nb_ch3_ch2_c06/s/=.*/=$param_nb_ch3_ch2_c06_r/g" |\
+    # sed -e "/^param_pair_ow_ow_c06/s/=.*/=$param_pair_ow_ow_c06_r/g" |\
+    # sed -e "/^param_pair_ch2_ch2_c06/s/=.*/=$param_pair_ch2_ch2_c06_r/g" |\
+    # sed -e "/^param_pair_ch3_ch3_c06/s/=.*/=$param_pair_ch3_ch3_c06_r/g" |\
+    # sed -e "/^param_pair_ch2_ow_c06/s/=.*/=$param_pair_ch2_ow_c06_r/g" |\
+    # sed -e "/^param_pair_ch3_ow_c06/s/=.*/=$param_pair_ch3_ow_c06_r/g" |\
+    # sed -e "/^param_pair_ch3_ch2_c06/s/=.*/=$param_pair_ch3_ch2_c06_r/g" |\
+    # sed -e "/^param_charge_ch2/s/=.*/=$param_charge_ch2_r/g" |\
+    # sed -e "/^param_charge_ch3a/s/=.*/=$param_charge_ch3a_r/g" |\
+    # sed -e "/^param_charge_ch3b/s/=.*/=$param_charge_ch3b_r/g" |\
+    # sed -e "/^param_charge_ow/s/=.*/=$param_charge_ow_r/g" |\
+    # sed -e "/^param_charge_h/s/=.*/=$param_charge_h_r/g" |\
 
     mv -f tmp.tmp.tmp $file
 }
