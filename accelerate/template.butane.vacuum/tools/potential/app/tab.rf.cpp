@@ -74,7 +74,7 @@ u  (const double & rr) const
     return 1.;
   }
   else {
-    return 1. + cos ( (rr - start) / inter * M_PI + M_PI );
+    return 0.5 + 0.5 * cos ( (rr - start) / inter * M_PI + M_PI );
   }
 }
 
@@ -88,7 +88,7 @@ up (const double & rr) const
     return 0.;
   }
   else {
-    return - sin ( (rr - start) / inter * M_PI + M_PI ) * M_PI / inter;
+    return - 0.5 * sin ( (rr - start) / inter * M_PI + M_PI ) * M_PI / inter;
   }
 }
 
@@ -211,8 +211,8 @@ int main(int argc, char * argv[])
 	       rr,
 	       (scale - 1) * psf.u(rr) * prf.u(rr) + prf.u(rr),
 	       - ( (scale - 1) * (psf.up(rr) * prf.u(rr) + psf.u(rr) * prf.up(rr)) + prf.up(rr)),
-	       (scale - 1) * psf.u(rr) * pc6.u(rr) + pc6.u(rr),
-	       - ( (scale - 1) * (psf.up(rr) * pc6.u(rr) + psf.u(rr) * pc6.up(rr)) + pc6.up(rr)),
+	       - (scale - 1) * psf.u(rr) * pc6.u(rr) + pc6.u(rr),
+	       ( (scale - 1) * (psf.up(rr) * pc6.u(rr) + psf.u(rr) * pc6.up(rr)) + pc6.up(rr)),
 	       (scale - 1) * psf.u(rr) * pc12.u(rr) + pc12.u(rr),
 	       - ( (scale - 1) * (psf.up(rr) * pc12.u(rr) + psf.u(rr) * pc12.up(rr)) + pc12.up(rr))
 	  );
