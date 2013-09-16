@@ -17,6 +17,17 @@
 namespace po = boost::program_options;
 using namespace std;
 
+class SwitchFunction
+{
+  double start, end, inter;
+public:
+  SwitchFunction (const double & start_,
+		  const double & end_);
+  double u  (const double & rr) const;
+  double up (const double & rr) const;
+}
+    ;
+
 class ReactionField 
 {
   double er, erf, rc, rc3;
@@ -29,12 +40,16 @@ public:
 }
     ;
 
-class SwitchFunction
+class ReactionField_Smooth
 {
-  double start, end, inter;
+  ReactionField rf;
+  SwitchFunction sw;
 public:
-  SwitchFunction (const double & start_,
-		  const double & end_);
+  ReactionField_Smooth (const double & er_,
+			const double & erf_,
+			const double & rc_,
+			const double & smooth_start,
+			const double & smooth_end);
   double u  (const double & rr) const;
   double up (const double & rr) const;
 }
@@ -48,9 +63,33 @@ public:
 }
     ;
 
+class C6_Smooth
+{
+  C6 c6;
+  SwitchFunction sw;
+public:
+  C6_Smooth (const double & smooth_start,
+	     const double & smooth_end);
+  double u  (const double & rr) const;
+  double up (const double & rr) const;
+}
+    ;
+
 class C12
 {
 public:
+  double u  (const double & rr) const;
+  double up (const double & rr) const;
+}
+    ;
+
+class C12_Smooth
+{
+  C12 c12;
+  SwitchFunction sw;
+public:
+  C12_Smooth (const double & smooth_start,
+	      const double & smooth_end);
   double u  (const double & rr) const;
   double up (const double & rr) const;
 }
@@ -132,6 +171,29 @@ up (const double & rr) const
   }
 }
 
+ReactionField_Smooth::
+ReactionField_Smooth (const double & er_,
+		      const double & erf_,
+		      const double & rc_,
+		      const double & smooth_start,
+		      const double & smooth_end)
+    : rf(er_, erf_, rc_), sw(smooth_start, smooth_end)
+{
+}
+
+double ReactionField_Smooth::
+u (const double & rr) const
+{
+  return (1. - sw.u(rr)) * rf.u(rr);
+}
+
+double ReactionField_Smooth::
+up (const double & rr) const
+{
+  return (1. - sw.u(rr)) * rf.up(rr) + ( - sw.up(rr)) * rf.u(rr);
+}
+
+
 double C6::
 u  (const double & rr) const 
 {
@@ -143,6 +205,26 @@ up (const double & rr) const
 {
   return -6./(rr * rr * rr * rr * rr * rr * rr);
 }
+
+C6_Smooth::
+C6_Smooth (const double & smooth_start,
+	   const double & smooth_end)
+    : sw(smooth_start, smooth_end)
+{
+}
+
+double C6_Smooth::
+u (const double & rr) const
+{
+  return (1. - sw.u(rr)) * c6.u(rr);
+}
+
+double C6_Smooth::
+up (const double & rr) const
+{
+  return (1. - sw.u(rr)) * c6.up(rr) + ( - sw.up(rr)) * c6.u(rr);
+}
+
 
 double C12::
 u  (const double & rr) const 
@@ -158,13 +240,32 @@ up (const double & rr) const
   return -12./(rr6 * rr6 * rr);
 }
 
+C12_Smooth::
+C12_Smooth (const double & smooth_start,
+	   const double & smooth_end)
+    : sw(smooth_start, smooth_end)
+{
+}
+
+double C12_Smooth::
+u (const double & rr) const
+{
+  return (1. - sw.u(rr)) * c12.u(rr);
+}
+
+double C12_Smooth::
+up (const double & rr) const
+{
+  return (1. - sw.u(rr)) * c12.up(rr) + ( - sw.up(rr)) * c12.u(rr);
+}
+
 
 int main(int argc, char * argv[])
 {
   std::string ofile;
   double erf;
   double er;
-  double rc;
+  double rc, rsmooth;
   double ext = 1.2;
   double dr;
   double scaleEleStart, scaleEleEnd;
@@ -177,6 +278,7 @@ int main(int argc, char * argv[])
       ("er", po::value<double > (&er)->default_value (1.0), "reletive permitivity")
       ("erf", po::value<double > (&erf)->default_value (78.0), "dielectric constant")
       ("rc", po::value<double > (&rc)->default_value (1.3), "cut-off radius")
+      ("r-smooth", po::value<double > (&rsmooth)->default_value (1.2), "cut-off radius")
       ("table-ext", po::value<double > (&ext)->default_value (1.2), "table extention")
       ("dr", po::value<double > (&dr)->default_value (0.002), "table step")
       ("scale", po::value<double > (&scale)->default_value (1.0), "scale")
@@ -194,9 +296,9 @@ int main(int argc, char * argv[])
     return 0;
   }
   
-  ReactionField prf (er, erf, rc);
-  C6 pc6;
-  C12 pc12;
+  ReactionField_Smooth prf (er, erf, rc, rsmooth, rc);
+  C6_Smooth pc6 (rsmooth, rc);
+  C12_Smooth pc12 (rsmooth, rc);
   SwitchFunction psf1 (scaleEleStart, scaleEleEnd);
   SwitchFunction psf2 (scaleVdwStart, scaleVdwEnd);
 
