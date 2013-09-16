@@ -103,10 +103,16 @@ function set_interaction () {
     param_charge_ch3b_r=`echo "$param_charge_ch3b * $pert_rescale_sqrt" | bc -l`
     param_charge_ow_r=`echo "$param_charge_ow * $pert_rescale_sqrt" | bc -l`
     param_charge_h_r=`echo "$param_charge_h * $pert_rescale_sqrt" | bc -l`
-    param_angle_c_c_c_k_r=`echo "$param_angle_c_c_c_k * $pert_rescale" | bc -l`
     param_dihedral_c_c_c_c_k=`echo "$param_dihedral_c_c_c_c_k * $pert_rescale" | bc -l`
+    param_bond_c_c_k_r=`echo "$param_bond_c_c_k * $pert_bond_rescale" | bc -l`
+    param_bond_ow_h_k_r=`echo "$param_bond_ow_h_k * $pert_bond_rescale" | bc -l`
+    param_angle_c_c_c_k_r=`echo "$param_angle_c_c_c_k * $pert_angle_rescale" | bc -l`
+    param_angle_h_ow_h_k_r=`echo "$param_angle_h_ow_h_k * $pert_angle_rescale" | bc -l`
     
     sed -e "/^param_angle_c_c_c_k/s/=.*/=$param_angle_c_c_c_k_r/g" $file |\
+    sed -e "/^param_angle_h_ow_h_k/s/=.*/=$param_angle_h_ow_h_k_r/g" |\
+    sed -e "/^param_bond_c_c_k/s/=.*/=$param_bond_c_c_k_r/g" |\
+    sed -e "/^param_bond_ow_h_k/s/=.*/=$param_bond_ow_h_k_r/g" |\
     sed -e "/^param_dihedral_c_c_c_c_k/s/=.*/=$param_dihedral_c_c_c_c_k/g" > tmp.tmp.tmp
 
     # sed -e "/^param_nb_ch2_c06/s/=.*/=$param_nb_ch2_c06_r/g" $file |\
@@ -126,6 +132,7 @@ function set_interaction () {
     # sed -e "/^param_charge_ch3b/s/=.*/=$param_charge_ch3b_r/g" |\
     # sed -e "/^param_charge_ow/s/=.*/=$param_charge_ow_r/g" |\
     # sed -e "/^param_charge_h/s/=.*/=$param_charge_h_r/g" |\
+    # sed -e "/^param_angle_c_c_c_k/s/=.*/=$param_angle_c_c_c_k_r/g" $file |\
 
     mv -f tmp.tmp.tmp $file
 }
