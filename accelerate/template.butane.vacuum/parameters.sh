@@ -25,7 +25,7 @@ pert_vdw_rescale_start=0.00	# nm
 pert_vdw_rescale_end=0.2	# nm
 pert_parallel_num_pro=1		# n
 pert_parallel_my_id=0		# n
-pert_integrator=sd1
+pert_integrator=sd-baoab
 
 grompp_command="grompp"
 mdrun_command="mdrun -v"

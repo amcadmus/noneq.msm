@@ -106,8 +106,8 @@ function set_interaction () {
     param_dihedral_c_c_c_c_k=`echo "$param_dihedral_c_c_c_c_k * $pert_rescale" | bc -l`
     param_bond_c_c_k_r=`echo "$param_bond_c_c_k * $pert_bond_rescale" | bc -l`
     param_bond_ow_h_k_r=`echo "$param_bond_ow_h_k * $pert_bond_rescale" | bc -l`
-    param_angle_c_c_c_k_r=`echo "$param_angle_c_c_c_k * $pert_angle_rescale" | bc -l`
     param_angle_h_ow_h_k_r=`echo "$param_angle_h_ow_h_k * $pert_angle_rescale" | bc -l`
+    param_angle_c_c_c_k_r=`echo "$param_angle_c_c_c_k * $pert_rescale" | bc -l`
     
     sed -e "/^param_angle_c_c_c_k/s/=.*/=$param_angle_c_c_c_k_r/g" $file |\
     sed -e "/^param_angle_h_ow_h_k/s/=.*/=$param_angle_h_ow_h_k_r/g" |\
