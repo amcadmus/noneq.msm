@@ -14,11 +14,26 @@
 #include <boost/program_options.hpp>
 #define MaxLineLength 10240
 
+#include "Interpolation.h"
+
 namespace po = boost::program_options;
 using namespace std;
 
+// class SwitchFunction
+// {
+//   double start, end, inter;
+// public:
+//   SwitchFunction (const double & start_,
+// 		  const double & end_);
+//   double u  (const double & rr) const;
+//   double up (const double & rr) const;
+// }
+//     ;
+
 class SwitchFunction
 {
+  Poly myp;
+  Poly mypp;
   double start, end, inter;
 public:
   SwitchFunction (const double & start_,
@@ -101,6 +116,9 @@ SwitchFunction (const double & start_,
     : start(start_), end(end_)
 {
   inter = end - start;
+  Interpolation::pieceHermiteInterpol (start, end, 0, 1, 0, 0, myp);
+  mypp = myp;
+  mypp.derivative ();
 }
 
 double SwitchFunction::
@@ -113,7 +131,7 @@ u  (const double & rr) const
     return 1.;
   }
   else {
-    return 0.5 + 0.5 * cos ( (rr - start) / inter * M_PI + M_PI );
+    return myp.value (rr);
   }
 }
 
@@ -127,9 +145,45 @@ up (const double & rr) const
     return 0.;
   }
   else {
-    return - 0.5 * sin ( (rr - start) / inter * M_PI + M_PI ) * M_PI / inter;
+    return mypp.value (rr);
   }
 }
+
+// SwitchFunction::
+// SwitchFunction (const double & start_,
+// 		const double & end_)
+//     : start(start_), end(end_)
+// {
+//   inter = end - start;
+// }
+
+// double SwitchFunction::
+// u  (const double & rr) const 
+// {
+//   if (rr < start) {
+//     return 0.;
+//   }
+//   else if (rr > end){
+//     return 1.;
+//   }
+//   else {
+//     return 0.5 + 0.5 * cos ( (rr - start) / inter * M_PI + M_PI );
+//   }
+// }
+
+// double SwitchFunction::
+// up (const double & rr) const 
+// {
+//   if (rr < start) {
+//     return 0.;
+//   }
+//   else if (rr > end){
+//     return 0.;
+//   }
+//   else {
+//     return - 0.5 * sin ( (rr - start) / inter * M_PI + M_PI ) * M_PI / inter;
+//   }
+// }
 
 
 ReactionField::
