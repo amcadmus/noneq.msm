@@ -57,6 +57,8 @@ function set_parameters_pert () {
     sed -e "/^nstfout/s/=.*/= 0/g" |\
     sed -e "/^nstenergy/s/=.*/= $pert_energy_feq/g" |\
     sed -e "/^userreal1/s/=.*/= $pert_noSdRange/g" |\
+    sed -e "/^userreal2/s/=.*/= $pert_ele_rescale_start/g" |\
+    sed -e "/^userreal3/s/=.*/= $pert_ele_rescale_end/g" |\
     sed -e "/^userreal4/s/=.*/= $pert_rescale/g" |\
     sed -e "/^rlist /s/=.*/= $pert_rcut/g" |\
     sed -e "/^rcoulomb /s/=.*/= $pert_rcut/g" |\
