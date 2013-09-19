@@ -116,7 +116,7 @@ SwitchFunction (const double & start_,
     : start(start_), end(end_)
 {
   inter = end - start;
-  Interpolation::pieceHermiteInterpol (start, end, 0, 1, 0, 0, myp);
+  Interpolation::piece6OrderInterpol (start, end, 0, 1, 0, 0, 0, 0, myp);
   mypp = myp;
   mypp.derivative ();
 }
