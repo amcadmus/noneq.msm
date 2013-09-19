@@ -44,6 +44,7 @@ function set_parameters_pert () {
     pert_energy_feq=$pert_xtcout_feq
     pert_strength_r=`echo "$pert_strength * $pert_rescale" | bc -l`
     pert_warm_time_r=`echo "$pert_warm_time / $pert_rescale" | bc -l`
+    pert_epsilon_r=`echo "1. / $pert_rescale" | bc -l`
     pert_taut_r=`echo "$pert_taut / $pert_rescale" | bc -l`
     sed -e "/^dt/s/=.*/= $pert_dt/g" $file |\
     sed -e "/^integrator/s/=.*/= $pert_integrator/g" |\
@@ -63,6 +64,7 @@ function set_parameters_pert () {
     sed -e "/^rlist /s/=.*/= $pert_rcut/g" |\
     sed -e "/^rcoulomb /s/=.*/= $pert_rcut/g" |\
     sed -e "/^rvdw /s/=.*/= $pert_rcut/g" |\
+    sed -e "/^epsilon_r /s/=.*/= $pert_epsilon_r/g" |\
     sed -e "/^epsilon_rf /s/=.*/= $pert_erf/g" |\
     sed -e "/^E-x /s/=.*/= 1 $pert_strength_r 0.0/g" |\
     sed -e "/^ld-seed/s/=.*/= `date +%s`/g" |\
