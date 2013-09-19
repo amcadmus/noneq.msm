@@ -64,13 +64,13 @@ function set_parameters_pert () {
     sed -e "/^rlist /s/=.*/= $pert_rcut/g" |\
     sed -e "/^rcoulomb /s/=.*/= $pert_rcut/g" |\
     sed -e "/^rvdw /s/=.*/= $pert_rcut/g" |\
-    sed -e "/^epsilon_r /s/=.*/= $pert_epsilon_r/g" |\
     sed -e "/^epsilon_rf /s/=.*/= $pert_erf/g" |\
     sed -e "/^E-x /s/=.*/= 1 $pert_strength_r 0.0/g" |\
     sed -e "/^ld-seed/s/=.*/= `date +%s`/g" |\
     sed -e "/^gen_vel /s/=.*/= no/g" |\
     sed -e "/^gen-vel /s/=.*/= no/g" |\
     sed -e "/^nstxtcout/s/=.*/= $pert_xtcout_feq/g" > tmptmptmp.mdp
+#    sed -e "/^epsilon_r /s/=.*/= $pert_epsilon_r/g" |\
     mv -f tmptmptmp.mdp $file
     if test $pert_mode -eq 1; then
 	sed -e "/^E-xt /s/=.*/= 1 $pert_warm_time_r 0.0/g" $file > tmptmptmp.mdp
