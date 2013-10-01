@@ -57,6 +57,7 @@ do
     cd $my_dir
     rm -f run.log
     ../../tools/potential/tab.rf --scale $pert_rescale --scale-ele-start $pert_ele_rescale_start --scale-ele-end $pert_ele_rescale_end --scale-vdw-start $pert_vdw_rescale_start --scale-vdw-end $pert_vdw_rescale_end --rc $pert_rcut --r-smooth $pert_rsmooth --erf $pert_erf -o table.xvg
+    ../../tools/potential/tab.coulomb --scale $pert_rescale --scale-ele-start $pert_ele_rescale_start --scale-ele-end $pert_ele_rescale_end --scale-vdw-start $pert_vdw_rescale_start --scale-vdw-end $pert_vdw_rescale_end --rc $pert_rcut --r-smooth $pert_rsmooth --erf $pert_erf -o tablep.xvg
     if [ $? -ne 0 ]; then
 	echo "failed at tab.rf, exit"; exit
     fi
@@ -88,7 +89,7 @@ do
     if [ $tmpid -lt $pert_parallel_num_pro ]; then
 	cp -a ..//pert.$count ..//backup.pert.$count
     fi
-    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log
+    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log table.xvg tablep.xvg
     
     cd $cwd
     echo "$my_dir/angle.dat" >> angle.name

@@ -33,6 +33,6 @@ pert_parallel_my_id=0		# n
 
 
 grompp_command="grompp"
-mdrun_command="mdrun -v -tablep table.xvg"
+mdrun_command="mdrun -v"
 
 pert_rescale_sqrt=`echo "sqrt($pert_rescale)" | bc -l`
