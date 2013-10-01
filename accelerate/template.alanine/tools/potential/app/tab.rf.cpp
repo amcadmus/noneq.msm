@@ -365,11 +365,11 @@ int main(int argc, char * argv[])
     for (int ii = 0; ii < nn; ++ii){
       double rr = ii * dr;
       if (rr == 0){
-	fprintf (fout, "%f  %f %f  %f %f  %f %f\n",
+	fprintf (fout, "%.10e  %.10e %.10e  %.10e %.10e  %.10e %.10e\n",
 		 rr, 0., 0., 0., 0., 0., 0.);
       }
       else {
-	fprintf (fout, "%f  %f %f  %f %f  %f %f\n",
+	fprintf (fout, "%.10e  %.10e %.10e  %.10e %.10e  %.10e %.10e\n",
 		 rr,
 		 (scale - 1) * psf1.u(rr) * prf.u(rr) + prf.u(rr),
 		 - ( (scale - 1) * (psf1.up(rr) * prf.u(rr) + psf1.u(rr) * prf.up(rr)) + prf.up(rr)),
@@ -391,11 +391,11 @@ int main(int argc, char * argv[])
     for (int ii = 0; ii < nn; ++ii){
       double rr = ii * dr;
       if (rr == 0){
-	fprintf (fout, "%f  %f %f  %f %f  %f %f\n",
+	fprintf (fout, "%.10e  %.10e %.10e  %.10e %.10e  %.10e %.10e\n",
 		 rr, 0., 0., 0., 0., 0., 0.);
       }
       else {
-	fprintf (fout, "%f  %f %f  %f %f  %f %f\n",
+	fprintf (fout, "%.10e  %.10e %.10e  %.10e %.10e  %.10e %.10e\n",
 		 rr,
 		 (scale - 1) * psf1.u(rr) * prf.u(rr) + prf.u(rr),
 		 - ( (scale - 1) * (psf1.up(rr) * prf.u(rr) + psf1.u(rr) * prf.up(rr)) + prf.up(rr)),
