@@ -7,6 +7,9 @@ source functions.sh
 make -C tools/angles/ makedir
 make -C tools/angles/ clean
 make -C tools/angles/ -j8
+make -C tools/parse.top/ makedir
+make -C tools/parse.top/ clean
+make -C tools/parse.top/ -j8
 make -C tools/potential/ makedir
 make -C tools/potential/ clean
 make -C tools/potential/ -j8
@@ -49,6 +52,7 @@ do
     mkdir $my_dir
     cp $pert_equi_result/conf.gro	$my_dir
     cp $pert_equi_result/grompp.mdp	$my_dir
+    cp $pert_equi_result/index.ndx	$my_dir
     cp $pert_equi_result/topol.top	$my_dir
     cd $my_dir
     rm -f run.log
@@ -61,7 +65,7 @@ do
     set_parameters_pert grompp.mdp
     start_time=`grep $count $pert_equi_result/equi.frame | awk '{print $2}'`
     echo "# run with command `which grompp`" &> run.log
-    $grompp_command -t $pert_equi_result/traj.trr -time $start_time &> run.log
+    $grompp_command -t $pert_equi_result/traj.trr -time $start_time -n index.ndx &> run.log
     if [ $? -ne 0 ]; then
 	echo "failed at grompp exit"; exit
     fi
@@ -71,7 +75,7 @@ do
 	echo "failed at mdrun exit"; exit
     fi
 
-    echo 2 2 | trjconv -center -pbc whole
+    echo 3 14 | trjconv -center -pbc whole
     mv -f trajout.xtc alanine.xtc
     $cwd/tools/angles/evolve -f alanine.xtc -s angle.dat &> angle.log
     if [ $? -ne 0 ]; then
