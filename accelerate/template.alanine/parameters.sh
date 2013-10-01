@@ -2,7 +2,7 @@
 
 # non-equilibrium settings
 pert_equi_result="$HOME/study/noneq.msm/accelerate/equi.systems/alanine.rf.tab/"
-pert_num_conf_use=10	#
+pert_num_conf_use=5	#
 pert_mode=2			# 1: relax, 2: cos wave
 pert_strength=1.0		# nm/ps velocity
 pert_warm_time=40		# ps 1: warm time, 2: periodicity

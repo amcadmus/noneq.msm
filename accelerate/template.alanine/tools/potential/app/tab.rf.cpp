@@ -328,19 +328,19 @@ int main(int argc, char * argv[])
   
   po::options_description desc ("Allow options");
   desc.add_options()
-      ("help,h", "print this message")
-      ("er", po::value<double > (&er)->default_value (1.0), "reletive permitivity")
-      ("erf", po::value<double > (&erf)->default_value (78.0), "dielectric constant")
-      ("rc", po::value<double > (&rc)->default_value (1.3), "cut-off radius")
-      ("r-smooth", po::value<double > (&rsmooth)->default_value (1.2), "cut-off radius")
-      ("table-ext", po::value<double > (&ext)->default_value (1.2), "table extention")
-      ("dr", po::value<double > (&dr)->default_value (0.002), "table step")
-      ("scale", po::value<double > (&scale)->default_value (1.0), "scale")
-      ("scale-ele-start", po::value<double > (&scaleEleStart)->default_value (0.1), "scale start r")
-      ("scale-ele-end", po::value<double > (&scaleEleEnd)->default_value (0.18), "scale end r")
-      ("scale-vdw-start", po::value<double > (&scaleVdwStart)->default_value (0.3), "scale start r")
-      ("scale-vdw-end", po::value<double > (&scaleVdwEnd)->default_value (0.6), "scale end r")
-      ("output,o", po::value<std::string > (&ofile)->default_value ("table.xvg"), "the output table of potential");
+    ("help,h", "print this message")
+    ("er", po::value<double > (&er)->default_value (1.0), "reletive permitivity")
+    ("erf", po::value<double > (&erf)->default_value (78.0), "dielectric constant")
+    ("rc", po::value<double > (&rc)->default_value (1.3), "cut-off radius")
+    ("r-smooth", po::value<double > (&rsmooth)->default_value (1.2), "cut-off radius")
+    ("table-ext", po::value<double > (&ext)->default_value (1.2), "table extention")
+    ("dr", po::value<double > (&dr)->default_value (0.002), "table step")
+    ("scale", po::value<double > (&scale)->default_value (1.0), "scale")
+    ("scale-ele-start", po::value<double > (&scaleEleStart)->default_value (0.1), "scale start r")
+    ("scale-ele-end", po::value<double > (&scaleEleEnd)->default_value (0.18), "scale end r")
+    ("scale-vdw-start", po::value<double > (&scaleVdwStart)->default_value (0.3), "scale start r")
+    ("scale-vdw-end", po::value<double > (&scaleVdwEnd)->default_value (0.6), "scale end r")
+    ("output,o", po::value<std::string > (&ofile)->default_value ("table.xvg"), "the output table of potential");
   
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -350,34 +350,64 @@ int main(int argc, char * argv[])
     return 0;
   }
   
-  ReactionField_Smooth prf (er, erf, rc, rsmooth, rc);
-  C6_Smooth pc6 (rsmooth, rc);
-  C12_Smooth pc12 (rsmooth, rc);
-  SwitchFunction psf1 (scaleEleStart, scaleEleEnd);
-  SwitchFunction psf2 (scaleVdwStart, scaleVdwEnd);
-
   double rup = rc + ext;
   int nn = rup / dr + 1;
   
   FILE * fout = fopen (ofile.c_str(), "w");
-  for (int ii = 0; ii < nn; ++ii){
-    double rr = ii * dr;
-    if (rr == 0){
-      fprintf (fout, "%f  %f %f  %f %f  %f %f\n",
-	       rr, 0., 0., 0., 0., 0., 0.);
-    }
-    else {
-      fprintf (fout, "%f  %f %f  %f %f  %f %f\n",
-	       rr,
-	       (scale - 1) * psf1.u(rr) * prf.u(rr) + prf.u(rr),
-	       - ( (scale - 1) * (psf1.up(rr) * prf.u(rr) + psf1.u(rr) * prf.up(rr)) + prf.up(rr)),
-	       - ((scale - 1) * psf2.u(rr) * pc6.u(rr) + pc6.u(rr)),
-	       ( (scale - 1) * (psf2.up(rr) * pc6.u(rr) + psf2.u(rr) * pc6.up(rr)) + pc6.up(rr)),
-	       (scale - 1) * psf2.u(rr) * pc12.u(rr) + pc12.u(rr),
-	       - ( (scale - 1) * (psf2.up(rr) * pc12.u(rr) + psf2.u(rr) * pc12.up(rr)) + pc12.up(rr))
-	  );
+
+  if (rsmooth < rc){
+    ReactionField_Smooth prf (er, erf, rc, rsmooth, rc);
+    C6_Smooth pc6 (rsmooth, rc);
+    C12_Smooth pc12 (rsmooth, rc);
+    SwitchFunction psf1 (scaleEleStart, scaleEleEnd);
+    SwitchFunction psf2 (scaleVdwStart, scaleVdwEnd);
+
+    for (int ii = 0; ii < nn; ++ii){
+      double rr = ii * dr;
+      if (rr == 0){
+	fprintf (fout, "%f  %f %f  %f %f  %f %f\n",
+		 rr, 0., 0., 0., 0., 0., 0.);
+      }
+      else {
+	fprintf (fout, "%f  %f %f  %f %f  %f %f\n",
+		 rr,
+		 (scale - 1) * psf1.u(rr) * prf.u(rr) + prf.u(rr),
+		 - ( (scale - 1) * (psf1.up(rr) * prf.u(rr) + psf1.u(rr) * prf.up(rr)) + prf.up(rr)),
+		 - ((scale - 1) * psf2.u(rr) * pc6.u(rr) + pc6.u(rr)),
+		 ( (scale - 1) * (psf2.up(rr) * pc6.u(rr) + psf2.u(rr) * pc6.up(rr)) + pc6.up(rr)),
+		 (scale - 1) * psf2.u(rr) * pc12.u(rr) + pc12.u(rr),
+		 - ( (scale - 1) * (psf2.up(rr) * pc12.u(rr) + psf2.u(rr) * pc12.up(rr)) + pc12.up(rr))
+		 );
+      }
     }
   }
+  else {
+    ReactionField prf (er, erf, rc);
+    C6 pc6;
+    C12 pc12;
+    SwitchFunction psf1 (scaleEleStart, scaleEleEnd);
+    SwitchFunction psf2 (scaleVdwStart, scaleVdwEnd);
+
+    for (int ii = 0; ii < nn; ++ii){
+      double rr = ii * dr;
+      if (rr == 0){
+	fprintf (fout, "%f  %f %f  %f %f  %f %f\n",
+		 rr, 0., 0., 0., 0., 0., 0.);
+      }
+      else {
+	fprintf (fout, "%f  %f %f  %f %f  %f %f\n",
+		 rr,
+		 (scale - 1) * psf1.u(rr) * prf.u(rr) + prf.u(rr),
+		 - ( (scale - 1) * (psf1.up(rr) * prf.u(rr) + psf1.u(rr) * prf.up(rr)) + prf.up(rr)),
+		 - ((scale - 1) * psf2.u(rr) * pc6.u(rr) + pc6.u(rr)),
+		 ( (scale - 1) * (psf2.up(rr) * pc6.u(rr) + psf2.u(rr) * pc6.up(rr)) + pc6.up(rr)),
+		 (scale - 1) * psf2.u(rr) * pc12.u(rr) + pc12.u(rr),
+		 - ( (scale - 1) * (psf2.up(rr) * pc12.u(rr) + psf2.u(rr) * pc12.up(rr)) + pc12.up(rr))
+		 );
+      }
+    }
+  }    
+  
   fclose (fout);
   
   return 0;
