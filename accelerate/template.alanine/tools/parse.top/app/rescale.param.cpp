@@ -75,6 +75,40 @@ int main (int argc, char **argv) {
     }
   }
 
+  for (unsigned ii = 0; ii < systop.moles.size(); ++ii){
+    for (unsigned jj = 0; jj < systop.moles[ii].bonds.size(); ++jj){
+      if (systop.moles[ii].bonds[jj].funct == 1 ||
+	  systop.moles[ii].bonds[jj].funct == 2 ||
+	  systop.moles[ii].bonds[jj].funct == 6 ||
+	  systop.moles[ii].bonds[jj].funct == 7 ||
+	  systop.moles[ii].bonds[jj].funct == 8 ||
+	  systop.moles[ii].bonds[jj].funct == 9 ){
+	if (systop.moles[ii].bonds[jj].params.size() >=2 ){
+	  systop.moles[ii].bonds[jj].params[1] *= sbond;
+	}
+      }
+    }
+    for (unsigned jj = 0; jj < systop.moles[ii].angles.size(); ++jj){
+      if (systop.moles[ii].angles[jj].funct == 1 ||
+	  systop.moles[ii].angles[jj].funct == 2 ||
+	  systop.moles[ii].angles[jj].funct == 8 ){
+	if (systop.moles[ii].angles[jj].params.size() >=2 ){
+	  systop.moles[ii].angles[jj].params[1] *= sangle;
+	}
+      }
+    }
+    for (unsigned jj = 0; jj < systop.moles[ii].dihedrals.size(); ++jj){
+      if (systop.moles[ii].dihedrals[jj].funct == 1 ||
+	  systop.moles[ii].dihedrals[jj].funct == 2 ||
+	  systop.moles[ii].dihedrals[jj].funct == 4 ||
+	  systop.moles[ii].dihedrals[jj].funct == 8 ||
+	  systop.moles[ii].dihedrals[jj].funct == 9 ){
+	if (systop.moles[ii].dihedrals[jj].params.size() >=2 ){
+	  systop.moles[ii].dihedrals[jj].params[1] *= sdihedral;
+	}
+      }
+    }
+  }  
   
   FILE * fp = fopen (ofile.c_str(), "w");
   systype.print (fp);
