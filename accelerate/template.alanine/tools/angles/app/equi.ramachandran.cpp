@@ -53,8 +53,8 @@ int main(int argc, char * argv[])
   desc.add_options()
     ("help,h", "print this message")
     ("refh,r",  po::value<double > (&refh)->default_value(10), "size of bin (deg.)")
-    ("output,o", po::value<std::string > (&ofile)->default_value ("avg.angle"), "the output of average angle")
-    ("input,f",  po::value<std::string > (&ifile)->default_value ("angle.name"), "the file of file names");
+    ("output,o", po::value<std::string > (&ofile)->default_value ("avg.angle.out"), "the output of average angle")
+    ("input,f",  po::value<std::string > (&ifile)->default_value ("angle.dat"), "the file of file names");
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -64,16 +64,15 @@ int main(int argc, char * argv[])
     return 0;
   }
 
-  char nameline [MaxLineLength];
   int nbin = 360 / refh;
   float time;
   ValueType phi, psi;
   Distribution_1d  dist (-180, 180, nbin, -180, 180, nbin);
 
   FILE *fp = fopen (ifile.c_str(), "r");
-  cout << "reading file " << nameline << endl;
+  cout << "reading file " << ifile << endl;
   if (fp == NULL){
-    std::cerr << "cannot open file " << nameline << std::endl;
+    std::cerr << "cannot open file " << ifile << std::endl;
     return 1;
   }
   while (myread(fp, time, phi, psi)){
