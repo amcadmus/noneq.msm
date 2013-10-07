@@ -66,6 +66,8 @@ function set_parameters_pert () {
     sed -e "/^rvdw /s/=.*/= $pert_rcut/g" |\
     sed -e "/^epsilon_r /s/=.*/= $pert_epsilon_r/g" |\
     sed -e "/^epsilon_rf /s/=.*/= $pert_erf/g" |\
+    sed -e "/^fourierspacing /s/=.*/= $pert_fourierspacing/g" |\
+    sed -e "/^pme_order /s/=.*/= $pert_pme_order/g" |\
     sed -e "/^E-x /s/=.*/= 1 $pert_strength_r 0.0/g" |\
     sed -e "/^ld-seed/s/=.*/= `date +%s`/g" |\
     sed -e "/^gen_vel /s/=.*/= no/g" |\

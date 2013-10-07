@@ -14,6 +14,8 @@ pert_dt=0.0005			# ps
 pert_rcut=1.3			# nm
 pert_rsmooth=1.2		# nm
 pert_erf=78			# 
+pert_fourierspacing=0.12	# nm
+pert_pme_order=4		#
 
 pert_integrator=sd-baoab
 pert_taut=5.0			# ps
