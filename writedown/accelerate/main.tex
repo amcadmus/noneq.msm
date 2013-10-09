@@ -58,7 +58,7 @@ technique}
 
 All formula will be developed formally. We consider the following SDE:
 \begin{align}\label{eqn:sde-1}
-  \dd \vect x_t = \vect b(\vect x_t) \dd t + \sigma\dd \vect w_t
+  \dd \vect x_t = \vect b(\vect x_t, t)\, \dd t + \sigma\dd \vect w_t
 \end{align}
 And we are interested in some nonequilibrium observable of the system,
 which is expressed by
@@ -78,7 +78,7 @@ by an accelerating technique.
 More precisely, we want to design a new
 SDE
 \begin{align}\label{eqn:sde-2}
-  \dd \vect y_t = \tilde{\vect b}(\vect y_t)\dd t + \tilde\sigma\dd \vect w_t,
+  \dd \vect y_t = \tilde{\vect b}(\vect y_t, t)\,\dd t + \tilde\sigma\dd \vect w_t,
 \end{align}
 such that the solution $\vect y_{t}$ satisfies
 \begin{align}\label{eqn:tmp3}
@@ -113,7 +113,7 @@ is the same as the original dynamics. Now the problem is how to design
 the rescaled dynamics. Actually, the solution is very simple, we simply
 let
 \begin{align}
-  \tilde {\vect b}(\vect y) = \alpha\, {\vect b}(\vect y)\quad
+  \tilde {\vect b}(\vect y, t) = \alpha\, {\vect b}(\vect y, \alpha t)\quad
   \textrm{and}\quad
   \tilde\sigma = \sqrt{\alpha}\,\sigma
 \end{align}
@@ -124,7 +124,7 @@ Then the Eq.~\eqref{eqn:tmp3} is automatically satisfied.
 However, stability or the largest allowed time-step of the numerical
 solution of the dynamics depends on the fastest modes of the
 force $\vect b$. When the force $\vect b$ is rescaled by $\alpha$, the
-largest time-step is also rescaled by $\alpha$, so the total computational
+largest time-step is also rescaled by $1/\alpha$, so the total computational
 cost of is not reduced by this rescaling technique.
 
 Now we want to eliminate the fast modes in~\eqref{eqn:sde-2}, so that
