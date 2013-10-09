@@ -185,8 +185,14 @@ clear ()
 void GmxTop::gmx_atom::
 print (FILE * fp) const
 {
-  fprintf (fp, "%d\t%s\t%d\t%s\t%s\t%d\t%f\t%f\n",
-	   id, at_type.c_str(), res_nr, res_name.c_str(), at_name.c_str(), cgnr, charge, mass);
+  if (mass <= 0){
+    fprintf (fp, "%d\t%s\t%d\t%s\t%s\t%d\t%f\n",
+	     id, at_type.c_str(), res_nr, res_name.c_str(), at_name.c_str(), cgnr, charge);
+  }
+  else {
+    fprintf (fp, "%d\t%s\t%d\t%s\t%s\t%d\t%f\t%f\n",
+	     id, at_type.c_str(), res_nr, res_name.c_str(), at_name.c_str(), cgnr, charge, mass);
+  }
 }
 
 void GmxTop::gmx_pairs_item::
@@ -555,8 +561,8 @@ parseType (const string & fname,
 	gmx_atomtypes_item tmp;
 	tmp.name = words[0];
 	tmp.atom_num = atoi(words[1].c_str());
-	tmp.mass = atoi(words[2].c_str());
-	tmp.charge = atoi(words[3].c_str());
+	tmp.mass = atof(words[2].c_str());
+	tmp.charge = atof(words[3].c_str());
 	tmp.ptype = string(words[4].c_str());
 	tmp.c6 = atof(words[5].c_str());
 	tmp.c12 = atof(words[6].c_str());
