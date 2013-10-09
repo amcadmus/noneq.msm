@@ -90,6 +90,21 @@ namespace GmxTop {
   }
       ;
 
+  struct gmx_cmaptypes_item
+  {
+    string		name0;
+    string		name1;
+    string		name2;
+    string		name3;
+    string		name4;
+    int			funct;
+    int			ngrid0;
+    int			ngrid1;    
+    vector<double >	params;
+    void		print (FILE * fp) const;
+  }
+      ;
+
   struct gmx_sys_types
   {
     gmx_defaults_item			defaults;
@@ -99,6 +114,7 @@ namespace GmxTop {
     vector<gmx_bondtypes_item>		bondtypes;
     vector<gmx_angletypes_item>		angletypes;
     vector<gmx_dihedraltypes_item>	dihedraltypes;
+    vector<gmx_cmaptypes_item>		cmaptypes;
     void		print (FILE * fp) const;
   }
       ;

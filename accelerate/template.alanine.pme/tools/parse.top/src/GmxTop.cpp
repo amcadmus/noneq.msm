@@ -78,6 +78,29 @@ notTrivalLine (const string & line)
   return false;
 }
 
+
+static void
+unfoldLines (vector<vector<string > > & lines)
+{
+  vector<vector<string > > tmplines (lines);
+  lines.clear ();
+
+  for (unsigned ii = 0; ii < tmplines.size(); ++ii){
+    vector<string > blockline;
+    for (unsigned jj = 0; jj < tmplines[ii].size(); ++jj){
+      if (blockline.size() != 0 && blockline.back()[blockline.back().size()-1] == '\\'){
+	blockline.back().erase(blockline.back().size()-1);
+	blockline.back().push_back(' ');
+	blockline.back() += tmplines[ii][jj];
+      }
+      else {
+	blockline.push_back (tmplines[ii][jj]);
+      }
+    }
+    lines.push_back (blockline);
+  }
+}
+
 static void 
 readBlocks (ifstream & file,
 	    vector<string> & keys,
@@ -90,12 +113,11 @@ readBlocks (ifstream & file,
   
   while (! file.eof() ){
     file.getline (line, MAX_LINE_LENGTH);
-    
+    normalizeLine (line);
     // cout << line <<endl;
     
     if (!inBlock){
       if (ifKeyWord(line, tmpKey)){
-	normalizeLine (line);
 	inBlock = true;
 	// keys.push_back ("");
 	keys.push_back (tmpKey);
@@ -103,24 +125,23 @@ readBlocks (ifstream & file,
 	blockLines.clear ();
       }
       else if (notTrivalLine(line)) {
-	normalizeLine (line);
 	blockLines.push_back(line);	
       }
     }
     else {
       if (ifKeyWord(line, tmpKey)){
-	normalizeLine (line);
 	keys.push_back (tmpKey);
 	lines.push_back (blockLines);
 	blockLines.clear ();	
       }
       else if (notTrivalLine(line)){
-	normalizeLine (line);
 	blockLines.push_back(line);
       }
     }
   }
   lines.push_back (blockLines);
+
+  unfoldLines (lines);
 }
 
 
@@ -173,7 +194,7 @@ print (FILE * fp) const
 {
   fprintf (fp, "%d\t%d\t%d", ii, jj, funct);
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%f", params[ii]);
+    fprintf (fp, "\t%.10e", params[ii]);
   }
   fprintf (fp, "\n");
 }
@@ -183,7 +204,7 @@ print (FILE * fp) const
 {
   fprintf (fp, "%d\t%d\t%d", ii, jj, funct);
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%f", params[ii]);
+    fprintf (fp, "\t%.10e", params[ii]);
   }
   fprintf (fp, "\n");
 }
@@ -193,7 +214,7 @@ print (FILE * fp) const
 {
   fprintf (fp, "%d\t%d\t%d\t%d", ii, jj, kk, funct);
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%f", params[ii]);
+    fprintf (fp, "\t%.10e", params[ii]);
   }
   fprintf (fp, "\n");
 }
@@ -203,7 +224,7 @@ print (FILE * fp) const
 {
   fprintf (fp, "%d\t%d\t%d\t%d\t%d", ii, jj, kk, ll, funct);
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%f", params[ii]);
+    fprintf (fp, "\t%.10e", params[ii]);
   }
   fprintf (fp, "\n");
 }
@@ -314,6 +335,13 @@ print (FILE * fp) const
     }
     fprintf (fp, "\n");
   }
+  if (cmaptypes.size() > 0){
+    fprintf (fp, "[ cmaptypes ]\n");
+    for (unsigned ii = 0; ii < cmaptypes.size(); ++ii){
+      cmaptypes[ii].print (fp);
+    }
+    fprintf (fp, "\n");
+  }
 }
 
 
@@ -333,14 +361,14 @@ parseTop (const string & fname,
   readBlocks (file, keys, lines);
   vector<string > words;
 
-  // cout << "n. keys " << keys.size() << endl;
-  // cout << "n. lines " << lines.size() << endl;
-  // for (unsigned ii = 0; ii < keys.size(); ++ii){
-  //   cout << "key " << ii << ": " << keys[ii] << endl;
-  //   for (unsigned jj = 0; jj < lines[ii].size(); ++jj){
-  //     cout << lines[ii][jj] << endl;
-  //   }
-  // }
+  cout << "n. keys " << keys.size() << endl;
+  cout << "n. lines " << lines.size() << endl;
+  for (unsigned ii = 0; ii < keys.size(); ++ii){
+    cout << "key " << ii << ": " << keys[ii] << endl;
+    for (unsigned jj = 0; jj < lines[ii].size(); ++jj){
+      cout << lines[ii][jj] << endl;
+    }
+  }
   
   for (unsigned ii = 0; ii < keys.size(); ++ii){
     if (keys[ii] == "system"){
@@ -621,6 +649,28 @@ parseType (const string & fname,
 	  tmp.params.push_back (atof(words[ii].c_str()));
 	}
 	type.dihedraltypes.push_back (tmp);
+      }
+    }
+  }
+
+  for (unsigned ii = 0; ii < keys.size(); ++ii){
+    if (keys[ii] == "cmaptypes"){
+      for (unsigned jj = 0; jj < lines[ii].size(); ++jj){
+	StringOperation::split (lines[ii][jj], words);
+	if (words.size() < 8) die_wrong_format (__FILE__, __LINE__);
+	gmx_cmaptypes_item tmp;
+	tmp.name0 = words[0];
+	tmp.name1 = words[1];
+	tmp.name2 = words[2];
+	tmp.name3 = words[3];
+	tmp.name4 = words[4];
+	tmp.funct = atoi(words[5].c_str());
+	tmp.ngrid0 = atoi(words[6].c_str());
+	tmp.ngrid1 = atoi(words[7].c_str());
+	for (unsigned ii = 8; ii < words.size(); ++ii){
+	  tmp.params.push_back (atof(words[ii].c_str()));
+	}
+	type.cmaptypes.push_back (tmp);
       }
     }
   }

@@ -16,7 +16,7 @@ print (FILE * fp) const
 void GmxTop::gmx_atomtypes_item::
 print (FILE * fp) const
 {
-  fprintf (fp, "%s\t%d\t%f\t%f\t%s\t%e\t%e\n",
+  fprintf (fp, "%s\t%d\t%f\t%f\t%s\t%.10e\t%.10e\n",
 	   name.c_str(), atom_num, mass, charge, ptype.c_str(), c6, c12);
 }
 
@@ -26,7 +26,7 @@ print (FILE * fp) const
   fprintf (fp, "%s\t%s\t%d",
 	   name0.c_str(), name1.c_str(), funct);
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%e", params[ii]);
+    fprintf (fp, "\t%.10e", params[ii]);
   }
   fprintf (fp, "\n");
 }
@@ -37,7 +37,7 @@ print (FILE * fp) const
   fprintf (fp, "%s\t%s\t%d",
 	   name0.c_str(), name1.c_str(), funct);
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%f", params[ii]);
+    fprintf (fp, "\t%.10e", params[ii]);
   }
   fprintf (fp, "\n");
 }
@@ -48,7 +48,7 @@ print (FILE * fp) const
   fprintf (fp, "%s\t%s\t%d",
 	   name0.c_str(), name1.c_str(), funct);
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%f", params[ii]);
+    fprintf (fp, "\t%.10e", params[ii]);
   }
   fprintf (fp, "\n");
 }
@@ -59,7 +59,7 @@ print (FILE * fp) const
   fprintf (fp, "%s\t%s\t%s\t%d",
 	   name0.c_str(), name1.c_str(), name2.c_str(), funct);
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%f", params[ii]);
+    fprintf (fp, "\t%.10e", params[ii]);
   }
   fprintf (fp, "\n");
 }
@@ -71,16 +71,32 @@ print (FILE * fp) const
 	   name0.c_str(), name1.c_str(), name2.c_str(), name3.c_str(), funct);
   if (funct == 1 || funct == 4 || funct == 9){
     for (unsigned ii = 0; ii < params.size() - 1; ++ii){
-      fprintf (fp, "\t%f", params[ii]);
+      fprintf (fp, "\t%.10e", params[ii]);
     }
     fprintf (fp, "\t%d", int(params.back() + 0.5));
   }
   else{
     for (unsigned ii = 0; ii < params.size(); ++ii){
-      fprintf (fp, "\t%f", params[ii]);
+      fprintf (fp, "\t%.10e", params[ii]);
     }
   }
   fprintf (fp, "\n");
 }
 
-  
+void GmxTop::gmx_cmaptypes_item::  
+print (FILE * fp) const
+{
+  fprintf (fp, "%s\t%s\t%s\t%s\t%s\t%d\t%d\t%d",
+	   name0.c_str(), name1.c_str(), name2.c_str(), name3.c_str(), name4.c_str(),
+	   funct,
+	   ngrid0, ngrid1);
+  fprintf (fp, "\\\n");
+  for (unsigned ii = 0; ii < params.size(); ++ii){
+    fprintf (fp, "%.10f ", params[ii]);
+    if ((ii+1) % 10 == 0){
+      fprintf (fp, "\\\n");
+    }
+  }
+  fprintf (fp, "\n");
+}
+
