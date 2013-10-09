@@ -43,6 +43,7 @@
 \usepackage{hyperref}
 \usepackage{movie15}
 % \usepackage{media9}
+\usepackage[fleqn]{nccmath}
 
 % \usepackage[usenames,dvipsnames]{color}
 \definecolor{shadow}{gray}{0.8}
@@ -71,7 +72,7 @@
 \newcommand{\fwg}{{\mathcal A}}
 \newcommand{\bwg}{{\mathcal B}}
 \newcommand{\bsigma}{\boldsymbol\sigma}
-\newcommand{\inv}{\textrm{inv}}
+\newcommand{\inv}{{\textrm{inv}}}
 
 \usepackage{amsfonts}
 \newcommand{\tickYes}{\checkmark}
@@ -107,76 +108,79 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
 
 \frame{\titlepage}
 
-\begin{frame}{Linear response thoery for equilibrium system}{A brief review}
+\begin{frame}{Linear response theory for equilibrium system}{A brief review}
   \begin{itemize}
   \item <1->
-    The Langevin equation under external perturbation
-    \bluec{$\eps \delta\fe(t) \vect D(\vect q)$}:
+    The Langevin equation \only<2->{under external perturbation
+    \bluec{$\eps\, \delta\fe(t)\, \vect D(\vect q)$}}:
     \bluec{
       \begin{align*}
         \dot{\vect q} & = \nabla_{\vect p}\mh(\vect q,\vect p), \\
         \dot{\vect p} & =- \nabla_{\vect q}\mh(\vect q,\vect p)
-        + \eps \delta\fe(t) \vect D(\vect q) 
+        \only<2->{
+        + \eps \delta\fe(t) \vect D(\vect q) }
         - \gamma\vect p
-        + \sigma\dot{\vect W}.
+        + \sigma\dot{\vect W},
       \end{align*}
     }
-  \item <2->
+    where \bluec{$\sigma = \sqrt{2k_B T\gamma }$}.
+    \vfill
+  \item <3->
     The corresponding Kolmogorov forward equation:
     \bluec{
       \begin{align*}
-        \frac{\partial}{\partial t} f^\eps(\vect x, t) - \fwg^\eps(t) f^\eps(\vect x, t) = 0
+        \frac{\partial}{\partial t} \rho^\eps(\vect x, t) - \fwg^\eps(t) \rho^\eps(\vect x, t) = 0
       \end{align*}
     }
-    with forward infiniesimal generator \bluec{$\fwg^\eps (t)$}, phase space
-    probability density \bluec{$f^\eps(\vect x, t)$} and phase space notation
+    with forward infinitesimal generator \bluec{$\fwg^\eps (t)$}, phase space
+    probability density \bluec{$\rho^\eps(\vect x, t)$} and phase space notation
     \bluec{$\vect x  = (\vect q, \vect p)$}.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Linear response thoery for equilibrium system}{A brief review}
+\begin{frame}{Linear response theory for equilibrium system}{A brief review}
   \begin{itemize}
   \item <1-> Splitting the generator:
     \bluec{
       \begin{align*}
-        \fwg^\eps(t) = \fwg_0 + \eps\fwg_q(t),
+        \fwg^\eps(t) = \fwg_0 + \eps\fwg_1(t),
       \end{align*}
     }
-    where
+    % where
+    % \bluec{
+    %   \begin{align*}
+    %     \fwg_0 =&
+    %     \frac{\sigma^2}2\Delta_{\vect p}
+    %     -
+    %     \nabla_{\vect p}\mh\cdot\nabla_{\vect q}
+    %     - \big(
+    %     -\nabla_{\vect q}\mh - \gamma\vect p
+    %     \big)\cdot\nabla_{\vect p}
+    %     + 3N\gamma,\\
+    %     \fwg_1(t) =&
+    %     - \delta\fe(t) \, \vect D \cdot\nabla_{\vect p}.        
+    %   \end{align*}
+    % }
+  \item <2-> The asymptotic expansion of \bluec{$\rho^\eps$} in \bluec{$\eps$}:
     \bluec{
       \begin{align*}
-        \fwg_0 =&
-        \frac{\sigma^2}2\Delta_{\vect p}
-        -
-        \nabla_{\vect p}\mh\cdot\nabla_{\vect q}
-        - \big(
-        -\nabla_{\vect q}\mh - \gamma\vect p
-        \big)\cdot\nabla_{\vect p}
-        + 3N\gamma,\\
-        \fwg_1(t) =&
-        - \delta\fe(t) \, \vect D \cdot\nabla_{\vect p}.        
-      \end{align*}
-    }
-  \item <2-> The asymptotic expansion of \bluec{$f^\eps$} in \bluec{$\eps$}:
-    \bluec{
-      \begin{align*}
-        f^\eps(\vect x, t) &= f_0(\vect x, t) + \eps f_1(\vect x, t)
-        +\eps^2 f_2(\vect x, t) + \mo (\eps^3),        
+        \rho^\eps(\vect x, t) &= \rho_0(\vect x, t) + \eps \rho_1(\vect x, t)
+        +\eps^2 \rho_2(\vect x, t) + \mo (\eps^3),        
       \end{align*}
     }
   \end{itemize}
 \end{frame}
 
 
-\begin{frame}{Linear response thoery for equilibrium system}{A brief review}
+\begin{frame}{Linear response theory for equilibrium system}{A brief review}
   \begin{itemize}
   \item <1-> Inserting the expansion of
-    \bluec{$\fwg^\eps$} and \bluec{$f^\eps(\vect x, t)$} into the
+    \bluec{$\fwg^\eps$} and \bluec{$\rho^\eps(\vect x, t)$} into the
     Kolmogorov forward equation, matching different orders of \bluec{$\eps$}:
     \bluec{
       \begin{align*}
         \bigg[ \frac{\partial}{\partial t} - \fwg_0 \bigg]
-        f_0(\vect x, t) = 0
+        \rho_0(\vect x, t) = 0
       \end{align*}
     }
     Higher orders:
@@ -186,55 +190,55 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
         \frac{\partial}{\partial t}
         - \fwg_0
         \bigg]
-        f_1(\vect x, t)
+        \rho_1(\vect x, t)
         =&
-        \fwg_1(t) f_0(\vect x, t)\\\label{eqn:e-o2}
+        \fwg_1(t) \rho_0(\vect x, t)\\\label{eqn:e-o2}
         \bigg[
         \frac{\partial}{\partial t}
         - \fwg_0
         \bigg]
-        f_2(\vect x, t)
+        \rho_2(\vect x, t)
         =&
-        \fwg_1(t) f_1(\vect x, t)        
+        \fwg_1(t) \rho_1(\vect x, t)        
       \end{align*}
     }
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Linear response thoery for equilibrium system}{A brief review}
+\begin{frame}{Linear response theory for equilibrium system}{A brief review}
   \begin{itemize}
   \item <1-> Formal solution:
     \bluec{
       \begin{align*}
-        f_0(\vect x, t)
+        \rho_0(\vect x, t)
         =&\,
-        e^{t\fwg_0}f_0(\vect x, 0) \\
-        f_1(\vect x, t)
-        =&\,
-        \int_0^t\dd s\,
-        e^{(t-s)\fwg_0}\circ
-        \fwg_1(s) f_0(\vect x,s)\\
-        f_2(\vect x, t)
+        e^{t\fwg_0}\rho_0(\vect x, 0) \\
+        \rho_1(\vect x, t)
         =&\,
         \int_0^t\dd s\,
         e^{(t-s)\fwg_0}\circ
-        \fwg_1(s) f_1(\vect x,s) 
+        \fwg_1(s) \rho_0(\vect x,s)\\
+        \rho_2(\vect x, t)
+        =&\,
+        \int_0^t\dd s\,
+        e^{(t-s)\fwg_0}\circ
+        \fwg_1(s) \rho_1(\vect x,s) 
       \end{align*}
     }
-  \item <2-> Provide the initial condition being the invariant measure, i.e.
-    \bluec{$f_0(\vect x, 0) = f_{\inv}(\vect x)$},
+  \item <2-> Provide the initial condition being the invariant probability density, i.e.
+    \bluec{$\rho_0(\vect x, 0) = \rho_{\inv}(\vect x)$},
     \bluec{
       \begin{align*}
-        f_0(\vect x, t) &= f_{\inv} (\vect x)\\
-        f_1(\vect x, t) &=
+        \rho_0(\vect x, t) &= \rho_{\inv} (\vect x)\\
+        \rho_1(\vect x, t) &=
         -\beta
         \int_0^t\dd s\,
         \delta\fe(s)\,
         e^{(t-s)\fwg_0}
-        \big[
+        \big[\,
         j(\vect x)
-        f_{\inv}(\vect x)
-        \big]
+        \rho_{\inv}(\vect x)
+        \,\big]
       \end{align*}
     }
     {dissipative flux} is defined by \bluec{$j(\vect x)=-\vect D\cdot\nabla_{\vect p}\mh$}.
@@ -243,85 +247,95 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
 
 
 \begin{frame}
-  \frametitle{Linear response thoery for nonequilibrium system}
+  \frametitle{Linear response theory for nonequilibrium system}
   \framesubtitle{A brief review}
   \begin{itemize}
-    \vfill
-  \item <1-> We are interested in the observable of the system:
+  \item<1-> We are interested in the observable of the system. For the equilibrium observable:
     \bluec{
-      \begin{align*}
-        \mo^\eps(t)= \int\dd \vect x \:O(\vect x)\cdot f^\eps(\vect x, t)
-      \end{align*}}
-    \vfill
-  \item<2-> Insert
-    \bluec{
-      \begin{align*}
-        f^\eps (\vect x, t) = f^0(\vect x, t) + \eps f^1(\vect x, t)        
+      \begin{align*}        
+        \mo^0= \int\dd \vect x \:O(\vect x)\cdot \rho_\inv (\vect x)
       \end{align*}
     }
-    \vfill
+  \item <2-> For nonequilibrium case:
+    \bluec{
+      \begin{align*}
+        \mo^\eps(t)= \int\dd \vect x \:O(\vect x)\cdot \rho^\eps(\vect x, t)
+      \end{align*}}
+  \item<3-> Insert
+    \bluec{
+      \begin{align*}
+        \rho^\eps (\vect x, t) \approx \rho_0(\vect x, t) + \eps \rho_1(\vect x, t)        
+      \end{align*}
+    }
   \end{itemize}
 \end{frame}
 
 
-    % We denote \bluec{$\mo^0 = \int\dd \vect x O(\vect x)\cdot f_{\inv} $}
-\begin{frame}{Linear response thoery for equilibrium system}{A brief review}
+    % We denote \bluec{$\mo^0 = \int\dd \vect x O(\vect x)\cdot \rho_{\inv} $}
+\begin{frame}{Linear response theory for equilibrium system}{A brief review}
   \begin{itemize}
     \vfill
   \item <1-> By the previous results on the asymptotic expansion,
     we have the well-known Green-Kubo relation:
     \bluec{
       \begin{align*}
-        \mo^\eps(t) = 
+        \mo^\eps(t) \approx
         \mo^0
         -
         \eps\beta
         \int_0^t\dd s\,
         \delta\fe(t-s)
+        \only<1>{
         \bluec{
         \int \dd \vect x\,
-        f_{\inv}(\vect x)\,
+        \rho_{\inv}(\vect x)\,
         j(\vect x)\,
-        \mathbb E_{\vect x} [O(\vect x_s)]}
+        \mathbb E_{\vect x} [O(\vect x_s)]}}
+        \only<2->{
+        \redc{
+        \int \dd \vect x\,
+        \rho_{\inv}(\vect x)\,
+        j(\vect x)\,
+        \mathbb E_{\vect x} [O(\vect x_s)]}}
       \end{align*}
     }
     \bluec{$\vect x_s$}: solution to the \redc{equilibrium} Langevin eqn. with \bluec{$\vect x_0 = \vect x$}.
     \vfill
-  \item[] <2-> \whitec{Last integral: {Equilibrium time correlation function} or {response function}.}
+  \item <2-> {Last integral: \redc{Equilibrium time correlation function} or \redc{response function}.}
     \vfill
   \end{itemize}
 \end{frame}
 
-    % We denote \bluec{$\mo^0 = \int\dd \vect x O(\vect x)\cdot f_{\inv}$}
-\begin{frame}{Linear response thoery for equilibrium system}{A brief review}
-  \addtocounter{framenumber}{-1}
-  \begin{itemize}
-    \vfill
-  \item <1-> By the previous results on the asymptotic expansion,
-    we have the well-known Green-Kubo relation:
-    \bluec{
-      \begin{align*}
-        \mo^\eps(t) = 
-        \mo^0
-        -
-        \eps\beta
-        \int_0^t\dd s\,
-        \delta\fe(t-s)\redc{
-        \int \dd \vect x\,
-        f_{\inv}(\vect x)\,
-        j(\vect x)\,
-        \mathbb E_{\vect x} [O(\vect x_s)]}
-      \end{align*}
-    }
-    \bluec{$\vect x_s$}: solution to the \redc{equilibrium} Langevin eqn. with \bluec{$\vect x_0 = \vect x$}.
-    \vfill
-  \item <1-> Last integral: \redc{Equilibrium time correlation function} or \redc{response function}.
-    \vfill
-    \end{itemize}
-\end{frame}
+%     % We denote \bluec{$\mo^0 = \int\dd \vect x O(\vect x)\cdot f_{\inv}$}
+% \begin{frame}{Linear response thoery for equilibrium system}{A brief review}
+%   \addtocounter{framenumber}{-1}
+%   \begin{itemize}
+%     \vfill
+%   \item <1-> By the previous results on the asymptotic expansion,
+%     we have the well-known Green-Kubo relation:
+%     \bluec{
+%       \begin{align*}
+%         \mo^\eps(t) = 
+%         \mo^0
+%         -
+%         \eps\beta
+%         \int_0^t\dd s\,
+%         \delta\fe(t-s)\redc{
+%         \int \dd \vect x\,
+%         f_{\inv}(\vect x)\,
+%         j(\vect x)\,
+%         \mathbb E_{\vect x} [O(\vect x_s)]}
+%       \end{align*}
+%     }
+%     \bluec{$\vect x_s$}: solution to the \redc{equilibrium} Langevin eqn. with \bluec{$\vect x_0 = \vect x$}.
+%     \vfill
+%   \item <1-> Last integral: \redc{Equilibrium time correlation function} or \redc{response function}.
+%     \vfill
+%     \end{itemize}
+% \end{frame}
 
 
-\begin{frame}{Linear response thoery for equilibrium system}{Limitations}
+\begin{frame}{Linear response theory for equilibrium system}{Limitations}
   \begin{itemize}\itemsep 1cm
   \item <1-> Worse results for larger perturbation \bluec{$\eps$}.
   \item <2-> Not easy to derive higher orders of responses.
@@ -330,7 +344,7 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
 
 
 
-\begin{frame}{Linear response thoery for nonequilibrium system}{Driven Langevin dynamics}
+\begin{frame}{Linear response theory for nonequilibrium system}{Driven Langevin dynamics}
   \begin{itemize}
   \item <1-> Nonequilibrium
     Langevin eqn. with external driving \bluec{$\fe(t)\,\vect D(\vect q)$}.
@@ -358,41 +372,53 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
 \end{frame}
 
 
-\begin{frame}{Linear response thoery for nonequilibrium system}{Driven Langevin dynamics}
+\begin{frame}{Linear response theory for nonequilibrium system}{Driven Langevin dynamics}
   \begin{itemize}
-  \item <1-> The nonequilibrium time dependent observable:
+  \item <1-> The nonequilibrium observable:
     \bluec{
       \begin{align*}
         \mo^\eps(t) = \langle O\,\rangle_{\pathmeas^\eps}
-        = \int \dd \vect x\, f(\vect x, 0)
+        = \int \dd \vect x\, \rho(\vect x, 0)
         \int_{\mc\{\vect x,0; t\}} O[\vect x_s]\,\dd \pathmeas^\eps[\vect x_s]
       \end{align*}
     }
-    \bluec{$f(\vect x, 0)$}: The inital distribution.
-    \bluec{$\mc\{\vect x,0; t\}$}: The set of all continuous trajectories starting at $\vect x$ at time 0, and stoping at time $t$.
-    \bluec{$\pathmeas^\eps[\vect x_s]$}: Probability measure of trajectories.   
-    \bluec{$O[\vect x_s]$}: Observable, can be functional.
+    is time dependent.\\
+    \vskip .4cm
+    {\footnotesize\bluec{$\rho(\vect x, 0)$}: The initial distribution.\\
+    \bluec{$\mc\{\vect x,0; t\}$}: The set of all continuous trajectories starting at $\vect x$ at time 0, and stopping at time $t$.\\
+    \bluec{$\pathmeas^\eps[\vect x_s]$}: Probability measure of trajectories generated by the perturbed Langevin dynamics.\\
+    \bluec{$O[\vect x_s]$}: Observable, can be a functional.}
   \end{itemize}
 \end{frame}
 
 
 
-\begin{frame}{Linear response thoery for nonequilibrium system}
+\begin{frame}{Linear response theory for nonequilibrium system}
   {The Girsanov transformation}
   \begin{itemize}
   \item <1-> The trajectory reweighting:
     \bluec{
       \begin{align*}
         \mo^\eps(t)
-        &= \int \dd \vect x\, f(\vect x, 0)
+        &= \int \dd \vect x\, \rho(\vect x, 0)
         \int_{\mc\{\vect x,0; t\}} O[\vect x_s]\,\dd \pathmeas^\eps[\vect x_s]\\
-        &= \int \dd \vect x\, f(\vect x, 0)
+        &
+        \only<1>{
+          \whitec{
+        = \int \dd \vect x\, \rho(\vect x, 0)
+        \int_{\mc\{\vect x,0; t\}} O[\vect x_s]\,
+        \frac{\dd\pathmeas^\eps[\vect x_s]}{\dd\pathmeas^0[\vect x_s]}\,
+        \dd\pathmeas^0[\vect x_s]}
+        }
+        \only<2->{
+        = \int \dd \vect x\, \rho(\vect x, 0)
         \int_{\mc\{\vect x,0; t\}} O[\vect x_s]\,
         \frac{\dd\pathmeas^\eps[\vect x_s]}{\dd\pathmeas^0[\vect x_s]}\,
         \dd\pathmeas^0[\vect x_s]
+        }
       \end{align*}
     }
-  \item<2-> The \redc{Girsanov transform}:
+  \item<3-> The \redc{Girsanov transform}:
     \bluec{
       \begin{align*}
         \frac{\dd\pathmeas^\eps[\vect x_s]}{\dd\pathmeas^0[\vect x_s]}
@@ -417,10 +443,10 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
         % \delta\fe(s)\,\vect D(\vect q_s)\cdot\dd\vect W_s
         % \Big\rangle_{\pathmeas^0}
 
-\begin{frame}{Linear response thoery for nonequilibrium system}
+\begin{frame}{Linear response theory for nonequilibrium system}
   {The linear and quadratic approximation}
   \begin{itemize}
-  \item<1-> Linear approximation of exponent:
+  \item<1-> Linear \only<2->{and quadratic} expansion of the observable:
     \bluec{
       \begin{align*}
         \mo^\eps(t) \approx\: & \mo^0(t)\\
@@ -430,38 +456,129 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
           O[\vect x_s]\cdot G[\vect x_s]
           \Big\rangle_{\pathmeas^0}}
         \\
+        \only<1>{
+        &
+        \whitec{+
+        \frac{\eps^2}2\:
+        \Big\langle
+        O[\vect x_s]\cdot \big\{\, G[\vect x_s]^2 - H[\vect x_s]\,\big\}
+        \Big\rangle_{\pathmeas^0}}}
+        \only<2->{
         &+
         \redc{
         \frac{\eps^2}2\:
         \Big\langle
         O[\vect x_s]\cdot \big\{\, G[\vect x_s]^2 - H[\vect x_s]\,\big\}
-        \Big\rangle_{\pathmeas^0}}
+        \Big\rangle_{\pathmeas^0}}}
       \end{align*}
     }
-  \item<2-> where
+  \item<1-> where
     \bluec{
       \begin{align*}
         G[\vect x_s] & = \int_0^t\frac 1\sigma\,\delta\fe(s)\,\vect D(\vect q_s)\cdot \dd\vect W_s\\
-        H[\vect x_s] & = \int_0^t\frac 1{\sigma^2}\,\delta\fe^2(s)\,\vect D^2(\vect q_s)\cdot \dd s
+        \only<1>{
+          \whitec{H[\vect x_s]} &
+          \whitec{
+            = \int_0^t\frac 1{\sigma^2}\,\delta\fe^2(s)\,\vect D^2(\vect q_s)\cdot \dd s}}
+        \only<2->{
+        H[\vect x_s] & = \int_0^t\frac 1{\sigma^2}\,\delta\fe^2(s)\,\vect D^2(\vect q_s)\cdot \dd s}
     \end{align*}
     }
   \end{itemize}
 \end{frame}
 
 
-\begin{frame}{Numerical example: splitting single well potentialu}
-  \begin{itemize}
-  \item<1-> Single well Hamiltonian:
-    \bluec{
-      \begin{align*}
-        H(\vect q, \vect p) = \frac12\vert \vect p\vert^2 + \frac12 k\vert \vect q\vert^2
-      \end{align*}
-    }
+
+
+\begin{frame}{Schematic illustration of the nonequilibrium response theory}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-00-a.eps}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Schematic illustration of the nonequilibrium response theory}
+  \addtocounter{framenumber}{-1}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-20.eps}
+  \end{figure}  
+\end{frame}
+
+
+\begin{frame}{Schematic illustration of the nonequilibrium response theory}
+  \addtocounter{framenumber}{-1}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-21.eps}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Schematic illustration of the nonequilibrium response theory}
+  \addtocounter{framenumber}{-1}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-22.eps}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Schematic illustration of the nonequilibrium response theory}
+  \addtocounter{framenumber}{-1}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-10.eps}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Schematic illustration of the nonequilibrium response theory}
+  \addtocounter{framenumber}{-1}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-01.eps}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Schematic illustration of the nonequilibrium response theory}
+  \addtocounter{framenumber}{-1}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/drive/frame-02.eps}
+  \end{figure}  
+\end{frame}
+
+
+
+\begin{frame}{Numerical example: splitting single well potential}
+  \begin{itemize}\itemsep -.3cm
+  \item<1->
+    \begin{minipage}[t]{0.5\linewidth}      
+      Single well 1-D Hamiltonian:
+      \bluec{
+        \begin{align*}
+          H( q,  p) = \frac12\vert  p\vert^2 + \frac12 k\vert  q\vert^2
+        \end{align*}
+      }
+    \end{minipage}
+    \begin{minipage}[t]{0.450\linewidth}
+      \vskip -.5cm
+      \only<1>{
+        \begin{figure}
+          \centering
+          \includegraphics[width=1.0\textwidth]{figs/single.well/pot-1.eps}
+        \end{figure}
+      }
+      \only<2>{
+        \begin{figure}
+          \centering
+          \includegraphics[width=1.0\textwidth]{figs/single.well/pot-2.eps}
+        \end{figure}
+      }
+      \only<3->{
+        \begin{figure}
+          \centering
+          \includegraphics[width=1.0\textwidth]{figs/single.well/pot-3.eps}
+        \end{figure}
+      }
+    \end{minipage}
+    \hfill
   \item<2-> External drive:
     \bluec{
       \begin{align*}
-        u(t)\vect D(\vect q) = - k_e \frac{t}{T}\cdot
-        \nabla_{\vect q}
+        u(t) D( q) = - k_e \frac{t}{T}\cdot
+        \nabla_{ q}
         \Big[
         \frac{1}{\sqrt{2\pi \Sigma^2}} \exp\Big\{-\frac{ q^2}{2\Sigma^2}\Big\}
         \Big]
@@ -470,8 +587,8 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
   \item<3-> Perturbation:
     \bluec{
       \begin{align*}
-        \eps\delta u(t)\vect D(\vect q) = - \eps\cdot k_e \frac{t}{T}\cdot
-        \nabla_{\vect q}
+        \eps\delta u(t) D( q) = - \eps\cdot k_e \frac{t}{T}\cdot
+        \nabla_{ q}
         \Big[
         \frac{1}{\sqrt{2\pi \Sigma^2}} \exp\Big\{-\frac{ q^2}{2\Sigma^2}\Big\}
         \Big]        
@@ -482,53 +599,9 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
 
 
 \begin{frame}{Numerical example: splitting single well potential}
-  \begin{figure}
-    \includegraphics[width=0.8\textwidth]{figs/drive/frame-10.eps}
-  \end{figure}  
-\end{frame}
-
-\begin{frame}{Numerical example: splitting single well potential}
-  \addtocounter{framenumber}{-1}
-  \begin{figure}
-    \includegraphics[width=0.8\textwidth]{figs/drive/frame-01.eps}
-  \end{figure}  
-\end{frame}
-
-\begin{frame}{Numerical example: splitting single well potential}
-  \addtocounter{framenumber}{-1}
-  \begin{figure}
-    \includegraphics[width=0.8\textwidth]{figs/drive/frame-02.eps}
-  \end{figure}  
-\end{frame}
-
-\begin{frame}{Numerical example: splitting single well potential}
-  \addtocounter{framenumber}{-1}
-  \begin{figure}
-    \includegraphics[width=0.8\textwidth]{figs/drive/frame-10.eps}
-  \end{figure}  
-\end{frame}
-
-\begin{frame}{Numerical example: splitting single well potential}
-  \addtocounter{framenumber}{-1}
-  \begin{figure}
-    \includegraphics[width=0.8\textwidth]{figs/drive/frame-11.eps}
-  \end{figure}  
-\end{frame}
-
-\begin{frame}{Numerical example: splitting single well potential}
-  \addtocounter{framenumber}{-1}
-  \begin{figure}
-    \includegraphics[width=0.8\textwidth]{figs/drive/frame-12.eps}
-  \end{figure}  
-\end{frame}
-
-
-
-
-\begin{frame}{Numerical example: splitting single well potential}
-  The probability density on the phase space: Exnternal vedio
+  The probability density on the phase space: External video
   \begin{figure}[ht]
-    \includemovie[poster,autoplay,externalviewer]{}{}{figs/movie/fig-2d-tog.mp4}
+    \includemovie[poster,autoplay,externalviewer]{}{}{figs.1/movie.1e10/fig-2d-tog.mp4}
   \end{figure}
  % \flashmovie[engine=flv-player,auto=1,controlbar=0]{/home/wanghan/study/noneq.msm/writedown/linear.response/figs/tilt.warm020.str6.0.nst1e09.smallgrid/fig-2d-tog.flv}
   % /home/wanghan/study/noneq.msm/writedown/linear.response/figs/tilt.warm020.str6.0.nst1e09.smallgrid/fig-2d-tog.mp4
@@ -536,7 +609,25 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
 
 \begin{frame}{Numerical example: splitting single well potential}
   \begin{figure}
-    \includegraphics[width=0.7\textwidth]{figs/movie/fig-2d-tog-00020.pdf}
+    \includegraphics[width=0.7\textwidth]{figs.1/movie.1e10/fig-2d-tog-00020.pdf}
+  \end{figure}  
+\end{frame}
+
+
+\begin{frame}{Numerical example: splitting single well potential}
+  {Second order response}
+  The probability density on the phase space: External video
+  \begin{figure}[ht]
+    \includemovie[poster,autoplay,externalviewer]{}{}{figs.1/movie.1e10.2ndorder/fig-2d-tog.mp4}
+  \end{figure}
+ % \flashmovie[engine=flv-player,auto=1,controlbar=0]{/home/wanghan/study/noneq.msm/writedown/linear.response/figs/tilt.warm020.str6.0.nst1e09.smallgrid/fig-2d-tog.flv}
+  % /home/wanghan/study/noneq.msm/writedown/linear.response/figs/tilt.warm020.str6.0.nst1e09.smallgrid/fig-2d-tog.mp4
+\end{frame}
+
+\begin{frame}{Numerical example: splitting single well potential}
+  {Second order response}
+  \begin{figure}
+    \includegraphics[width=0.7\textwidth]{figs.1/movie.1e10.2ndorder/fig-2d-tog-00020.pdf}
   \end{figure}  
 \end{frame}
 
@@ -559,11 +650,11 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
   \bluec{
     \begin{align*}
       \psi(u) =
-      \int_0^T
-      \Big\{ f(q_s) - \frac12\vert u(s)\vert^2\Big\}\, \dd t + g(q_T)\,
+      \int_0^T f(\vect q_s)\,\dd t + g(\vect q_{_T}) 
+      - \eta\cdot\int_0^T\frac12\vert u(s)\vert^2\, \dd t 
     \end{align*}
   }
-  \bluec{$f$} and \bluec{$g$} are the running cost and the terminal cost.
+%  \bluec{$f$} and \bluec{$g$} are the running cost and the terminal cost.
 \end{frame}
 
 
@@ -577,7 +668,7 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
         u(t) = \sum_{k = 1}^K a_k\Phi_k(t), \quad a_k\in \mathbb R
       \end{align*}
     }
-  \item<2-> The gradient descent searching:
+  \item<2-> The gradient descent searching to maximize \bluec{$I(u)$}:
     \bluec{
       \begin{align*}
         u^{(n+1)} = u^{(n)} + \tau_n \,\nabla I\,(u^{(n)})
@@ -596,8 +687,17 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
 
 \begin{frame}
   \frametitle{Optimal control of a nonequilibrium system}
+  \framesubtitle{Gradient by nonequilibrium linear response}
   \begin{itemize}
-  \item<1-> With the response theory we have
+  \item<1-> By definition:
+    \bluec{
+      \begin{align*}
+        \frac{\partial I}{\partial a_k}\bigg\vert_{a_k = a_k^{(n)}}
+        =
+        \lim_{\eps\rightarrow 0}\frac{I(a_k^{(n)} + \eps) - I(a_k^{(n)})}{\eps}   
+      \end{align*}
+    }
+  \item<2-> With the response theory we have
     \bluec{
       \begin{align*}
         \frac{\partial I}{\partial a_k} =
@@ -610,6 +710,23 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
     }
   \end{itemize}
 \end{frame}
+
+\begin{frame}
+  \frametitle{Optimal control of a nonequilibrium system}
+  \framesubtitle{Gradient by finite difference}
+  \begin{itemize}
+  \item<1-> The central finite difference:
+    \bluec{
+      \begin{align*}
+        \frac{\partial I}{\partial a_k}\bigg\vert_{a_k = a_k^{(n)}}
+        \approx
+        \frac{I(a_k^{(n)} + \eps) - I(a_k^{(n)} - \eps)}{2\eps}
+        \quad \textrm{for}\ k=1,\cdots,K
+      \end{align*}
+    }
+  \end{itemize}
+\end{frame}
+
 
 \begin{frame}
   \frametitle{Optimal tilting of a double-well potential}
@@ -643,7 +760,7 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
         I = \max_{u\in\mathcal U} I(u), \quad
         I(u) =
         \bigg\langle
-        \chi(q_T\in [0,+\infty)) - \frac\eta 2\int_0^T\vert u(s)\vert^2\,\dd s
+        \chi(q_{_T}\in [0,+\infty)) - \frac\eta 2\int_0^T\vert u(s)\vert^2\,\dd s
         \bigg\rangle_{\pathmeas^0}
       \end{align*}
     }
@@ -663,13 +780,31 @@ Joint with: Carsten Hartmann (FUB), Christof Sch\"utte (FUB \& ZIB)}
 
 
 
-
-
-
-
 \begin{frame}
-  Thank you...
+  \vskip 1.5cm
+  \centerline{\bluec{\Huge Thank you for your attention}}
+  \vskip 1cm
+  \Large{
+  \bluec{
+    \begin{ceqn}
+    \begin{align*}
+      \mo^\eps(t) \approx\: & \mo^0(t)
+      +
+      \redc{\eps\:
+        \Big\langle
+        O[\vect x_s]\cdot G[\vect x_s]
+        \Big\rangle_{\pathmeas^0}}
+    \end{align*}
+  \end{ceqn}
+}
+}
+\vskip 1.5cm
+\bluec{\small
+Ref: H. Wang, C. Hartmann, C. Sch\"utte, Mol. Phys., in press (2013)
+}
 \end{frame}
+
+
 
 \end{document}
 
