@@ -25,7 +25,7 @@ namespace GmxTop {
     int			cgnr;
     double		charge;
     double		mass;
-    gmx_atom ();
+    gmx_atom		();
     void		clear ();    
     void		print (FILE * fp) const;
   }
@@ -74,6 +74,21 @@ namespace GmxTop {
   }
       ;
 
+  struct gmx_cmap_item
+  {
+    int			ii;
+    int			jj;
+    int			kk;
+    int			ll;
+    int			mm;
+    int			funct;
+    int			ngrid0;
+    int			ngrid1;
+    vector<double >	params;
+    gmx_cmap_item	();
+    void		print (FILE * fp) const;
+  }
+      ;
   
   struct gmx_mol
   {

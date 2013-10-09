@@ -235,6 +235,28 @@ print (FILE * fp) const
   fprintf (fp, "\n");
 }
 
+GmxTop::gmx_cmap_item::
+gmx_cmap_item ()
+    : funct (0), ngrid0(0), ngrid1(0)
+{
+}
+
+void GmxTop::gmx_cmap_item::
+print (FILE * fp) const
+{
+  fprintf (fp, "%d\t%d\t%d\t%d\t%d\t%d", ii, jj, kk, ll, mm, funct);
+  if (ngrid0 != 0) {
+    fprintf (fp, "\t%d", ngrid0);
+  }
+  if (ngrid1 != 0) {
+    fprintf (fp, "\t%d", ngrid1);
+  }
+  for (unsigned ii = 0; ii < params.size(); ++ii){
+    fprintf (fp, "\t%.10e", params[ii]);
+  }
+  fprintf (fp, "\n");
+}
+
 
 void GmxTop::gmx_mol::
 print (FILE * fp) const
