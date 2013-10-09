@@ -83,4 +83,20 @@ print (FILE * fp) const
   fprintf (fp, "\n");
 }
 
-  
+void GmxTop::gmx_cmaptypes_item::  
+print (FILE * fp) const
+{
+  fprintf (fp, "%s\t%s\t%s\t%s\t%s\t%d\t%d\t%d",
+	   name0.c_str(), name1.c_str(), name2.c_str(), name3.c_str(), name4.c_str(),
+	   funct,
+	   ngrid0, ngrid1);
+  fprintf (fp, "\\\n");
+  for (unsigned ii = 0; ii < params.size(); ++ii){
+    fprintf (fp, "%.10f ", params[ii]);
+    if ((ii+1) % 10 == 0){
+      fprintf (fp, "\\\n");
+    }
+  }
+  fprintf (fp, "\n");
+}
+
