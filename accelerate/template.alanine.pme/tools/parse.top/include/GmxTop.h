@@ -99,6 +99,7 @@ namespace GmxTop {
     vector<gmx_bonds_item>	bonds;
     vector<gmx_angles_item>	angles;
     vector<gmx_dihedrals_item>	dihedrals;
+    vector<gmx_cmap_item>	cmap;
     void		print (FILE * fp) const;
   }
       ;

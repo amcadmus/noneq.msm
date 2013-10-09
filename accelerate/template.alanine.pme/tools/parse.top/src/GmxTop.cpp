@@ -297,6 +297,13 @@ print (FILE * fp) const
     }
     fprintf (fp, "\n");
   }  
+  if (cmap.size() > 0) {
+    fprintf (fp, "[ cmap ]\n");
+    for (unsigned ii = 0; ii < cmap.size(); ++ii){
+      cmap[ii].print (fp);
+    }
+    fprintf (fp, "\n");
+  }  
 }
 
 void GmxTop::gmx_sys_top::
@@ -508,6 +515,29 @@ parseTop (const string & fname,
 	      tmp.params.push_back (atof(words[mm].c_str()));
 	    }
 	    tmpmol.dihedrals.push_back(tmp);
+	  } 
+	}
+	if (keys[kk] == "cmap"){
+	  for (unsigned ll = 0; ll < lines[kk].size(); ++ll){
+	    StringOperation::split (lines[kk][ll], words);
+	    gmx_cmap_item tmp;
+	    if (words.size () < 6) die_wrong_format (__FILE__, __LINE__);
+	    tmp.ii = atoi(words[0].c_str());
+	    tmp.jj = atoi(words[1].c_str());
+	    tmp.kk = atoi(words[2].c_str());
+	    tmp.ll = atoi(words[3].c_str());
+	    tmp.mm = atoi(words[4].c_str());
+	    tmp.funct = atoi(words[5].c_str());
+	    if (words.size() >= 7){
+	      tmp.ngrid0 = atoi(words[6].c_str());
+	    }
+	    if (words.size() >= 8){	    
+	      tmp.ngrid1 = atoi(words[7].c_str());
+	    }
+	    for (unsigned mm = 8; mm < words.size(); ++mm){
+	      tmp.params.push_back (atof(words[mm].c_str()));
+	    }
+	    tmpmol.cmap.push_back(tmp);
 	  } 
 	}
       }
