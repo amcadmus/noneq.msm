@@ -18,7 +18,8 @@ pert_fourierspacing=0.12	# nm
 pert_pme_order=4		#
 
 pert_integrator=sd-baoab
-pert_taut=5.0			# ps
+pert_taut=1.0			# ps
+pert_noSdRange=1.0		# nm
 pert_barostat=no		# Parrinello-Rahman or no
 pert_taup=2.0			# ps
 

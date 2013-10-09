@@ -21,6 +21,7 @@ int main (int argc, char **argv) {
   // systop.print (stdout);
 
   GmxTop::gmx_sys_types newtype;
+  // newtype = systype;
   GmxTop::convertType_2_1 (systype, newtype);
       
   newtype.print(stdout);
