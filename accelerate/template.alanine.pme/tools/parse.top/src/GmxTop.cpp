@@ -783,7 +783,19 @@ convertType_2_1 (const gmx_sys_types	& old_types,
       tmp.params[1] = c12_01;
       new_types.nonbond_params.push_back(tmp);
     }
-  }    
+  }
+
+  for (unsigned ii = 0; ii < new_types.pairtypes.size(); ++ii){
+    if (old_types.pairtypes[ii].funct != 1){
+      cerr << "the funct of pair is not equal to 1, ignor" << endl;
+    }
+    double sigma = old_types.pairtypes[ii].params[0];
+    double eps = old_types.pairtypes[ii].params[1];
+    double c6, c12;
+    param_2_to_1 (eps, sigma, c6, c12);
+    new_types.pairtypes[ii].params[0] = c6;
+    new_types.pairtypes[ii].params[1] = c12;
+  }
 }
 
 
