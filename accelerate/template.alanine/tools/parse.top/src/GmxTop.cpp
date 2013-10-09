@@ -113,12 +113,11 @@ readBlocks (ifstream & file,
   
   while (! file.eof() ){
     file.getline (line, MAX_LINE_LENGTH);
-    
+    normalizeLine (line);
     // cout << line <<endl;
     
     if (!inBlock){
       if (ifKeyWord(line, tmpKey)){
-	normalizeLine (line);
 	inBlock = true;
 	// keys.push_back ("");
 	keys.push_back (tmpKey);
@@ -126,19 +125,16 @@ readBlocks (ifstream & file,
 	blockLines.clear ();
       }
       else if (notTrivalLine(line)) {
-	normalizeLine (line);
 	blockLines.push_back(line);	
       }
     }
     else {
       if (ifKeyWord(line, tmpKey)){
-	normalizeLine (line);
 	keys.push_back (tmpKey);
 	lines.push_back (blockLines);
 	blockLines.clear ();	
       }
       else if (notTrivalLine(line)){
-	normalizeLine (line);
 	blockLines.push_back(line);
       }
     }
@@ -198,7 +194,7 @@ print (FILE * fp) const
 {
   fprintf (fp, "%d\t%d\t%d", ii, jj, funct);
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%f", params[ii]);
+    fprintf (fp, "\t%.10e", params[ii]);
   }
   fprintf (fp, "\n");
 }
@@ -208,7 +204,7 @@ print (FILE * fp) const
 {
   fprintf (fp, "%d\t%d\t%d", ii, jj, funct);
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%f", params[ii]);
+    fprintf (fp, "\t%.10e", params[ii]);
   }
   fprintf (fp, "\n");
 }
@@ -218,7 +214,7 @@ print (FILE * fp) const
 {
   fprintf (fp, "%d\t%d\t%d\t%d", ii, jj, kk, funct);
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%f", params[ii]);
+    fprintf (fp, "\t%.10e", params[ii]);
   }
   fprintf (fp, "\n");
 }
@@ -228,7 +224,7 @@ print (FILE * fp) const
 {
   fprintf (fp, "%d\t%d\t%d\t%d\t%d", ii, jj, kk, ll, funct);
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%f", params[ii]);
+    fprintf (fp, "\t%.10e", params[ii]);
   }
   fprintf (fp, "\n");
 }
@@ -365,14 +361,14 @@ parseTop (const string & fname,
   readBlocks (file, keys, lines);
   vector<string > words;
 
-  // cout << "n. keys " << keys.size() << endl;
-  // cout << "n. lines " << lines.size() << endl;
-  // for (unsigned ii = 0; ii < keys.size(); ++ii){
-  //   cout << "key " << ii << ": " << keys[ii] << endl;
-  //   for (unsigned jj = 0; jj < lines[ii].size(); ++jj){
-  //     cout << lines[ii][jj] << endl;
-  //   }
-  // }
+  cout << "n. keys " << keys.size() << endl;
+  cout << "n. lines " << lines.size() << endl;
+  for (unsigned ii = 0; ii < keys.size(); ++ii){
+    cout << "key " << ii << ": " << keys[ii] << endl;
+    for (unsigned jj = 0; jj < lines[ii].size(); ++jj){
+      cout << lines[ii][jj] << endl;
+    }
+  }
   
   for (unsigned ii = 0; ii < keys.size(); ++ii){
     if (keys[ii] == "system"){
