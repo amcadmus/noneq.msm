@@ -38,6 +38,9 @@ function set_parameters_equi () {
 
 function set_parameters_pert () {
     file=$1
+    if ! `grep userreal5 $file &>/dev/null`; then
+	echo "userreal5 = 1.0" >> $file
+    fi    
     pert_nstep=`echo "$pert_time / $pert_dt" | bc -l | cut -d '.' -f 1`
     pert_xtcout_feq=`echo "$pert_frame_feq / $pert_dt" | bc -l | cut -d '.' -f 1`
     pert_xvout_feq=$pert_xtcout_feq
@@ -61,6 +64,7 @@ function set_parameters_pert () {
     sed -e "/^userreal2/s/=.*/= $pert_ele_rescale_start/g" |\
     sed -e "/^userreal3/s/=.*/= $pert_ele_rescale_end/g" |\
     sed -e "/^userreal4/s/=.*/= $pert_rescale/g" |\
+    sed -e "/^userreal5/s/=.*/= $pert_ele_rescale_scale0/g" |\
     sed -e "/^rlist /s/=.*/= $pert_rlist/g" |\
     sed -e "/^rcoulomb /s/=.*/= $pert_rcut/g" |\
     sed -e "/^rcoulomb-switch /s/=.*/= $pert_rsmooth/g" |\

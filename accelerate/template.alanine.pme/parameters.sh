@@ -28,6 +28,9 @@ pert_rescale=1.0		# ps
 pert_bond_rescale=1.0		# 
 pert_angle_rescale=1.0		# 
 pert_angle_bond_rescale=1.0	# 
+pert_ele_rescale_scale0=1.0	# 
+pert_vdw_rescale_scale0=1.0	# 
+
 pert_ele_rescale_start=0.00	# nm
 pert_ele_rescale_end=0.01	# nm
 pert_vdw_rescale_start=0.00	# nm

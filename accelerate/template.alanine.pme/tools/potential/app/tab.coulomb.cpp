@@ -288,7 +288,8 @@ int main(int argc, char * argv[])
   double dr;
   double scaleEleStart, scaleEleEnd;
   double scaleVdwStart, scaleVdwEnd;
-  double scale;
+  double scale, scale0;
+  double fmax = 1e30;
   
   po::options_description desc ("Allow options");
   desc.add_options()
@@ -300,6 +301,7 @@ int main(int argc, char * argv[])
     ("table-ext", po::value<double > (&ext)->default_value (1.2), "table extention")
     ("dr", po::value<double > (&dr)->default_value (0.002), "table step")
     ("scale", po::value<double > (&scale)->default_value (1.0), "scale")
+    ("scale-0", po::value<double > (&scale0)->default_value (1.0), "scale")
     ("scale-ele-start", po::value<double > (&scaleEleStart)->default_value (0.1), "scale start r")
     ("scale-ele-end", po::value<double > (&scaleEleEnd)->default_value (0.18), "scale end r")
     ("scale-vdw-start", po::value<double > (&scaleVdwStart)->default_value (0.3), "scale start r")
@@ -333,15 +335,36 @@ int main(int argc, char * argv[])
 		 rr, 0., 0., 0., 0., 0., 0.);
       }
       else {
+	double vc = (scale - scale0) * psf1.u(rr) * pc1.u(rr) + scale0 * pc1.u(rr);
+	double fc = - ( (scale - scale0) * (psf1.up(rr) * pc1.u(rr) + psf1.u(rr) * pc1.up(rr)) + scale0 * pc1.up(rr));
+	double vc6 = - ((scale - scale0) * psf2.u(rr) * pc6.u(rr) + scale0 * pc6.u(rr));
+	double fc6 = ( (scale - scale0) * (psf2.up(rr) * pc6.u(rr) + psf2.u(rr) * pc6.up(rr)) + scale0 * pc6.up(rr));
+	double vc12 = (scale - scale0) * psf2.u(rr) * pc12.u(rr) + scale0 * pc12.u(rr);
+	double fc12 = - ( (scale - scale0) * (psf2.up(rr) * pc12.u(rr) + psf2.u(rr) * pc12.up(rr)) + scale0 * pc12.up(rr));
+	if (fc > fmax) {
+	  fc = 0;
+	  vc = 0;
+	}
+	if (fc6 > fmax) {
+	  fc6 = 0;
+	  vc6 = 0;
+	}
+	if (fc12 > fmax) {
+	  fc12 = 0;
+	  vc12 = 0;
+	}	
 	fprintf (fout, "%.10e  %.10e %.10e  %.10e %.10e  %.10e %.10e\n",
-		 rr,
-		 (scale - 1) * psf1.u(rr) * pc1.u(rr) + pc1.u(rr),
-		 - ( (scale - 1) * (psf1.up(rr) * pc1.u(rr) + psf1.u(rr) * pc1.up(rr)) + pc1.up(rr)),
-		 - ((scale - 1) * psf2.u(rr) * pc6.u(rr) + pc6.u(rr)),
-		 ( (scale - 1) * (psf2.up(rr) * pc6.u(rr) + psf2.u(rr) * pc6.up(rr)) + pc6.up(rr)),
-		 (scale - 1) * psf2.u(rr) * pc12.u(rr) + pc12.u(rr),
-		 - ( (scale - 1) * (psf2.up(rr) * pc12.u(rr) + psf2.u(rr) * pc12.up(rr)) + pc12.up(rr))
+		 rr, vc, fc, vc6, fc6, vc12, fc12
 		 );
+	// fprintf (fout, "%.10e  %.10e %.10e  %.10e %.10e  %.10e %.10e\n",
+	// 	 rr,
+	// 	 (scale - scale0) * psf1.u(rr) * pc1.u(rr) + scale0 * pc1.u(rr),
+	// 	 - ( (scale - scale0) * (psf1.up(rr) * pc1.u(rr) + psf1.u(rr) * pc1.up(rr)) + scale0 * pc1.up(rr)),
+	// 	 - ((scale - scale0) * psf2.u(rr) * pc6.u(rr) + scale0 * pc6.u(rr)),
+	// 	 ( (scale - scale0) * (psf2.up(rr) * pc6.u(rr) + psf2.u(rr) * pc6.up(rr)) + scale0 * pc6.up(rr)),
+	// 	 (scale - scale0) * psf2.u(rr) * pc12.u(rr) + scale0 * pc12.u(rr),
+	// 	 - ( (scale - scale0) * (psf2.up(rr) * pc12.u(rr) + psf2.u(rr) * pc12.up(rr)) + scale0 * pc12.up(rr))
+	// 	 );
       }
     }
   }
@@ -359,15 +382,36 @@ int main(int argc, char * argv[])
 		 rr, 0., 0., 0., 0., 0., 0.);
       }
       else {
+	double vc = (scale - scale0) * psf1.u(rr) * pc1.u(rr) + scale0 * pc1.u(rr);
+	double fc = - ( (scale - scale0) * (psf1.up(rr) * pc1.u(rr) + psf1.u(rr) * pc1.up(rr)) + scale0 * pc1.up(rr));
+	double vc6 = - ((scale - scale0) * psf2.u(rr) * pc6.u(rr) + scale0 * pc6.u(rr));
+	double fc6 = ( (scale - scale0) * (psf2.up(rr) * pc6.u(rr) + psf2.u(rr) * pc6.up(rr)) + scale0 * pc6.up(rr));
+	double vc12 = (scale - scale0) * psf2.u(rr) * pc12.u(rr) + scale0 * pc12.u(rr);
+	double fc12 = - ( (scale - scale0) * (psf2.up(rr) * pc12.u(rr) + psf2.u(rr) * pc12.up(rr)) + scale0 * pc12.up(rr));
+	if (fc > fmax) {
+	  fc = 0;
+	  vc = 0;
+	}
+	if (fc6 > fmax) {
+	  fc6 = 0;
+	  vc6 = 0;
+	}
+	if (fc12 > fmax) {
+	  fc12 = 0;
+	  vc12 = 0;
+	}
 	fprintf (fout, "%.10e  %.10e %.10e  %.10e %.10e  %.10e %.10e\n",
-		 rr,
-		 (scale - 1) * psf1.u(rr) * pc1.u(rr) + pc1.u(rr),
-		 - ( (scale - 1) * (psf1.up(rr) * pc1.u(rr) + psf1.u(rr) * pc1.up(rr)) + pc1.up(rr)),
-		 - ((scale - 1) * psf2.u(rr) * pc6.u(rr) + pc6.u(rr)),
-		 ( (scale - 1) * (psf2.up(rr) * pc6.u(rr) + psf2.u(rr) * pc6.up(rr)) + pc6.up(rr)),
-		 (scale - 1) * psf2.u(rr) * pc12.u(rr) + pc12.u(rr),
-		 - ( (scale - 1) * (psf2.up(rr) * pc12.u(rr) + psf2.u(rr) * pc12.up(rr)) + pc12.up(rr))
+		 rr, vc, fc, vc6, fc6, vc12, fc12
 		 );
+	// fprintf (fout, "%.10e  %.10e %.10e  %.10e %.10e  %.10e %.10e\n",
+	// 	 rr,
+	// 	 (scale - scale0) * psf1.u(rr) * pc1.u(rr) + scale0 * pc1.u(rr),
+	// 	 - ( (scale - scale0) * (psf1.up(rr) * pc1.u(rr) + psf1.u(rr) * pc1.up(rr)) + scale0 * pc1.up(rr)),
+	// 	 - ((scale - scale0) * psf2.u(rr) * pc6.u(rr) + scale0 * pc6.u(rr)),
+	// 	 ( (scale - scale0) * (psf2.up(rr) * pc6.u(rr) + psf2.u(rr) * pc6.up(rr)) + scale0 * pc6.up(rr)),
+	// 	 (scale - scale0) * psf2.u(rr) * pc12.u(rr) + scale0 * pc12.u(rr),
+	// 	 - ( (scale - scale0) * (psf2.up(rr) * pc12.u(rr) + psf2.u(rr) * pc12.up(rr)) + scale0 * pc12.up(rr))
+	// 	 );
       }
     }
   }    
