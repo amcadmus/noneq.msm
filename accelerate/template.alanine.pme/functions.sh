@@ -61,9 +61,14 @@ function set_parameters_pert () {
     sed -e "/^userreal2/s/=.*/= $pert_ele_rescale_start/g" |\
     sed -e "/^userreal3/s/=.*/= $pert_ele_rescale_end/g" |\
     sed -e "/^userreal4/s/=.*/= $pert_rescale/g" |\
-    sed -e "/^rlist /s/=.*/= $pert_rcut/g" |\
+    sed -e "/^rlist /s/=.*/= $pert_rlist/g" |\
     sed -e "/^rcoulomb /s/=.*/= $pert_rcut/g" |\
+    sed -e "/^rcoulomb-switch /s/=.*/= $pert_rsmooth/g" |\
     sed -e "/^rvdw /s/=.*/= $pert_rcut/g" |\
+    sed -e "/^rvdw-switch /s/=.*/= $pert_rsmooth/g" |\
+    sed -e "/^coulombtype /s/=.*/= pme-switch/g" |\
+    sed -e "/^table-extension /s/=.*/= 0.5/g" |\
+    sed -e "/^nstlist /s/=.*/= -1/g" |\
     sed -e "/^epsilon_r /s/=.*/= $pert_epsilon_r/g" |\
     sed -e "/^epsilon_rf /s/=.*/= $pert_erf/g" |\
     sed -e "/^fourierspacing /s/=.*/= $pert_fourierspacing/g" |\

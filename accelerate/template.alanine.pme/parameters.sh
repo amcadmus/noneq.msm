@@ -1,24 +1,25 @@
 #!/bin/bash
 
 # non-equilibrium settings
-pert_equi_result="$HOME/study/noneq.msm/accelerate/equi.systems/alanine.pme/"
+pert_equi_result="$HOME/study/noneq.msm/accelerate/equi.systems/alanine.charmm.pme.tab/"
 pert_num_conf_use=100000	#
 pert_mode=2			# 1: relax, 2: cos wave
 pert_strength=1.0		# nm/ps velocity
 pert_warm_time=40		# ps 1: warm time, 2: periodicity
 pert_shift=0			# unitless
 pert_phi=270			# deg. shift of the phase
-pert_time=200			# ps
+pert_time=100			# ps
 pert_frame_feq=0.5		# ps
 pert_dt=0.0005			# ps
-pert_rcut=1.3			# nm
-pert_rsmooth=1.2		# nm
+pert_rlist=1.33			# nm
+pert_rcut=1.0			# nm
+pert_rsmooth=0.9		# nm
 pert_erf=78			# 
 pert_fourierspacing=0.12	# nm
 pert_pme_order=4		#
 
 pert_integrator=sd-baoab
-pert_taut=1.0			# ps
+pert_taut=0.2			# ps
 pert_noSdRange=1.0		# nm
 pert_barostat=no		# Parrinello-Rahman or no
 pert_taup=2.0			# ps
