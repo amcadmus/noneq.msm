@@ -61,7 +61,7 @@ do
     if [ $? -ne 0 ]; then
 	echo "failed at tab.rf, exit"; exit
     fi
-    ../../tools/parse.top/rescale.param -f topol.top -b $pert_bond_rescale -a $pert_angle_rescale -d $pert_rescale -o out.top
+    ../../tools/parse.top/rescale.param -f topol.top -b $pert_bond_rescale -a $pert_angle_rescale --scal-angle-bond $pert_angle_bond_rescale -d $pert_rescale --scal-cmap $pert_rescale -o out.top
     mv -f out.top topol.top
     set_parameters_pert grompp.mdp
     start_time=`grep $count $pert_equi_result/equi.frame | awk '{print $2}'`
