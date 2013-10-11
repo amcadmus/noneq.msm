@@ -56,8 +56,8 @@ do
     cp $pert_equi_result/topol.top	$my_dir
     cd $my_dir
     rm -f run.log
-    ../../tools/potential/tab.coulomb --scale $pert_rescale --scale-ele-start 1000 --scale-ele-end 1001 --scale-0 $pert_vdw_rescale_scale0 --scale-vdw-start $pert_vdw_rescale_start --scale-vdw-end $pert_vdw_rescale_end --rc $pert_rcut --r-smooth $pert_rsmooth --erf $pert_erf -o table.xvg
-    ../../tools/potential/tab.coulomb --scale $pert_rescale --scale-ele-start 1000 --scale-ele-end 1001 --scale-0 $pert_vdw_rescale_scale0 --scale-vdw-start $pert_vdw_rescale_start --scale-vdw-end $pert_vdw_rescale_end --rc $pert_rcut --r-smooth $pert_rsmooth --erf $pert_erf -o tablep.xvg
+    ../../tools/potential/tab.coulomb --scale $pert_rescale --scale-ele-start 1000 --scale-ele-end 1001 --scale-ele-scale-0 1.0 --scale-vdw-scale-0 $pert_vdw_rescale_scale0 --scale-vdw-start $pert_vdw_rescale_start --scale-vdw-end $pert_vdw_rescale_end --rc $pert_rcut --r-smooth $pert_rsmooth --erf $pert_erf -o table.xvg
+    ../../tools/potential/tab.coulomb --scale $pert_rescale --scale-ele-start 1000 --scale-ele-end 1001 --scale-ele-scale-0 1.0 --scale-vdw-scale-0 $pert_vdw_rescale_scale0 --scale-vdw-start $pert_vdw_rescale_start --scale-vdw-end $pert_vdw_rescale_end --rc $pert_rcut --r-smooth $pert_rsmooth --erf $pert_erf -o tablep.xvg
     if [ $? -ne 0 ]; then
 	echo "failed at tab.rf, exit"; exit
     fi
