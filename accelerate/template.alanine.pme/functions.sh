@@ -40,9 +40,14 @@ function set_parameters_pert () {
     file=$1
     if ! `grep userreal5 $file &>/dev/null`; then
 	echo "userreal5 = 1.0" >> $file
-    fi    
-    pert_nstep=`echo "$pert_time / $pert_dt" | bc -l | cut -d '.' -f 1`
-    pert_xtcout_feq=`echo "$pert_frame_feq / $pert_dt" | bc -l | cut -d '.' -f 1`
+    fi
+    if ! `grep nstcalcenergy $file &>/dev/null`; then
+	echo "nstcalcenergy = 1.0" >> $file
+    fi
+    pert_time_r=`echo "$pert_time/$pert_rescale" | bc -l`
+    pert_frame_feq_r=`echo "$pert_frame_feq/$pert_rescale" | bc -l`
+    pert_nstep=`echo "$pert_time_r / $pert_dt" | bc -l | cut -d '.' -f 1`
+    pert_xtcout_feq=`echo "$pert_frame_feq_r / $pert_dt" | bc -l | cut -d '.' -f 1`
     pert_xvout_feq=$pert_xtcout_feq
     pert_energy_feq=$pert_xtcout_feq
     pert_strength_r=`echo "$pert_strength * $pert_rescale" | bc -l`
@@ -60,6 +65,7 @@ function set_parameters_pert () {
     sed -e "/^nstvout/s/=.*/= $pert_xvout_feq/g" |\
     sed -e "/^nstfout/s/=.*/= 0/g" |\
     sed -e "/^nstenergy/s/=.*/= $pert_energy_feq/g" |\
+    sed -e "/^nstcalcenergy/s/=.*/= $pert_energy_feq/g" |\
     sed -e "/^userreal1/s/=.*/= $pert_noSdRange/g" |\
     sed -e "/^userreal2/s/=.*/= $pert_ele_rescale_start/g" |\
     sed -e "/^userreal3/s/=.*/= $pert_ele_rescale_end/g" |\

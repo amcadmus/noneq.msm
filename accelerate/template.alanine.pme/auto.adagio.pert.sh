@@ -11,7 +11,7 @@ echo "#PBS -d $cwd"				>> submit.sh
 echo "#PBS -o adagio.out"			>> submit.sh
 echo "#PBS -e adagio.err"			>> submit.sh
 echo "#PBS -M han.wang@fu-berlin.de"		>> submit.sh
-echo "#PBS -l walltime=400:00:00"		>> submit.sh
+echo "#PBS -l walltime=24:00:00"		>> submit.sh
 echo "#PBS -l nodes=1:ppn=8"			>> submit.sh
 echo "#PBS -l mem=1000mb"			>> submit.sh
 
