@@ -41,6 +41,14 @@ namespace GmxTop {
   }
       ;
 
+  struct gmx_exclusions_item
+  {
+    int			ii;
+    vector<int >	params;
+    void		print (FILE * fp) const;
+  }
+      ;
+
   struct gmx_bonds_item
   {
     int			ii;
@@ -73,7 +81,7 @@ namespace GmxTop {
     void		print (FILE * fp) const;
   }
       ;
-
+  
   struct gmx_cmap_item
   {
     int			ii;
@@ -96,6 +104,7 @@ namespace GmxTop {
     int				nexcl;
     vector<gmx_atom>		atoms;
     vector<gmx_pairs_item>	pairs;
+    vector<gmx_exclusions_item>	exclusions;
     vector<gmx_bonds_item>	bonds;
     vector<gmx_angles_item>	angles;
     vector<gmx_dihedrals_item>	dihedrals;

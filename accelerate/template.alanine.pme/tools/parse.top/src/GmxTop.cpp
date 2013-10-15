@@ -205,6 +205,16 @@ print (FILE * fp) const
   fprintf (fp, "\n");
 }
 
+void GmxTop::gmx_exclusions_item::
+print (FILE * fp) const
+{
+  fprintf (fp, "%d", ii);
+  for (unsigned ii = 0; ii < params.size(); ++ii){
+    fprintf (fp, "\t%d", params[ii]);
+  }
+  fprintf (fp, "\n");
+}
+
 void GmxTop::gmx_bonds_item::
 print (FILE * fp) const
 {
@@ -229,10 +239,18 @@ void GmxTop::gmx_dihedrals_item::
 print (FILE * fp) const
 {
   fprintf (fp, "%d\t%d\t%d\t%d\t%d", ii, jj, kk, ll, funct);
-  for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%.10e", params[ii]);
+  if (funct == 1 || funct == 4 || funct == 9){
+    for (unsigned ii = 0; ii < params.size() - 1; ++ii){
+      fprintf (fp, "\t%.10e", params[ii]);
+    }
+    fprintf (fp, "\t%d", int(params.back() + 0.5));
   }
-  fprintf (fp, "\n");
+  else{
+    for (unsigned ii = 0; ii < params.size(); ++ii){
+      fprintf (fp, "\t%.10e", params[ii]);
+    }
+    fprintf (fp, "\n");
+  }
 }
 
 GmxTop::gmx_cmap_item::
@@ -273,6 +291,13 @@ print (FILE * fp) const
     fprintf (fp, "[ pairs ]\n");
     for (unsigned ii = 0; ii < pairs.size(); ++ii){
       pairs[ii].print (fp);
+    }
+    fprintf (fp, "\n");
+  }
+  if (exclusions.size() > 0) {
+    fprintf (fp, "[ exclusions ]\n");
+    for (unsigned ii = 0; ii < exclusions.size(); ++ii){
+      exclusions[ii].print (fp);
     }
     fprintf (fp, "\n");
   }
@@ -470,6 +495,18 @@ parseTop (const string & fname,
 	      tmp.params.push_back (atof(words[mm].c_str()));
 	    }
 	    tmpmol.pairs.push_back(tmp);
+	  } 
+	}
+	if (keys[kk] == "exclusions"){
+	  for (unsigned ll = 0; ll < lines[kk].size(); ++ll){
+	    StringOperation::split (lines[kk][ll], words);
+	    gmx_exclusions_item tmp;
+	    if (words.size () < 2) die_wrong_format (__FILE__, __LINE__);
+	    tmp.ii = atoi(words[0].c_str());
+	    for (unsigned mm = 1; mm < words.size(); ++mm){
+	      tmp.params.push_back (atof(words[mm].c_str()));
+	    }
+	    tmpmol.exclusions.push_back(tmp);
 	  } 
 	}
 	if (keys[kk] == "bonds"){
