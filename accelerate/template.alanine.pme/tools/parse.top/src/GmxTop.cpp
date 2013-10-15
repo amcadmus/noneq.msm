@@ -294,17 +294,17 @@ print (FILE * fp) const
     }
     fprintf (fp, "\n");
   }
-  if (exclusions.size() > 0) {
-    fprintf (fp, "[ exclusions ]\n");
-    for (unsigned ii = 0; ii < exclusions.size(); ++ii){
-      exclusions[ii].print (fp);
-    }
-    fprintf (fp, "\n");
-  }
   if (bonds.size() > 0) {
     fprintf (fp, "[ bonds ]\n");
     for (unsigned ii = 0; ii < bonds.size(); ++ii){
       bonds[ii].print (fp);
+    }
+    fprintf (fp, "\n");
+  }
+  if (exclusions.size() > 0) {
+    fprintf (fp, "[ exclusions ]\n");
+    for (unsigned ii = 0; ii < exclusions.size(); ++ii){
+      exclusions[ii].print (fp);
     }
     fprintf (fp, "\n");
   }
