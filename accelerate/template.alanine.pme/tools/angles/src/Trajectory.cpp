@@ -46,7 +46,7 @@ reinit (const char * filename)
   
   xd = xdrfile_open (filename, "r");
   if (xd == NULL){
-    std::cerr << "cannot open file " << filename << std::endl;
+    std::cerr << "XtcLoader::reinit: cannot open file at step1 " << filename << std::endl;
     return false;
   }
   read_xtc_natoms (tmpname, &natoms);
@@ -63,7 +63,7 @@ reinit (const char * filename)
   xdrfile_close (xd);
   xd = xdrfile_open (filename, "r");  
   if (xd == NULL){
-    std::cerr << "cannot open file " << filename << std::endl;
+    std::cerr << "XtcLoader::reinit: cannot open file at step2 " << filename << std::endl;
     clear ();
     return false;
   }
@@ -149,7 +149,7 @@ reinit (const char * filename)
   
   xd = xdrfile_open (filename, "r");
   if (xd == NULL){
-    std::cerr << "cannot open file " << filename << std::endl;
+    std::cerr << "TrrLoader::reinit: cannot open file at step1 " << filename << std::endl;
     return false;
   }
   read_trr_natoms (tmpname, &natoms);
@@ -166,7 +166,7 @@ reinit (const char * filename)
     xdrfile_close (xd);
     xd = xdrfile_open (filename, "r");  
     if (xd == NULL){
-      std::cerr << "cannot open file " << filename << std::endl;
+      std::cerr << "TrrLoader::reinit: cannot open file at step2 " << filename << std::endl;
       clear ();
       return false;
     }

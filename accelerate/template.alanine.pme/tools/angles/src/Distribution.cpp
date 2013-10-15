@@ -160,7 +160,7 @@ print_xv (const string & filename) const
 {
   FILE * fp = fopen (filename.c_str(), "w");
   if (fp == NULL){
-    std::cerr << "cannot open file " << std::endl;
+    std::cerr << "Distribution_1d::print_xv: cannot open file " << std::endl;
     return;
   }
   print_xv (fp);
@@ -172,7 +172,7 @@ print_x (const string & filename) const
 {
   FILE * fp = fopen (filename.c_str(), "w");
   if (fp == NULL){
-    std::cerr << "cannot open file " << std::endl;
+    std::cerr << "Distribution_1d::print_x: cannot open file " << std::endl;
     return;
   }
   print_x (fp);
