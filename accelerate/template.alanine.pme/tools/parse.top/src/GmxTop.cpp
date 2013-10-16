@@ -240,17 +240,19 @@ print (FILE * fp) const
 {
   fprintf (fp, "%d\t%d\t%d\t%d\t%d", ii, jj, kk, ll, funct);
   if (funct == 1 || funct == 4 || funct == 9){
-    for (unsigned ii = 0; ii < params.size() - 1; ++ii){
-      fprintf (fp, "\t%.10e", params[ii]);
+    if (params.size() != 0){
+      for (int myii = 0; myii < int(params.size()) - 1; ++myii){
+	fprintf (fp, "\t%.10e", params[myii]);
+      }
+      fprintf (fp, "\t%d", int(params.back() + 0.5));
     }
-    fprintf (fp, "\t%d", int(params.back() + 0.5));
   }
   else{
-    for (unsigned ii = 0; ii < params.size(); ++ii){
-      fprintf (fp, "\t%.10e", params[ii]);
+    for (int myii = 0; myii < int(params.size()); ++myii){
+      fprintf (fp, "\t%.10e", params[myii]);
     }
-    fprintf (fp, "\n");
   }
+  fprintf (fp, "\n");
 }
 
 GmxTop::gmx_cmap_item::
