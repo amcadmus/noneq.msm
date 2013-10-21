@@ -54,6 +54,8 @@ function set_parameters_pert () {
     pert_warm_time_r=`echo "$pert_warm_time / $pert_rescale" | bc -l`
     pert_epsilon_r=`echo "1. / $pert_rescale" | bc -l`
     pert_taut_r=`echo "$pert_taut / $pert_rescale" | bc -l`
+    pert_seed=`date +%s`
+    pert_seed=`echo "$pert_seed + $pert_num_conf_use * $pert_parallel_my_id" | bc`
     sed -e "/^dt/s/=.*/= $pert_dt/g" $file |\
     sed -e "/^integrator/s/=.*/= $pert_integrator/g" |\
     sed -e "/^Tcoupl /s/=.*/= no/g" |\
@@ -84,7 +86,7 @@ function set_parameters_pert () {
     sed -e "/^fourierspacing /s/=.*/= $pert_fourierspacing/g" |\
     sed -e "/^pme_order /s/=.*/= $pert_pme_order/g" |\
     sed -e "/^E-x /s/=.*/= 1 $pert_strength_r 0.0/g" |\
-    sed -e "/^ld-seed/s/=.*/= `date +%s`/g" |\
+    sed -e "/^ld-seed/s/=.*/= $pert_seed/g" |\
     sed -e "/^gen_vel /s/=.*/= no/g" |\
     sed -e "/^gen-vel /s/=.*/= no/g" |\
     sed -e "/^nstxtcout/s/=.*/= $pert_xtcout_feq/g" > tmptmptmp.mdp
