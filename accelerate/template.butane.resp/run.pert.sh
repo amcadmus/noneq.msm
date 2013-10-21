@@ -5,13 +5,13 @@ source parameters.sh
 source functions.sh
 
 make -C tools/angles/ makedir
-make -C tools/angles/ clean
+# make -C tools/angles/ clean
 make -C tools/angles/ -j8
 make -C tools/parse.top/ makedir
-make -C tools/parse.top/ clean
+# make -C tools/parse.top/ clean
 make -C tools/parse.top/ -j8
 make -C tools/potential/ makedir
-make -C tools/potential/ clean
+# make -C tools/potential/ clean
 make -C tools/potential/ -j8
 
 cwd=`pwd`
