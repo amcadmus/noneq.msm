@@ -111,6 +111,8 @@ int main(int argc, char * argv[])
   vector<float > times;
   vector<double > counts;
   vector<double > dcounts;
+  vector<double > counts2;
+  vector<double > dcounts2;
   unsigned countFile = 0;
 
   while (fpname.getline(nameline, MaxLineLength)&&
@@ -144,10 +146,14 @@ int main(int argc, char * argv[])
 	if (angle < -180 + tol || angle > 180 - tol) {
 	  counts.push_back (1.);
 	  dcounts.push_back (1. * ds * gxs);
+	  counts2.push_back (1.);
+	  dcounts2.push_back (1. * ds * gxs * ds * gxs);
 	}
 	else {
 	  counts.push_back (0.);
 	  dcounts.push_back (0. * ds * gxs);
+	  counts2.push_back (0.);
+	  dcounts2.push_back (0. * ds * gxs);
 	}
       }
     }
@@ -165,6 +171,8 @@ int main(int argc, char * argv[])
 	if (angle < -180 + tol || angle > 180 - tol) {
 	  counts[countFrame] += (1.);
 	  dcounts[countFrame] += (1.) * ds * gxs;
+	  counts2[countFrame] += (1.);
+	  dcounts2[countFrame] += (1.) * ds * gxs * ds * gxs;
 	}
 	countFrame ++;
       }
@@ -176,12 +184,27 @@ int main(int argc, char * argv[])
   FILE * fp = fopen (ofile.c_str(), "w");
   fprintf (fp, "# print the result of ds: %f\n", ds);
   for (unsigned ii = 0; ii < times.size(); ++ii){
-    fprintf (fp, "%f   %f %f %f\n",
+    counts[ii] /= double(countFile);
+    dcounts[ii] /= double(countFile);
+    counts2[ii] /= double(countFile);
+    counts2[ii] = sqrt((counts2[ii] - counts[ii] * counts[ii]) / double(countFile));
+    dcounts2[ii] /= double(countFile);
+    dcounts2[ii] = sqrt((dcounts2[ii] - dcounts[ii] * dcounts[ii]) / double(countFile));
+    fprintf (fp, "%f   %f %f   %f %f   %f %f\n",
 	     times[ii],
-	     (counts[ii] + dcounts[ii]) / double(countFile),
-	     counts[ii] / double(countFile),
-	     dcounts[ii] / double(countFile)
+	     (counts[ii] + dcounts[ii]),
+	     (counts2[ii] + dcounts2[ii]),
+	     counts[ii],
+	     counts2[ii],
+	     dcounts[ii],
+	     dcounts2[ii]
 	     );
+    // fprintf (fp, "%f   %f %f %f\n",
+    // 	     times[ii],
+    // 	     (counts[ii] + dcounts[ii]) / double(countFile),
+    // 	     counts[ii] / double(countFile),
+    // 	     dcounts[ii] / double(countFile)
+    // 	     );
   }
   fclose (fp);
   
