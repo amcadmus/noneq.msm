@@ -94,8 +94,8 @@ int main(int argc, char * argv[])
       ("tol,t", po::value<double > (&tol)->default_value (30.), "the default value of tolrence of trans")
       ("ds,s", po::value<double > (&ds)->default_value (1.), "value of ds")
       ("corr-lag-time,c", po::value<double > (&lagTime)->default_value (1.), "the lag time of corrlation")
-      ("output,o", po::value<std::string > (&ofile)->default_value ("prob.out"), "the output of probability distribution of the trans conformation")
-      ("output-flux", po::value<std::string > (&ofluxfile)->default_value ("prob.flux.out"), "the output of probability flux of the trans conformation")
+      ("output,o", po::value<std::string > (&ofile)->default_value ("prob.resp.out"), "the output of probability distribution of the trans conformation")
+      ("output-flux", po::value<std::string > (&ofluxfile)->default_value ("prob.flux.resp.out"), "the output of probability flux of the trans conformation")
       ("input-dir,d",  po::value<std::string > (&idfile)->default_value ("success.dir.name"), "the file of successful dirs")
       ("input-file,f",  po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "the file name")
       ("input-gxs",  po::value<std::string > (&igxsfile)->default_value ("gxs.out"), "the gxs file name");
@@ -236,13 +236,15 @@ int main(int argc, char * argv[])
 
   for (unsigned ii = 0; ii < times.size(); ++ii){
     for (unsigned dd = 0; dd < 2; ++dd){
-      counts[ii][dd] = counts[ii][dd] / double(countFile);
+      counts[ii][dd] /= double(countFile);
+      dcounts[ii][dd] /= double(countFile);
     }
   }
   for (unsigned ii = nLagTime - 1; ii < times.size(); ++ii){
     for (unsigned dd = 0; dd < 2; ++dd){
       for (unsigned mm = 0; mm < 2; ++mm){
 	corrsBw[ii][dd][mm] /= double(countFile);
+	dcorrsBw[ii][dd][mm] /= double(countFile);
       }
     }
   }
