@@ -86,17 +86,19 @@ static void calCorr (const vector<double> & counts0,
 int main(int argc, char * argv[])
 {
   std::string idfile, iffile, igxsfile, ofile, ofluxfile;
-  double tol, lagTime;
+  double tol, ds, lagTime;
 
   po::options_description desc ("Allow options");
   desc.add_options()
       ("help,h", "print this message")
       ("tol,t", po::value<double > (&tol)->default_value (30.), "the default value of tolrence of trans")
+      ("ds,s", po::value<double > (&ds)->default_value (1.), "value of ds")
       ("corr-lag-time,c", po::value<double > (&lagTime)->default_value (10.), "the lag time of corrlation")
       ("output,o", po::value<std::string > (&ofile)->default_value ("prob.out"), "the output of probability distribution of the trans conformation")
       ("output-flux", po::value<std::string > (&ofluxfile)->default_value ("prob.flux.out"), "the output of probability flux of the trans conformation")
       ("input-dir,d",  po::value<std::string > (&idfile)->default_value ("success.dir.name"), "the file of successful dirs")
-      ("input-file,f",  po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "the file name");
+      ("input-file,f",  po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "the file name")
+      ("input-gxs",  po::value<std::string > (&igxsfile)->default_value ("gxs.out"), "the gxs file name");
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -112,20 +114,25 @@ int main(int argc, char * argv[])
     return 1;
   }
   char nameline [MaxLineLength];
-  float time;
+  float time, time2;
   double dt;
   int nLagTime;
   ValueType angle;
+  ValueType gxs;
   vector<float > times;
   vector<vector<double > > counts;
+  vector<vector<double > > dcounts;
   vector<vector<vector<double > > > corrsBw;
+  vector<vector<vector<double > > > dcorrsBw;
   unsigned countFile = 0;
 
   while (fpname.getline(nameline, MaxLineLength)){
     if (nameline[0] == '#') continue;
     if (nameline[0] == '@') continue;
     char nameline1 [MaxLineLength];
+    char nameline2 [MaxLineLength];
     sprintf (nameline1, "%s/%s", nameline, iffile.c_str());
+    sprintf (nameline2, "%s/%s", nameline, igxsfile.c_str());
     FILE *fp = fopen (nameline1, "r");
     cout << "reading file " << nameline1 << endl;
     if (fp == NULL){
@@ -141,8 +148,14 @@ int main(int argc, char * argv[])
     Traj traj (nLagTime);
     fclose (fp);
     fp = fopen (nameline1, "r");
+    FILE *fp2 = fopen (nameline2, "r");
     if (fp == NULL){
       std::cerr << "cannot open file online " << nameline1 << std::endl;
+      std::cerr << std::endl;
+      return 1;
+    }
+    if (fp2 == NULL){
+      std::cerr << "cannot open file online " << nameline2 << std::endl;
       std::cerr << std::endl;
       return 1;
     }
@@ -153,6 +166,11 @@ int main(int argc, char * argv[])
       vector<double > tmpcount (2, 0.0);
       vector<vector<double > > tmpcorr (2, tmpcount);
       while (myread(fp, time, angle)){
+	bool success = myread(fp2, time2, gxs);
+	if (!success || fabs(time - time2) > 0.001) {
+	  cerr << "inconsistent gxs and angle files" << endl;
+	  return 1;
+	}
 	times.push_back (time);
 	depositMetastable (angle, tol, tmpcount);
 	counts.push_back (tmpcount);
@@ -161,6 +179,16 @@ int main(int argc, char * argv[])
 	  calCorr (traj.front(), traj.back(), tmpcorr);
 	}	
 	corrsBw.push_back (tmpcorr);
+	for (unsigned dd = 0; dd < tmpcount.size(); ++dd){
+	  tmpcount[dd] *= ds * gxs;
+	}
+	for (unsigned dd = 0; dd < tmpcorr.size(); ++dd){
+	  for (unsigned mm = 0; mm < tmpcorr[dd].size(); ++mm){
+	    tmpcorr[dd][mm] *= ds * gxs;
+	  }
+	}
+	dcounts.push_back (tmpcount);
+	dcorrsBw.push_back (tmpcorr);    
       }
     }
     else {
@@ -176,9 +204,15 @@ int main(int argc, char * argv[])
 	  cerr << "inconsistent time " << endl;
 	  return 1;
 	}
+	bool success = myread(fp2, time2, gxs);
+	if (!success || fabs(time - time2) > 0.001) {
+	  cerr << "inconsistent gxs and angle files" << endl;
+	  return 1;
+	}	
 	depositMetastable (angle, tol, tmpcount);
 	for (unsigned dd = 0; dd < tmpcount.size(); ++dd){
 	  counts[countFrame][dd] += tmpcount[dd];
+	  dcounts[countFrame][dd] += tmpcount[dd] * ds * gxs;
 	}
 	traj.push_back (tmpcount);
 	if (traj.full ()){
@@ -187,6 +221,7 @@ int main(int argc, char * argv[])
 	for (unsigned dd = 0; dd < tmpcorr.size(); ++dd){
 	  for (unsigned mm = 0; mm < tmpcorr[dd].size(); ++mm){
 	    corrsBw[countFrame][dd][mm] += tmpcorr[dd][mm];
+	    dcorrsBw[countFrame][dd][mm] += tmpcorr[dd][mm] * ds * gxs;
 	  }
 	}
 	countFrame ++;
@@ -199,10 +234,25 @@ int main(int argc, char * argv[])
   FILE * fp3 = fopen (ofluxfile.c_str(), "w");
 
   for (unsigned ii = 0; ii < times.size(); ++ii){
-    fprintf (fp, "%f ", times[ii]);
     for (unsigned dd = 0; dd < 2; ++dd){
       counts[ii][dd] = counts[ii][dd] / double(countFile);
-      fprintf (fp, "%f ", counts[ii][dd]);
+    }
+  }
+  for (unsigned ii = nLagTime - 1; ii < times.size(); ++ii){
+    for (unsigned dd = 0; dd < 2; ++dd){
+      for (unsigned mm = 0; mm < 2; ++mm){
+	corrsBw[ii][dd][mm] /= double(countFile);
+      }
+    }
+  }
+
+  for (unsigned ii = 0; ii < times.size(); ++ii){
+    fprintf (fp, "%f ", times[ii]);
+    for (unsigned dd = 0; dd < 2; ++dd){
+      fprintf (fp, "%f %f  ",
+	       counts[ii][dd],
+	       dcounts[ii][dd]
+	  );
     }
     fprintf (fp, "\n");
   }
@@ -215,7 +265,10 @@ int main(int argc, char * argv[])
     fprintf (fp3, "%f ", times[ii]);
     for (unsigned dd = 0; dd < 2; ++dd){
       for (unsigned mm = 0; mm < 2; ++mm){
-	fprintf (fp3, "%f ", (corrsBw[ii][dd][mm] - corrsBw[ii][mm][dd]) / double (countFile) / lagTime);
+	fprintf (fp3, "%f %f  ",
+		 (corrsBw[ii][dd][mm] - corrsBw[ii][mm][dd]) / lagTime,
+		 (dcorrsBw[ii][dd][mm] - dcorrsBw[ii][mm][dd]) / lagTime
+	    );
       }
       fprintf (fp3, "  ");
     }
