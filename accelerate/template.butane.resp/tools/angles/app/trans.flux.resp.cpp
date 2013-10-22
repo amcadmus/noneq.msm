@@ -134,7 +134,9 @@ int main(int argc, char * argv[])
     sprintf (nameline1, "%s/%s", nameline, iffile.c_str());
     sprintf (nameline2, "%s/%s", nameline, igxsfile.c_str());
     FILE *fp = fopen (nameline1, "r");
-    cout << "reading file " << nameline1 << endl;
+    if (countFile % 100 == 0){
+      cout << "reading file " << nameline1 << endl;
+    }
     if (fp == NULL){
       std::cerr << "cannot open file " << nameline1 << std::endl;
       return 1;
