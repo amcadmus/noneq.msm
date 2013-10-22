@@ -17,6 +17,13 @@
 \newcommand{\vect}[1]{\textbf{\textit{#1}}}
 \newcommand{\dd}{\textsf{d}}
 \newcommand{\inv}{\textrm{inv}}
+\newcommand{\hard}{\textrm{h}}
+\newcommand{\soft}{\textrm{s}}
+\newcommand{\vdw}{\textrm{vdw}}
+\newcommand{\ele}{\textrm{ele}}
+\newcommand{\dir}{\textrm{dir}}
+\newcommand{\rec}{\textrm{rec}}
+\newcommand{\corr}{\textrm{corr}}
 
 \newcommand{\mh}{\mathcal H}
 \newcommand{\eps}{\varepsilon}
@@ -224,15 +231,286 @@ the accelerated LJ potential (denoted by $\hat u(r)$) can be given by
   \hat u(r) = \alpha s(r) u(r) + (1 - s(r)) u(r)
 \end{align}
 where $u(r)$ is the original LJ potential. It is clear that
- $\hat u(0) = u(0)$, and $\hat u(\infty) = \alpha u(\infty)$.
+$\hat u(0) = u(0)$, and $\hat u(\infty) = \alpha u(\infty)$.
 
 
 
+\section{The slow and fast part of the CHARMM force field}
+
+In this study, we are using the following CHARMM27 force field~\cite{mackerell2004extending}, which can be described:
+\begin{align}\nonumber
+  U(\vect R) = &
+  \sum_{\textrm{bonds}} K_b(b-b_0)^2\\\nonumber
+  &
+  +\sum_{\textrm{angles}} K_\theta (\theta - \theta_0)^2
+  +\sum_{\textrm{Urey-Bradley}} K_{\textrm{UB}} (S - S_0)^2\\\nonumber
+  &
+  +\sum_{\textrm{dihedrals}} K_\phi( 1+\cos(n\phi - \delta)) 
+  +\sum_{\textrm{impropers}} K_\omega (\omega - \omega_0)^2\\ \nonumber
+  &
+  +\sum_{\textrm{residues}} U_{\textrm{CMAP}}(\phi, \psi) \\\label{eqn:tmp13}
+  &
+  +\sum_{\textrm{non-bonded}}
+  \big[\,U_{\vdw}(r_{ij}) + U_{\ele}(r_{ij})\,\big]
+  % \Bigg\{
+  % \eps_{ij}
+  % \bigg[\bigg(\frac{R_{ij}}{r_{ij}}\bigg)^{12}
+  % - 2\bigg(\frac{R_{ij}}{r_{ij}}\bigg)^{6}
+  % \bigg]
+  % + \frac{q_iq_j}{4\pi\eps_0\eps r_{ij}}
+  % \Bigg\}
+\end{align}
+The terms include bond ($b$), angle ($\theta$), Urey-Bradley ($S$),
+dihedral angle ($\phi$), improper angle ($\omega$), backbone torsional
+correction (CMAP) and non-bonded van der Waals and electrostatic
+interactions.  The van der Waals interaction is written by
+\begin{align}
+  U_{\vdw}(r_{ij}) = 
+  \eps_{ij}
+  \bigg[\bigg(\frac{R_{ij}}{r_{ij}}\bigg)^{12}
+  - 2\bigg(\frac{R_{ij}}{r_{ij}}\bigg)^{6}
+  \bigg]
+\end{align}
+The electrostatic interaction is
+\begin{align}
+  U_{\ele}(r_{ij}) = \frac{q_iq_j}{4\pi\eps_0\eps r_{ij}}
+\end{align}
+We treat the electrostatic interaction by the Particle Mesh Ewald (PME)
+method~\cite{darden1993pme, essmann1995spm}, which split the electrostatic interaction into three parts,
+namely the direct, the reciprocal and the correction parts.
+\begin{align}
+  U_{\ele}(r_{ij}) =
+  U_{\dir}(r_{ij}) +
+  U_{\rec}(r_{ij}) + U_{\corr},
+\end{align}
+where
+\begin {align}
+  U_{\dir} (r_{ij})& = \frac12 
+  \frac{q_iq_j \textrm{erfc}(\beta {r}_{ij})}
+  {{r}_{ij} } \\
+  U_{\rec} (r_{ij})& = \frac1{2\pi V} \sum_{\vect m \neq 0}
+  \frac{\exp(-\pi^2 m^2 / \beta^2)}{m^2}
+   q_iq_j e^ {2 \pi i m \cdot r_{ij}}\\
+  U_{\corr}& = -\frac\beta{\sqrt \pi} q_iq_j \delta_{ij}
+\end {align}
+The correction part is a constant term with respect to the position of
+the atoms, so it is not calculated during
+the force calculation.\\
+
+\noindent
+Among all the components of the CHARMM force field, the bond
+interaction is treated as fast interaction. The angle, Urey-Bradley,
+dihedral angle, improper angle, backbone torsional correction and the
+reciprocal part of the electrostatic interaction are treated as slow
+interactions. The van der Waals interaction has a hard core,
+so it is split into soft and hard contributions in the following way:
+\begin{align}
+  U_{\vdw} (r) &= U^\hard_{\vdw}(r) + U^\soft_{\vdw}(r)
+\end{align}
+and
+\begin{align}
+  U^\hard_{\vdw}(r) & =  [\, 1-w_\vdw - (1 - w_\vdw) s_\vdw(r) \,] \,U_{\vdw}(r)\\
+  U^\soft_{\vdw}(r) & =  [\, w_\vdw + (1 - w_\vdw) s_\vdw(r) \,] \,U_{\vdw}(r)
+\end{align}
+where $w_\vdw$ is a positive parameter between 0 and 1, and
+$s_\vdw(r)$ is a function smoothly switches from 0 to 1:
+\begin{align}
+  s_\vdw(r) =
+  \left\{
+    \begin{aligned}
+      &\frac12 - \frac12 \cos \Big(\frac{r}{r^\hard_\vdw} \pi\Big) &\quad & r < r^\hard_\vdw\\
+      &1 & \quad & r \geq r^\hard_\vdw
+    \end{aligned}
+  \right.
+\end{align}
+The soft part of the van der Waals $U^\soft_{\vdw}(r)$ switches
+smoothly from $w\,U_{\vdw}(r)$ to $U_{\vdw}(r)$ in the range
+$[0, r^\hard_\vdw]$. Here $[0, r^\hard_\vdw]$ is the range where the the van der Waals is
+treated as hard interaction, and therefore has to been reduced. The
+direct part of the electrostatic interaction is split in the same way:
+\begin{align}
+  U_{\dir} (r) &= U^\hard_{\dir}(r) + U^\soft_{\dir}(r)
+\end{align}
+and
+\begin{align}
+  U^\hard_{\dir}(r) & =  [\, 1-w_\dir - (1 - w_\dir) s(r) \,] \,U_{\dir}(r)\\
+  U^\soft_{\dir}(r) & =  [\, w_\dir + (1 - w_\dir) s(r) \,] \,U_{\dir}(r)
+\end{align}
+where $w_\dir$ is a positive parameter between 0 and 1 that
+has the similar meaning as $w_\vdw$. \\
+
+\noindent
+In summary, the CHARMM force field is split in the following way:
+\begin{align}
+  U(\vect R) = U^\hard(\vect R) + U^\soft(\vect R)
+\end{align}
+where
+\begin{align}
+  U^\hard(\vect R) &=
+  \sum_{\textrm{bonds}} K_b(b-b_0)^2 +
+  \sum_{\textrm{non-bonded}} [\,U_{\vdw}^\hard (r_{ij}) + U_{\dir}^\hard (r_{ij})\,] \\\nonumber
+  U^\soft(\vect R) &=
+  +\sum_{\textrm{angles}} K_\theta (\theta - \theta_0)^2
+  +\sum_{\textrm{Urey-Bradley}} K_{\textrm{UB}} (S - S_0)^2\\\nonumber
+  &
+  +\sum_{\textrm{dihedrals}} K_\phi( 1+\cos(n\phi - \delta)) 
+  +\sum_{\textrm{impropers}} K_\omega (\omega - \omega_0)^2\\ \nonumber
+  &
+  +\sum_{\textrm{residues}} U_{\textrm{CMAP}}(\phi, \psi) \\
+  &
+  +\sum_{\textrm{non-bonded}}
+  \big[\,U^\soft_{\vdw}(r_{ij})
+  + U^\soft_{\dir}(r_{ij})
+  + U_{\rec}(r_{ij})\,\big]  
+\end{align}
+Therefore, the interaction for the accelerated system is
+\begin{align}
+  \hat U(\vect R) = U^\hard(\vect R) + \alpha\,U^\soft(\vect R)  
+\end{align}
+
+
+\section{Numerical results}
+\noindent
+We study the alanine dipeptide under an oscillatory EF for example.
+This example is exactly the same as the period $T=40$~ps case in the previous
+manuscript~\cite{wang2013exploring}. The only difference is that we use
+flexible bonds instead of rigid bonds in the simulations, and the corresponding
+time-step is now 0.5~fs. The split parameter $\beta$ in the PME method is optimzied by
+the method mentioned in Ref.~\cite{wang2010optimizing}\\
+
+\begin{table}
+  \centering
+  \begin{tabular*}{0.48\textwidth}{@{\extracolsep{\fill}}lcccc}
+    \hline\hline
+    $\alpha$ & $w_\vdw$ & $r^\hard_\vdw$ [nm] & $w_\dir$ & $r^\hard_\vdw$ [nm] \\\hline
+    2           & 1.00     & 0.0   & 1.00    & 0.0\\
+    5           & 1.00     & 0.0   & 0.80    & 0.2\\
+    6           & 1.00     & 0.0   & 0.67    & 0.2\\
+    \hline\hline
+  \end{tabular*}
+  \caption{The systems tested and the parameters to split the slow and fast parts of the force.}
+  \label{tab:tmp1}
+\end{table}
+
+
+\noindent
+Till now we have tested the following three systems listed in
+Tab.~\ref{tab:tmp1}. The probabilities of different conformations as a
+function of time are plotted in Fig.~\ref{fig:tmp1}--\ref{fig:tmp3}.
+We can see that when $\alpha = 2$, the result is consistent with the
+reference simulation (no speed boosting, i.e.~$\alpha = 1$). For
+bigger $\alpha = 5$ and 6, the small time scale oscillating (20~ps
+that is roughly the same as half of the period of the EF) of
+conformations $A_1$, $A_2$, $B_1$ and $B_2$ is not well captured by
+the speed boosting algorithm. Moreover, the probability of $B_1$ is
+overestimated, while the probability of $B_2$ is underestimated (see
+the blue and purple lines in Fig.~\ref{fig:tmp2} and \ref{fig:tmp3}).
+We plot the time dependent probability density of $\alpha$-helix
+($A_1+A_2$) and $\beta$-sheet ($B_1+B_2$) conformations, on the right
+plots of Fig.~\ref{fig:tmp2} and \ref{fig:tmp3}. We can see that for
+$\alpha=5$, the result consistent with the reference simulation very
+well, while for $\alpha=6$ the precision is slightly lower, but is
+still qualitatively correct.  That means that the fine-scaled
+oscillating of conformation and the probability exchange between the
+two sub-conformations of the $\beta$-sheet are statistically relevant
+to the hard forces that are modified during the speed boosting
+simulation, while the conformation changes between the $\alpha$-helix
+$\beta$-sheet and left-handed $\alpha$-helix ($C$)  are not correlated
+with the hard forces.
+
+
+\begin{figure}
+  \centering
+  \includegraphics[]{figs/fig-meta02.eps}
+  \caption{$\alpha = 2$, the probability of different conformations as
+    a function of time.  Red: $A_1$, green: $A_2$, blue: $B_1$,
+    purple: $B_2$, cyan: $C$.  The lighter colors denote the reference
+    exact dynamics of the conformations ($\alpha = 1$), while the
+    darker colors denote $\alpha = 2$.}
+  \label{fig:tmp1}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[]{figs/fig-meta04.eps}
+  \includegraphics[]{figs/fig-meta04-1.eps}
+  \caption{$\alpha = 4$, the probability of different conformations as a function of time.
+    In the left plot: Red: $A_1$, green: $A_2$, blue: $B_1$, purple: $B_2$, cyan: $C$.
+    In the right plot: Red: $A_1+A_2$, blue: $B_1+B_2$, cyan: $C$.
+    The lighter colors denote the reference exact dynamics of the conformations ($\alpha = 1$), while the darker colors denote $\alpha = 4$.}
+  \label{fig:tmp2}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[]{figs/fig-meta05.eps}
+  \includegraphics[]{figs/fig-meta05-1.eps}
+  \caption{$\alpha = 5$, the probability of different conformations as a function of time.
+    In the left plot: Red: $A_1$, green: $A_2$, blue: $B_1$, purple: $B_2$, cyan: $C$.
+    In the right plot: Red: $A_1+A_2$, blue: $B_1+B_2$, cyan: $C$.
+    The lighter colors denote the reference exact dynamics of the conformations ($\alpha = 1$), while the darker colors denote $\alpha = 5$.}
+  \label{fig:tmp2}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[]{figs/fig-meta08.eps}
+  \includegraphics[]{figs/fig-meta08-1.eps}
+  \caption{$\alpha = 6$, the probability of different conformations as a function of time.
+    In the left plot: Red: $A_1$, green: $A_2$, blue: $B_1$, purple: $B_2$, cyan: $C$.
+    In the right plot: Red: $A_1+A_2$, blue: $B_1+B_2$, cyan: $C$.
+    The lighter colors denote the reference exact dynamics of the conformations ($\alpha = 1$), while the darker colors denote $\alpha = 6$.}
+  \label{fig:tmp3}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-02-1.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-02-2.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-02-3.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-02-4.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-02-5.eps}\\
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-1.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-2.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-3.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-4.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-5.eps}\\
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-1.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-2.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-3.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-4.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-5.eps}\\
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-1.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-2.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-3.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-4.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-5.eps}\\
+  \caption{The integrated probability fluxes. $\alpha = 2,4,5,8$.}
+  \label{fig:tmp3}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-1-1.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-1-2.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-1-3.eps}\\
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-1-1.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-1-2.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-1-3.eps}\\
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-1-1.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-1-2.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-1-3.eps}
+  \caption{The integrated probability fluxes. $\alpha = 4,5,8$.}
+  \label{fig:tmp3}
+\end{figure}
 
 
 
-
-
+\section*{References}
+\bibliography{ref}{}
+\bibliographystyle{unsrt}
 
 
 
