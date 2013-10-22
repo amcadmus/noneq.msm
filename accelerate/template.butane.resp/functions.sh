@@ -55,7 +55,7 @@ function set_parameters_pert () {
     pert_epsilon_r=`echo "1. / $pert_rescale" | bc -l`
     pert_taut_r=`echo "$pert_taut / $pert_rescale" | bc -l`
     pert_seed=`date +%s`
-    pert_seed=`echo "$pert_seed + $pert_num_conf_use * $pert_parallel_my_id" | bc`
+    pert_seed=`echo "$pert_seed + $pert_num_conf_use * 10 * $pert_parallel_my_id" | bc`
     sed -e "/^dt/s/=.*/= $pert_dt/g" $file |\
     sed -e "/^integrator/s/=.*/= $pert_integrator/g" |\
     sed -e "/^Tcoupl /s/=.*/= no/g" |\
