@@ -228,6 +228,7 @@ int main(int argc, char * argv[])
       }
     }
     fclose (fp);
+    fclose (fp2);
   }
 
   FILE * fp = fopen (ofile.c_str(), "w");
