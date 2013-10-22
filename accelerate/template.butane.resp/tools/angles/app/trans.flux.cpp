@@ -24,12 +24,11 @@ using namespace std;
 
 #define MaxLineLength 2048
 
-bool myread (FILE * fp,
-	     float & time,
-	     ValueType & angle)
+static bool myread (FILE * fp,
+		    float & time,
+		    ValueType & angle)
 {
   char line [MaxLineLength];
-  
   while (1){
     char* rv = fgets (line, MaxLineLength, fp);
     if (rv == NULL) return false;
@@ -51,9 +50,9 @@ bool myread (FILE * fp,
   return true;
 }
 
-void depositMetastable (const double & angle,
-			const double & tol,
-			vector<double > & counts)
+static void depositMetastable (const double & angle,
+			       const double & tol,
+			       vector<double > & counts)
 {
   counts.resize (2, 0.);
   if (angle < -180 + tol || angle > 180 - tol) {
@@ -66,9 +65,9 @@ void depositMetastable (const double & angle,
   }
 }
 
-void calCorr (const vector<double> & counts0,
-	      const vector<double> & counts1,
-	      vector<vector<double > > & countCorr)
+static void calCorr (const vector<double> & counts0,
+		     const vector<double> & counts1,
+		     vector<vector<double > > & countCorr)
 {
   countCorr.resize (counts0.size());
   for (unsigned ii = 0; ii < countCorr.size(); ++ii){
@@ -121,7 +120,6 @@ int main(int argc, char * argv[])
   vector<vector<double > > counts;
   vector<vector<vector<double > > > corrsBw;
   unsigned countFile = 0;
-  unsigned countData = 0;
 
   while (fpname.getline(nameline, MaxLineLength)){
     if (nameline[0] == '#') continue;
@@ -142,7 +140,7 @@ int main(int argc, char * argv[])
     if (nLagTime == 1) nLagTime ++;
     Traj traj (nLagTime);
     fclose (fp);
-    fp = fopen (nameline, "r");
+    fp = fopen (nameline1, "r");
     if (fp == NULL){
       std::cerr << "cannot open file online " << nameline << std::endl;
       std::cerr << std::endl;
@@ -161,7 +159,6 @@ int main(int argc, char * argv[])
 	traj.push_back (tmpcount);
 	if (traj.full ()){
 	  calCorr (traj.front(), traj.back(), tmpcorr);
-	  countData ++;
 	}	
 	corrsBw.push_back (tmpcorr);
       }
@@ -186,7 +183,6 @@ int main(int argc, char * argv[])
 	traj.push_back (tmpcount);
 	if (traj.full ()){
 	  calCorr (traj.front(), traj.back(), tmpcorr);
-	  countData ++;
 	}	
 	for (unsigned dd = 0; dd < tmpcorr.size(); ++dd){
 	  for (unsigned mm = 0; mm < tmpcorr[dd].size(); ++mm){

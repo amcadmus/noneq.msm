@@ -20,10 +20,10 @@ namespace po = boost::program_options;
 using namespace std;
 #define MaxLineLength 2048
 
-bool myread (FILE * fp,
-	     float & time,
-	     ValueType & phi,
-	     ValueType & psi)
+static bool myread (FILE * fp,
+		    float & time,
+		    ValueType & phi,
+		    ValueType & psi)
 {
   size_t rv;
   rv = fread (&time, sizeof(float), 1, fp);
@@ -44,10 +44,10 @@ bool myread (FILE * fp,
   return true;
 }
 
-void depositMetastable (const double & phi,
-			const double & psi,
-			const vector<MetastableSet> & sets,
-			vector<double > & counts)
+static void depositMetastable (const double & phi,
+			       const double & psi,
+			       const vector<MetastableSet> & sets,
+			       vector<double > & counts)
 {
   int cc = 0;
   counts.resize (sets.size());
@@ -69,9 +69,9 @@ void depositMetastable (const double & phi,
   }
 }
 
-void calCorr (const vector<double> & counts0,
-	      const vector<double> & counts1,
-	      vector<vector<double > > & countCorr)
+static void calCorr (const vector<double> & counts0,
+		     const vector<double> & counts1,
+		     vector<vector<double > > & countCorr)
 {
   countCorr.resize (counts0.size());
   for (unsigned ii = 0; ii < countCorr.size(); ++ii){
