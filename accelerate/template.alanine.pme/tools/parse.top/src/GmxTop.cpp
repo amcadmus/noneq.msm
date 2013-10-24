@@ -838,4 +838,82 @@ convertType_2_1 (const gmx_sys_types	& old_types,
 }
 
 
+bool GmxTop::
+matchAtomType (const string & type,
+	       const gmx_sys_types & systypes,
+	       gmx_atomtypes_item & atomtype)
+{
+  for (unsigned ii = 0; ii < systypes.atomtypes.size(); ++ii){
+    if (systypes.atomtypes[ii].name == type){
+      atomtype = systypes.atomtypes[ii];
+      return true;
+    }
+  }
+  return false;
+}
+
+
+bool GmxTop::
+matchBondType (const string & iitype,
+	       const string & jjtype,
+	       const gmx_sys_types & systypes,
+	       gmx_bondtypes_item & bond_type)
+{
+  for (unsigned ii = 0; ii < systypes.bondtypes.size(); ++ii){
+    if ( (iitype == systypes.bondtypes[ii].name0 &&
+	  jjtype == systypes.bondtypes[ii].name1 ) ||
+	 (iitype == systypes.bondtypes[ii].name1 &&
+	  jjtype == systypes.bondtypes[ii].name0 ) ) {
+      bond_type = systypes.bondtypes[ii];
+      return true;
+    }
+  }
+  return false;
+}
+
+bool GmxTop::
+matchBond (const int & iiidx_,
+	   const int & jjidx_,
+	   const gmx_mol & mol,
+	   gmx_bonds_item & bond)
+{
+  int iiidx (iiidx_+1);
+  int jjidx (jjidx_+1);
+  
+  for (unsigned ii = 0; ii < mol.bonds.size(); ++ii){
+    if ( (iiidx == mol.bonds[ii].ii &&
+	  jjidx == mol.bonds[ii].jj )  ||
+	 (iiidx == mol.bonds[ii].jj &&
+	  jjidx == mol.bonds[ii].ii )  ){
+      bond = mol.bonds[ii];
+      return true;
+    }	  
+  }
+  return false;
+}
+
+
+
+
+bool GmxTop::
+matchAngleType (const string & iitype,
+		const string & jjtype,
+		const string & kktype,
+		const gmx_sys_types & systypes,
+		gmx_angletypes_item & angletype)
+{
+  for (unsigned ii = 0; ii < systypes.angletypes.size(); ++ii){
+    if (jjtype ==  systypes.angletypes[ii].name1){
+      if ( (iitype == systypes.angletypes[ii].name0 &&
+	    kktype == systypes.angletypes[ii].name2 ) ||
+	   (iitype == systypes.angletypes[ii].name2 &&
+	    kktype == systypes.angletypes[ii].name0 ) ) {
+	angletype = systypes.angletypes[ii];
+	return true;
+      }
+    }
+  }
+  return false;
+}
+
 

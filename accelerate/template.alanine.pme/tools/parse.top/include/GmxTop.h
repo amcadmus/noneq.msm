@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
-
+#include "GmxType.h"
 
 #define MAX_LINE_LENGTH 2048
 #define MAX_NAME_LENGTH 32
@@ -56,6 +56,8 @@ namespace GmxTop {
     int			funct;
     vector<double >	params;
     void		print (FILE * fp) const;
+    int			atom_idx_ii () const {return ii-1;}
+    int			atom_idx_jj () const {return jj-1;}
   }
       ;
 
@@ -67,6 +69,9 @@ namespace GmxTop {
     int			funct;
     vector<double >	params;
     void		print (FILE * fp) const;
+    int			atom_idx_ii () const {return ii-1;}
+    int			atom_idx_jj () const {return jj-1;}
+    int			atom_idx_kk () const {return kk-1;}
   }
       ;
 
@@ -124,6 +129,23 @@ namespace GmxTop {
 
   void parseTop (const string & fname,
 		 gmx_sys_top & top);
+
+  bool matchAtomType (const string & type,
+		      const gmx_sys_types & systypes,
+		      gmx_atomtypes_item & atomtype);
+  bool matchBond (const int & iitype,
+		  const int & jjtype,
+		  const gmx_mol & systypes,
+		  gmx_bonds_item & bond);
+  bool matchBondType (const string & iitype,
+		      const string & jjtype,
+		      const gmx_sys_types & systypes,
+		      gmx_bondtypes_item & bond_type);
+  bool matchAngleType (const string & iitype,
+		       const string & jjtype,
+		       const string & kktype,
+		       const gmx_sys_types & systypes,
+		       gmx_angletypes_item & angletype);
 };
 
 #endif
