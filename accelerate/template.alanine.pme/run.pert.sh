@@ -5,13 +5,13 @@ source parameters.sh
 source functions.sh
 
 make -C tools/angles/ makedir
-make -C tools/angles/ clean
+#make -C tools/angles/ clean
 make -C tools/angles/ -j8
 make -C tools/parse.top/ makedir
-make -C tools/parse.top/ clean
+#make -C tools/parse.top/ clean
 make -C tools/parse.top/ -j8
 make -C tools/potential/ makedir
-make -C tools/potential/ clean
+#make -C tools/potential/ clean
 make -C tools/potential/ -j8
 
 cwd=`pwd`
@@ -95,7 +95,7 @@ do
     if [ $tmpid -lt $pert_parallel_num_pro ]; then
 	cp -a ..//pert.$count ..//backup.pert.$count
     fi
-    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log table.xvg tablep.xvg
+    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log table.xvg tablep.xvg error.out grompp.mdp topol.top
     
     cd $cwd
     echo "$my_dir/angle.dat" >> angle.name
