@@ -72,7 +72,7 @@ int main (int argc, char **argv) {
 
   std::string ifile, ofile, opfile;
   double sbond, sangle, sdihedral, scmap;
-  double capTbond, capTangle;
+  double capTbond, capTangle; 
 
   po::options_description desc ("Allow options");
   desc.add_options()
