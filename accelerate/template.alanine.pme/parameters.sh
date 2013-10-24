@@ -25,9 +25,8 @@ pert_barostat=no		# Parrinello-Rahman or no
 pert_taup=2.0			# ps
 
 pert_rescale=1.0		# ps
-pert_bond_rescale=1.0		# 
-pert_angle_rescale=1.0		# 
-pert_angle_bond_rescale=1.0	# 
+pert_bond_T_cap=8.631997e-15	# s taken from water
+pert_angle_T_cap=6.955613e-15	# s taken from water
 pert_ele_rescale_scale0=1.0	# 
 pert_vdw_rescale_scale0=1.0	# 
 

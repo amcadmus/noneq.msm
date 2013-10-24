@@ -104,60 +104,6 @@ function set_parameters_pert () {
     mv -f tmptmptmp.mdp $file
 }
 
-function set_interaction () {
-    file=$1    
-    pert_rescale_sqrt=`echo "sqrt($pert_rescale)" | bc -l`
-    param_nb_ch2_c06_r=`echo "$param_nb_ch2_c06 * $pert_rescale" | bc -l`
-    param_nb_ch3_c06_r=`echo "$param_nb_ch3_c06 * $pert_rescale" | bc -l`
-    param_nb_ow_c06_r=`echo "$param_nb_ow_c06 * $pert_rescale" | bc -l`
-    param_nb_ch2_ow_c06_r=`echo "$param_nb_ch2_ow_c06 * $pert_rescale" | bc -l`
-    param_nb_ch3_ow_c06_r=`echo "$param_nb_ch3_ow_c06 * $pert_rescale" | bc -l`
-    param_nb_ch3_ch2_c06_r=`echo "$param_nb_ch3_ch2_c06 * $pert_rescale" | bc -l`
-    param_pair_ow_ow_c06_r=`echo "$param_pair_ow_ow_c06 * $pert_rescale" | bc -l`
-    param_pair_ch2_ch2_c06_r=`echo "$param_pair_ch2_ch2_c06 * $pert_rescale" | bc -l`
-    param_pair_ch3_ch3_c06_r=`echo "$param_pair_ch3_ch3_c06 * $pert_rescale" | bc -l`
-    param_pair_ch2_ow_c06_r=`echo "$param_pair_ch2_ow_c06 * $pert_rescale" | bc -l`
-    param_pair_ch3_ow_c06_r=`echo "$param_pair_ch3_ow_c06 * $pert_rescale" | bc -l`
-    param_pair_ch3_ch2_c06_r=`echo "$param_pair_ch3_ch2_c06 * $pert_rescale" | bc -l`
-    param_charge_ch2_r=`echo "$param_charge_ch2 * $pert_rescale_sqrt" | bc -l`
-    param_charge_ch3a_r=`echo "$param_charge_ch3a * $pert_rescale_sqrt" | bc -l`
-    param_charge_ch3b_r=`echo "$param_charge_ch3b * $pert_rescale_sqrt" | bc -l`
-    param_charge_ow_r=`echo "$param_charge_ow * $pert_rescale_sqrt" | bc -l`
-    param_charge_h_r=`echo "$param_charge_h * $pert_rescale_sqrt" | bc -l`
-    param_dihedral_c_c_c_c_k=`echo "$param_dihedral_c_c_c_c_k * $pert_rescale" | bc -l`
-    param_bond_c_c_k_r=`echo "$param_bond_c_c_k * $pert_bond_rescale" | bc -l`
-    param_bond_ow_h_k_r=`echo "$param_bond_ow_h_k * $pert_bond_rescale" | bc -l`
-    param_angle_h_ow_h_k_r=`echo "$param_angle_h_ow_h_k * $pert_angle_rescale" | bc -l`
-    param_angle_c_c_c_k_r=`echo "$param_angle_c_c_c_k * $pert_rescale" | bc -l`
-    
-    sed -e "/^param_angle_c_c_c_k/s/=.*/=$param_angle_c_c_c_k_r/g" $file |\
-    sed -e "/^param_angle_h_ow_h_k/s/=.*/=$param_angle_h_ow_h_k_r/g" |\
-    sed -e "/^param_bond_c_c_k/s/=.*/=$param_bond_c_c_k_r/g" |\
-    sed -e "/^param_bond_ow_h_k/s/=.*/=$param_bond_ow_h_k_r/g" |\
-    sed -e "/^param_dihedral_c_c_c_c_k/s/=.*/=$param_dihedral_c_c_c_c_k/g" > tmp.tmp.tmp
-
-    # sed -e "/^param_nb_ch2_c06/s/=.*/=$param_nb_ch2_c06_r/g" $file |\
-    # sed -e "/^param_nb_ch3_c06/s/=.*/=$param_nb_ch3_c06_r/g" |\
-    # sed -e "/^param_nb_ow_c06/s/=.*/=$param_nb_ow_c06_r/g" |\
-    # sed -e "/^param_nb_ch2_ow_c06/s/=.*/=$param_nb_ch2_ow_c06_r/g" |\
-    # sed -e "/^param_nb_ch3_ow_c06/s/=.*/=$param_nb_ch3_ow_c06_r/g" |\
-    # sed -e "/^param_nb_ch3_ch2_c06/s/=.*/=$param_nb_ch3_ch2_c06_r/g" |\
-    # sed -e "/^param_pair_ow_ow_c06/s/=.*/=$param_pair_ow_ow_c06_r/g" |\
-    # sed -e "/^param_pair_ch2_ch2_c06/s/=.*/=$param_pair_ch2_ch2_c06_r/g" |\
-    # sed -e "/^param_pair_ch3_ch3_c06/s/=.*/=$param_pair_ch3_ch3_c06_r/g" |\
-    # sed -e "/^param_pair_ch2_ow_c06/s/=.*/=$param_pair_ch2_ow_c06_r/g" |\
-    # sed -e "/^param_pair_ch3_ow_c06/s/=.*/=$param_pair_ch3_ow_c06_r/g" |\
-    # sed -e "/^param_pair_ch3_ch2_c06/s/=.*/=$param_pair_ch3_ch2_c06_r/g" |\
-    # sed -e "/^param_charge_ch2/s/=.*/=$param_charge_ch2_r/g" |\
-    # sed -e "/^param_charge_ch3a/s/=.*/=$param_charge_ch3a_r/g" |\
-    # sed -e "/^param_charge_ch3b/s/=.*/=$param_charge_ch3b_r/g" |\
-    # sed -e "/^param_charge_ow/s/=.*/=$param_charge_ow_r/g" |\
-    # sed -e "/^param_charge_h/s/=.*/=$param_charge_h_r/g" |\
-    # sed -e "/^param_angle_c_c_c_k/s/=.*/=$param_angle_c_c_c_k_r/g" $file |\
-
-    mv -f tmp.tmp.tmp $file
-}
-
 function split_trr () {
     echo 2 0 | trjconv -f traj.trr -o out.gro -center
     equi_xvout_feq=`echo "$equi_frame_feq / $equi_dt" | bc -l | cut -d '.' -f 1`
