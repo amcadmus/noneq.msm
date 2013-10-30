@@ -386,7 +386,8 @@ u ($1*8):22 ls 12 w l not, \
 
 ################################################################################
 unset label
-set label 'Q_{J,A}, T = 40 ps' at 20,0.3
+set yrange [-0.3:0.3]
+set label 'Q_{J,A}, T = 40 ps' at 20,0.25
 set out 'fig-meta-iflux-04-1-1.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
@@ -400,7 +401,7 @@ u ($1*4):($2+$3+$7+$8) ls 12 w l not, \
 
 
 unset label
-set label 'Q_{J,B}, T = 40 ps' at 20,0.3
+set label 'Q_{J,B}, T = 40 ps' at 20,0.25
 set out 'fig-meta-iflux-04-1-2.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
@@ -414,7 +415,7 @@ u ($1*4):($12+$13+$17+$18) ls 12 w l not, \
 
 
 unset label
-set label 'Q_{J,C}, T = 40 ps' at 20,0.3
+set label 'Q_{J,C}, T = 40 ps' at 20,0.25
 set out 'fig-meta-iflux-04-1-3.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
@@ -428,7 +429,7 @@ u ($1*4):($22+$23) ls 12 w l not, \
 
 
 unset label
-set label 'Q_{J,A}, T = 40 ps' at 20,0.3
+set label 'Q_{J,A}, T = 40 ps' at 20,0.25
 set out 'fig-meta-iflux-05-1-1.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
@@ -442,7 +443,7 @@ u ($1*5):($2+$3+$7+$8) ls 12 w l not, \
 
 
 unset label
-set label 'Q_{J,B}, T = 40 ps' at 20,0.3
+set label 'Q_{J,B}, T = 40 ps' at 20,0.25
 set out 'fig-meta-iflux-05-1-2.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
@@ -456,7 +457,7 @@ u ($1*5):($12+$13+$17+$18) ls 12 w l not, \
 
 
 unset label
-set label 'Q_{J,C}, T = 40 ps' at 20,0.3
+set label 'Q_{J,C}, T = 40 ps' at 20,0.25
 set out 'fig-meta-iflux-05-1-3.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
@@ -471,7 +472,7 @@ u ($1*5):($22+$23) ls 12 w l not, \
 
 
 unset label
-set label 'Q_{J,A}, T = 40 ps' at 20,0.3
+set label 'Q_{J,A}, T = 40 ps' at 20,0.25
 set out 'fig-meta-iflux-08-1-1.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
@@ -485,7 +486,7 @@ u ($1*8):($2+$3+$7+$8) ls 12 w l not, \
 
 
 unset label
-set label 'Q_{J,B}, T = 40 ps' at 20,0.3
+set label 'Q_{J,B}, T = 40 ps' at 20,0.25
 set out 'fig-meta-iflux-08-1-2.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
@@ -499,7 +500,7 @@ u ($1*8):($12+$13+$17+$18) ls 12 w l not, \
 
 
 unset label
-set label 'Q_{J,C}, T = 40 ps' at 20,0.3
+set label 'Q_{J,C}, T = 40 ps' at 20,0.25
 set out 'fig-meta-iflux-08-1-3.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \

@@ -345,13 +345,19 @@ In summary, the CHARMM force field is split in the following way:
   U(\vect R) = U^\hard(\vect R) + U^\soft(\vect R)
 \end{align}
 where
-\begin{align}
-  U^\hard(\vect R) &=
-  \sum_{\textrm{bonds}} K_b(b-b_0)^2 +
-  \sum_{\textrm{non-bonded}} [\,U_{\vdw}^\hard (r_{ij}) + U_{\dir}^\hard (r_{ij})\,] \\\nonumber
-  U^\soft(\vect R) &=
-  +\sum_{\textrm{angles}} K_\theta (\theta - \theta_0)^2
-  +\sum_{\textrm{Urey-Bradley}} K_{\textrm{UB}} (S - S_0)^2\\\nonumber
+\begin{align}\nonumber
+  U^\hard(\vect R) =\,&
+  (1 - w_b) \sum_{\textrm{bonds}} K_b(b-b_0)^2 \\\nonumber
+  &
+  +(1 - w_\theta)\bigg[\sum_{\textrm{angles}} K_\theta (\theta - \theta_0)^2
+  +\sum_{\textrm{Urey-Bradley}} K_{\textrm{UB}} (S - S_0)^2\bigg]\\\nonumber
+  &
+  +\sum_{\textrm{non-bonded}} [\,U_{\vdw}^\hard (r_{ij}) + U_{\dir}^\hard (r_{ij})\,] \\\nonumber
+  U^\soft(\vect R) =\,&
+  w_b\sum_{\textrm{bonds}} K_b(b-b_0)^2 \\\nonumber
+  &
+  +w_\theta \bigg[\sum_{\textrm{angles}} K_\theta (\theta - \theta_0)^2
+  +\sum_{\textrm{Urey-Bradley}} K_{\textrm{UB}} (S - S_0)^2\bigg]\\\nonumber
   &
   +\sum_{\textrm{dihedrals}} K_\phi( 1+\cos(n\phi - \delta)) 
   +\sum_{\textrm{impropers}} K_\omega (\omega - \omega_0)^2\\ \nonumber
@@ -367,6 +373,12 @@ Therefore, the interaction for the accelerated system is
 \begin{align}
   \hat U(\vect R) = U^\hard(\vect R) + \alpha\,U^\soft(\vect R)  
 \end{align}
+The parameters $w_b$ and $w_\theta$ are chosen so that the vibrational
+frequency of the bond $ \big[1 + (\alpha - 1) w_b\big]\cdot
+K_b(b-b_0)^2 $ and angle $ \big[1 + (\alpha - 1) w_\theta\big]\cdot
+\big[K_\theta (\theta - \theta_0)^2 +K_{\textrm{UB}} (S - S_0)^2] $ is
+no more than the vibrational frequency of the bond and angle
+potentials of water molecule, respectively.
 
 
 \section{Numerical results}
@@ -384,8 +396,10 @@ the method mentioned in Ref.~\cite{wang2010optimizing}\\
     \hline\hline
     $\alpha$ & $w_\vdw$ & $r^\hard_\vdw$ [nm] & $w_\dir$ & $r^\hard_\vdw$ [nm] \\\hline
     2           & 1.00     & 0.0   & 1.00    & 0.0\\
-    5           & 1.00     & 0.0   & 0.80    & 0.2\\
-    6           & 1.00     & 0.0   & 0.67    & 0.2\\
+    4           & 1.00     & 0.0   & 0.88    & 0.2\\
+    % 5           & 1.00     & 0.0   & 0.80    & 0.2\\
+    % 6           & 1.00     & 0.0   & 0.67    & 0.2\\
+    8           & 1.00     & 0.0   & 0.50    & 0.2\\
     \hline\hline
   \end{tabular*}
   \caption{The systems tested and the parameters to split the slow and fast parts of the force.}
@@ -442,22 +456,22 @@ with the hard forces.
 \end{figure}
 
 
-\begin{figure}
-  \centering
-  \includegraphics[]{figs/fig-meta05.eps}
-  \includegraphics[]{figs/fig-meta05-1.eps}
-  \caption{$\alpha = 5$, the probability of different conformations as a function of time.
-    In the left plot: Red: $A_1$, green: $A_2$, blue: $B_1$, purple: $B_2$, cyan: $C$.
-    In the right plot: Red: $A_1+A_2$, blue: $B_1+B_2$, cyan: $C$.
-    The lighter colors denote the reference exact dynamics of the conformations ($\alpha = 1$), while the darker colors denote $\alpha = 5$.}
-  \label{fig:tmp2}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \includegraphics[]{figs/fig-meta05.eps}
+%   \includegraphics[]{figs/fig-meta05-1.eps}
+%   \caption{$\alpha = 5$, the probability of different conformations as a function of time.
+%     In the left plot: Red: $A_1$, green: $A_2$, blue: $B_1$, purple: $B_2$, cyan: $C$.
+%     In the right plot: Red: $A_1+A_2$, blue: $B_1+B_2$, cyan: $C$.
+%     The lighter colors denote the reference exact dynamics of the conformations ($\alpha = 1$), while the darker colors denote $\alpha = 5$.}
+%   \label{fig:tmp2}
+% \end{figure}
 
 \begin{figure}
   \centering
   \includegraphics[]{figs/fig-meta08.eps}
   \includegraphics[]{figs/fig-meta08-1.eps}
-  \caption{$\alpha = 6$, the probability of different conformations as a function of time.
+  \caption{$\alpha = 8$, the probability of different conformations as a function of time.
     In the left plot: Red: $A_1$, green: $A_2$, blue: $B_1$, purple: $B_2$, cyan: $C$.
     In the right plot: Red: $A_1+A_2$, blue: $B_1+B_2$, cyan: $C$.
     The lighter colors denote the reference exact dynamics of the conformations ($\alpha = 1$), while the darker colors denote $\alpha = 6$.}
@@ -477,17 +491,17 @@ with the hard forces.
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-3.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-4.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-5.eps}\\
-  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-1.eps}
-  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-2.eps}
-  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-3.eps}
-  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-4.eps}
-  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-5.eps}\\
+  % \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-1.eps}
+  % \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-2.eps}
+  % \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-3.eps}
+  % \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-4.eps}
+  % \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-5.eps}\\
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-1.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-2.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-3.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-4.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-5.eps}\\
-  \caption{The integrated probability fluxes. $\alpha = 2,4,5,8$.}
+  \caption{The integrated probability fluxes. $\alpha = 2,4,8$.}
   \label{fig:tmp3}
 \end{figure}
 
@@ -496,13 +510,13 @@ with the hard forces.
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-1-1.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-1-2.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-1-3.eps}\\
-  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-1-1.eps}
-  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-1-2.eps}
-  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-1-3.eps}\\
+  % \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-1-1.eps}
+  % \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-1-2.eps}
+  % \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-05-1-3.eps}\\
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-1-1.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-1-2.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-08-1-3.eps}
-  \caption{The integrated probability fluxes. $\alpha = 4,5,8$.}
+  \caption{The integrated probability fluxes. $\alpha = 4,8$.}
   \label{fig:tmp3}
 \end{figure}
 
