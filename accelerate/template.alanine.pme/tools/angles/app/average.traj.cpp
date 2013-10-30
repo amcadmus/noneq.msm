@@ -47,7 +47,7 @@ bool myread (FILE * fp,
 int main(int argc, char * argv[])
 {
   std::string ifile, ofile;
-  unsigned numBlock = 20;
+  // unsigned numBlock = 20;
   double refh;
   float time_prec = .01;
   
