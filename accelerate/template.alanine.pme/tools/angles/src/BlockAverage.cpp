@@ -69,7 +69,13 @@ reinit (const unsigned & nDataInBlock_)
 }
 
 BlockAverage_acc::
-BlockAverage_acc (const unsigned & nDataInBlock_)
+BlockAverage_acc ()
+{
+  reinit (1);
+}
+
+BlockAverage_acc::
+BlockAverage_acc (const unsigned nDataInBlock_)
 {
   reinit (nDataInBlock_);
 }

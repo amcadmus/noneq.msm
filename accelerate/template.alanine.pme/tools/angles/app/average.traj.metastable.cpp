@@ -100,8 +100,8 @@ int main(int argc, char * argv[])
   desc.add_options()
       ("help,h", "print this message")
       ("output,o", po::value<std::string > (&ofile)->default_value ("metastable.out"), "the output of metastable propulation")
+      ("output-error", po::value<std::string > (&oefile)->default_value ("metastable.err.out"), "the output of metastable propulation with error")
       ("input,f",  po::value<std::string > (&ifile)->default_value ("angle.name"), "the file of file names");
-  oefile = ofile + string(".error");
   
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -147,17 +147,17 @@ int main(int argc, char * argv[])
     }
     countFile ++;
     vector<double > tmpcount;
-    vector<BlockAverage_acc > tmpba;
     if (countFile == 1){
       while (myread(fp, time, phi, psi)){
 	times.push_back (time);
 	depositMetastable (psi, phi, sets, tmpcount);
 	counts.push_back (tmpcount);
+	vector<BlockAverage_acc > tmpba (tmpcount.size());
 	for (unsigned ii = 0; ii < tmpcount.size(); ++ii){
-	  BlockAverage_acc tmptmpba (nDataInBlock);
-	  tmptmpba.deposite (tmpcount[ii]);
-	  tmpba.push_back (tmptmpba);
+	  tmpba[ii].reinit(nDataInBlock);
+	  tmpba[ii].deposite (tmpcount[ii]);
 	}
+	bas.push_back (tmpba);
       }
     }
     else {
@@ -180,6 +180,7 @@ int main(int argc, char * argv[])
 
   FILE * fp = fopen (ofile.c_str(), "w");
   FILE * fpe = fopen (oefile.c_str(), "w");
+  // cout << "print to " << oefile << endl;
   for (unsigned ii = 0; ii < times.size(); ++ii){
     fprintf (fp, "%f ", times[ii]);
     fprintf (fpe, "%f ", times[ii]);

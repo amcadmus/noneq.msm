@@ -39,7 +39,8 @@ private:
   double currentBlockSum;
   unsigned currentNDataInBlock;
 public:
-  BlockAverage_acc (const unsigned & nDataInBlock_);
+  BlockAverage_acc ();
+  BlockAverage_acc (const unsigned nDataInBlock_);
   void clear ();
   void reinit (const unsigned & nDataInBlock_);
 public:
