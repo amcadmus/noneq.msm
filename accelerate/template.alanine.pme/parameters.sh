@@ -2,13 +2,13 @@
 
 # non-equilibrium settings
 pert_equi_result="$HOME/study/noneq.msm/accelerate/equi.systems/alanine.charmm.pme.tab/"
-pert_num_conf_use=100000	#
+pert_num_conf_use=2500	#
 pert_mode=2			# 1: relax, 2: cos wave
 pert_strength=1.0		# nm/ps velocity
 pert_warm_time=40		# ps 1: warm time, 2: periodicity
 pert_shift=0			# unitless
 pert_phi=270			# deg. shift of the phase
-pert_time=100			# ps
+pert_time=500			# ps
 pert_frame_feq=0.5		# ps
 pert_dt=0.0005			# ps
 pert_rlist=1.33			# nm
@@ -26,7 +26,7 @@ pert_taup=2.0			# ps
 
 pert_rescale=1.0		# ps
 pert_bond_T_cap=8.631997e-15	# s taken from water
-pert_angle_T_cap=6.955613e-15	# s taken from water
+pert_angle_T_cap=17.037705e-15	# s taken from water
 pert_ele_rescale_scale0=1.0	# 
 pert_vdw_rescale_scale0=1.0	# 
 
