@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/48/trunk/n.butane/tools/dihedral.table/app
+END
+combine.table.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/38/trunk/n.butane/tools/dihedral.table/app/combine.table.cpp
+END
+constraint.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/28/trunk/n.butane/tools/dihedral.table/app/constraint.cpp
+END
+join.table.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/48/trunk/n.butane/tools/dihedral.table/app/join.table.cpp
+END
+gmx.funct1.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/18/trunk/n.butane/tools/dihedral.table/app/gmx.funct1.cpp
+END

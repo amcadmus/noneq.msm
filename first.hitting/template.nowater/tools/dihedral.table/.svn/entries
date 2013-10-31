@@ -1,0 +1,77 @@
+10
+
+dir
+112
+https://optimal-control.googlecode.com/svn/trunk/n.butane/tools/dihedral.table
+https://optimal-control.googlecode.com/svn
+
+
+
+2013-04-09T10:24:47.487118Z
+63
+amcadmus@gmail.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+173e7c6b-bc21-92da-1036-d016c426decc
+
+app
+dir
+
+.depends
+dir
+
+include
+dir
+
+lib
+dir
+
+src
+dir
+
+Makefile
+file
+
+
+
+
+2013-04-09T10:22:51.000000Z
+aa045b6c2dbe567929bee66c317b8ede
+2013-04-09T10:24:47.487118Z
+63
+amcadmus@gmail.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3283
+
