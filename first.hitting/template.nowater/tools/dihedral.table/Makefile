@@ -5,9 +5,9 @@
 #boost-include-path=	/people/thnfs/homes/wanghan/local/include/boost-1_36
 #boost-lib-path=		/people/thnfs/homes/wanghan/local/lib
 boost-lib-option=	-lboost_program_options
-link-options=           /home/mi/wanghan/local/lib/libxdrfile.a $(boost-lib-option)
+link-options=           ~/local/lib/libxdrfile.a $(boost-lib-option)
 
-include_dirs = 	./include /home/mi/wanghan/local/include/ $(MKL_INCLUDE)
+include_dirs = 	./include ~/local/include/ $(MKL_INCLUDE)
 
 sources_dir =		src
 application_dir=	app
