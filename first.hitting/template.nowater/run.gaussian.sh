@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 source env.sh
 source parameters.sh
 source functions.sh
@@ -11,12 +9,12 @@ make -C tools/dihedral.table/ -j8
 
 cwd=`pwd`
 # prepare files
-if test ! -d $equi_result ; then
-    echo "no dir $equi_result, exit"
+if test ! -d $fht_equi_dir ; then
+    echo "no dir $fht_equi_dir, exit"
     exit
 fi
-if test ! -f $equi_result/equi.frame ; then
-    echo "no file $equi_result/equi.frame, exit"
+if test ! -f $fht_equi_dir/equi.frame ; then
+    echo "no file $fht_equi_dir/equi.frame, exit"
     exit
 fi
 #rm -f angle.name
@@ -24,7 +22,7 @@ fi
 #rm -f success.dir.name
 touch success.dir.name
 
-targets=`awk '{print $1}' $equi_result/equi.frame | head -n $fht_num_conf_use`
+targets=`awk '{print $1}' $fht_equi_dir/equi.frame | head -n $fht_num_conf_use`
 
 fht_main_dir=result.fhts
 for i in $targets;
@@ -45,23 +43,23 @@ do
     fi
     echo "# doing in dir $my_dir"
     mkdir $my_dir
-    cp $equi_result/conf.gro	$my_dir
-    cp $equi_result/grompp.mdp	$my_dir
-    cp $equi_result/angle.ndx	$my_dir
-    cp $equi_result/topol.top	$my_dir
+    cp $fht_equi_dir/conf.gro	$my_dir
+    cp $fht_equi_dir/grompp.mdp	$my_dir
+    cp $fht_equi_dir/angle.ndx	$my_dir
+#    cp $fht_equi_dir/topol.top	$my_dir
     cd $my_dir
     make_top
-    count=0
+    table_count=0
     for ii in $fht_gaussian_base_position;
     do
-	./tools/dihedral.table/gaussian --max $fht_gaussian_base_max --mu $ii --sigma $fht_gaussian_base_sigma -o table_d${count}.xvg
-	count=$(($count+1))
+	./tools/dihedral.table/gaussian --max $fht_gaussian_base_max --mu $ii --sigma $fht_gaussian_base_sigma -o table_d${table_count}.xvg
+	table_count=$(($table_count+1))
     done
     set_parameters_fht grompp.mdp
     
-    start_time=`grep ^$count $equi_result/equi.frame | awk '{print $2}'`
+    start_time=`grep "^$count" $fht_equi_dir/equi.frame | awk '{print $2}'`
     echo "# run with command `which grompp`"
-    $grompp_command -t $equi_result/traj.trr -time $start_time &> run.log
+    $grompp_command -t $fht_equi_dir/traj.trr -time $start_time &> run.log
     if [ $? -ne 0 ]; then
 	echo "failed at grompp exit"; exit
     fi
@@ -71,20 +69,22 @@ do
 	echo "failed at mdrun exit"; exit
     fi
 
-    echo 2 2 | trjconv -center -pbc whole
+    echo 2 2 | trjconv -center -pbc whole &> run.log
+    if [ $? -ne 0 ]; then
+	echo "failed at trjconv exit"; exit
+    fi
     mv -f trajout.xtc butane.xtc
-    # $cwd/tools/angles/evolve -f alanine.xtc -s angle.dat &> angle.log
-    # if [ $? -ne 0 ]; then
-    # 	echo "failed at evolve exit"; exit
-    # fi
     g_angle -type dihedral -od angdist.xvg  -ov angaver.xvg -xvg none &> run.log
+    if [ $? -ne 0 ]; then
+	echo "failed at g_angle exit"; exit
+    fi
 
     tmpid=`echo "$count - $fht_parallel_num_pro" | bc -l`
     echo "tmpid is $tmpid"
     if [ $tmpid -lt $fht_parallel_num_pro ]; then
 	cp -a ..//fht.$count ..//backup.fht.$count
     fi
-    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg 
+    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out
     
     cd $cwd
     # echo "$my_dir/angle.dat" >> angle.name
