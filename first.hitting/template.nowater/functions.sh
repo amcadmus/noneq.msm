@@ -36,13 +36,11 @@ function make_top () {
     echo '[ dihedrals ] '>> topol.top
     echo '; ai    aj      ak      al      funct   tab_num k'>> topol.top
     echo '1       2       3       4       1       gd_17'>> topol.top
-    ;1      2       3       4       8       0       0.5
-    ;1      2       3       4       8       1       0.5
-    count=0
+    top_item_count=0
     for i in `echo $fht_gaussian_base_position`
     do
-	echo "1      2       3       4       8	$count	1.0" >> topol.top
-	count=$(($count+1))
+	echo "1      2       3       4       8	$top_item_count	1.0" >> topol.top
+	top_item_count=$(($top_item_count+1))
     done    
     echo ''>> topol.top
     echo '#include "gromos45a3.ff/spce.itp"'>> topol.top
@@ -57,15 +55,17 @@ function make_top () {
     echo ''>> topol.top
 }
 
-function gen_tables () {
-    
-}
-
 
 function set_parameters_fht () {
     file=$1
     if ! `grep userreal5 $file &>/dev/null`; then
 	echo "userreal5 = 1.0" >> $file
+    fi
+    if ! `grep userreal6 $file &>/dev/null`; then
+	echo "userreal6 = 0.0" >> $file
+    fi
+    if ! `grep userreal7 $file &>/dev/null`; then
+	echo "userreal7 = 0.0" >> $file
     fi
     if ! `grep nstcalcenergy $file &>/dev/null`; then
 	echo "nstcalcenergy = 1.0" >> $file
@@ -93,6 +93,8 @@ function set_parameters_fht () {
     # sed -e "/^userreal3/s/=.*/= $fht_ele_rescale_end/g" |\
     # sed -e "/^userreal4/s/=.*/= $fht_rescale/g" |\
     # sed -e "/^userreal5/s/=.*/= $fht_ele_rescale_scale0/g" |\
+    sed -e "/^userreal6/s/=.*/= $fht_meta_low/g" |\
+    sed -e "/^userreal7/s/=.*/= $fht_meta_up/g" |\
     sed -e "/^E-x /s/=.*/= 0 0.0 0.0/g" |\
     sed -e "/^ld-seed/s/=.*/= $fht_seed/g" |\
     sed -e "/^gen_vel /s/=.*/= no/g" |\
