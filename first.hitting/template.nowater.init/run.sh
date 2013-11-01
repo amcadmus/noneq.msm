@@ -3,6 +3,8 @@
 source env.sh
 source parameters.sh
 
+make -C $tool_dir/make.equi -j8
+
 function set_parameters_init () {
     file=$1
     init_nstep=`echo "$gmx_time / $gmx_dt" | bc -l | cut -f 1 -d '.'`
@@ -32,3 +34,4 @@ mdrun &> run.log
 
 g_angle -type dihedral -od angdist.xvg  -ov angaver.xvg -xvg none -nice 0
 
+./$tool_dir/make.equi/main -f angaver.xvg --lower $cis_start --upper $cis_end --start $equi_time

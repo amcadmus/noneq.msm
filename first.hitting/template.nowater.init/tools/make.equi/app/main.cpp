@@ -59,7 +59,7 @@ int main(int argc, char * argv[])
   int count = 1;
   while (2 == fscanf (fin, "%lf %lf", &time, &angle)){
     if (angle >= lower && angle <= upper && time >= start){
-      fprintf (fout, "%06d \t %f\n", count, time - 0.5 * dt);
+      fprintf (fout, "%08d \t %.12e\n", count, time - 0.5 * dt);
       count++;
     }
   }
