@@ -49,12 +49,7 @@ do
 #    cp $fht_equi_dir/topol.top	$my_dir
     cd $my_dir
     make_top
-    table_count=0
-    for ii in $fht_gaussian_base_position;
-    do
-	./tools/dihedral.table/gaussian --max $fht_gaussian_base_max --mu $ii --sigma $fht_gaussian_base_sigma -o table_d${table_count}.xvg
-	table_count=$(($table_count+1))
-    done
+    make_tables
     set_parameters_fht grompp.mdp
     
     start_time=`grep "^$count" $fht_equi_dir/equi.frame | awk '{print $2}'`

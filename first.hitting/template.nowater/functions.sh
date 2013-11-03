@@ -1,3 +1,18 @@
+function make_tables () {
+    table_count=0
+    table_list=""
+    table_scale=""
+    for ii in $fht_gaussian_base_position;
+    do
+	./tools/dihedral.table/gaussian --max $fht_gaussian_base_max --mu $ii --sigma $fht_gaussian_base_sigma -o table_d${table_count}.xvg
+	table_list="$table_list table_d${table_count}.xvg"
+	table_scale="$table_scale 1.0"
+	table_count=$(($table_count+1))
+    done
+    if test $table_count -ne 0; then
+	./tools/dihedral.table/combine.table.1 --input-list \"$table_list\" --scale-list \"$scale_list\" -o effective.table.xvg
+    fi
+}
 
 function make_top () {
     echo '; n-butane'							>  topol.top
