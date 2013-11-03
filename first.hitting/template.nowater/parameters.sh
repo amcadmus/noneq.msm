@@ -1,7 +1,7 @@
 #!/bin/bash
 
 fht_equi_dir=/home/mi/wanghan/study/noneq.msm/first.hitting/equi.systems/nowater.gromos.45a3.new/
-fht_num_conf_use=20
+fht_num_conf_use=200
 
 fht_integrator=sd1
 fht_dt=0.001			# ps

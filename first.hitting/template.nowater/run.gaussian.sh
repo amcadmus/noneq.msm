@@ -22,6 +22,7 @@ fi
 #rm -f success.dir.name
 touch success.dir.name
 
+make_tables
 targets=`awk '{print $1}' $fht_equi_dir/equi.frame | head -n $fht_num_conf_use`
 
 fht_main_dir=result.fhts
@@ -49,7 +50,8 @@ do
 #    cp $fht_equi_dir/topol.top	$my_dir
     cd $my_dir
     make_top
-    make_tables
+#    make_tables
+    cp $cwd/table_d*xvg .
     set_parameters_fht grompp.mdp
     
     start_time=`grep "^$count" $fht_equi_dir/equi.frame | awk '{print $2}'`
@@ -79,7 +81,7 @@ do
     if [ $tmpid -lt $fht_parallel_num_pro ]; then
 	cp -a ..//fht.$count ..//backup.fht.$count
     fi
-    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out
+    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg
     
     cd $cwd
     # echo "$my_dir/angle.dat" >> angle.name

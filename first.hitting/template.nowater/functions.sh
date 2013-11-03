@@ -4,14 +4,18 @@ function make_tables () {
     table_scale=""
     for ii in $fht_gaussian_base_position;
     do
-	./tools/dihedral.table/gaussian --max $fht_gaussian_base_max --mu $ii --sigma $fht_gaussian_base_sigma -o table_d${table_count}.xvg
-	table_list="$table_list table_d${table_count}.xvg"
+	$cwd/tools/dihedral.table/gaussian --max $fht_gaussian_base_max --mu $ii --sigma $fht_gaussian_base_sigma -o table_d${table_count}.xvg
+	table_list="$table_list $cwd/table_d${table_count}.xvg"
 	table_scale="$table_scale 1.0"
 	table_count=$(($table_count+1))
     done
-    if test $table_count -ne 0; then
-	./tools/dihedral.table/combine.table.1 --input-list \"$table_list\" --scale-list \"$scale_list\" -o effective.table.xvg
-    fi
+    # if test $table_count -ne 0; then
+    # 	tmp_s1=" \" ${table_list} \" "
+    # 	tmp_s2=" \" ${table_scale} \" "	
+    # 	# command="$cwd/tools/dihedral.table/combine.table.1 --input-list ' ${table_list} ' --scale-list ' ${table_scale} ' -o $cwd/$my_dir/effective.table.xvg"
+    # 	# echo command is  $command
+    # 	$cwd/tools/dihedral.table/combine.table.1 --input-list $tmp_s1 --scale-list $tmp_s2
+    # fi
 }
 
 function make_top () {
