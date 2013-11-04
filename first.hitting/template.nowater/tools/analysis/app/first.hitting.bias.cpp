@@ -31,6 +31,7 @@ int cal_n_base (const int in)
 {
   int value = 0;
   bool find = false;
+  if (in == 0) return 0;
   while ((value + value * value) != in && value < 100000){
     value ++;
     find = true;
@@ -59,8 +60,8 @@ int main(int argc, char * argv[])
       ("meta-width,w",  po::value<double > (&width)->default_value (30),   "width of the metastable set")
       ("num-in-block,n",  po::value<unsigned > (&nDataInBlock)->default_value (1),   "number of data in a block")
       ("input-dir,d", po::value<std::string > (&idfile)->default_value ("success.dir.name"), "file including successful dir names")
-      ("input-angle-name,f", po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "the angle file name")
-      ("input-gxs-name,f", po::value<std::string > (&igxsfile)->default_value ("gxs12.out"), "the gxs file name")
+      ("input-angle-name", po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "the angle file name")
+      ("input-gxs-name", po::value<std::string > (&igxsfile)->default_value ("gxs12.out"), "the gxs file name")
       ("output,o", po::value<std::string > (&ofile)->default_value ("fmpt.out"), "the output of first mean passage time");
   
       
@@ -98,7 +99,7 @@ int main(int argc, char * argv[])
   // analyze traj
   ifstream fpname (idfile.c_str());
   if (!fpname){
-    std::cerr << "cannot open file " << idfile << std::endl;
+    std::cerr << "\n cannot open file " << idfile << std::endl;
     return 1;
   }
   char nameline [MaxLineLength];
@@ -114,18 +115,19 @@ int main(int argc, char * argv[])
     filename_ang += string("/") + iffile;
     ifstream angname (filename_ang.c_str());
     if (!angname){
-      std::cerr << "cannot open file " << filename_ang << std::endl;
+      std::cerr << "\n cannot open file " << filename_ang << std::endl;
       return 1;
     }
     string filename_gxs (nameline);
     filename_gxs += string("/") + igxsfile;
     ifstream gxsname (filename_gxs.c_str());
     if (!gxsname){
-      std::cerr << "cannot open file " << filename_gxs << std::endl;
+      std::cerr << "\n cannot open file " << filename_gxs << std::endl;
       return 1;
     }
-    if (printCount == 10) {
+    if (printCount == 100) {
       printf ("# reading file %s and %s      \r", filename_ang.c_str(), filename_gxs.c_str());
+      fflush (stdout);
       printCount = 0;
     }
     printCount ++;
@@ -185,12 +187,18 @@ int main(int argc, char * argv[])
 	}
       }
       if (times.back() < gate){
-	ba.deposite (1.0 * exp(-sum1 - 0.5 * sum2));
+	ba.deposite (1.0 * exp( - sum1 - 0.5 * sum2));
+	// ba.deposite (1.0 * (1. - sum1));
+	// ba.deposite (1.0 * exp( - sum1));
+	// ba.deposite (1.0);
       }
       else {
 	ba.deposite (0.0);
       }
-      ba_fht.deposite (times.back() * exp(-sum1 - 0.5 * sum2));
+      ba_fht.deposite (times.back() * exp( - sum1 - 0.5 * sum2));
+      // ba_fht.deposite (times.back() * (1. - sum1));
+      // ba_fht.deposite (times.back() * exp( - sum1));
+      // ba_fht.deposite (times.back());
       countFound ++ ;
     }
     else {
@@ -210,7 +218,7 @@ int main(int argc, char * argv[])
   printf ("# avg. first hitting time\n");
   printf ("%f   %f\n", ba_fht.getAvg(), ba_fht.getAvgError());
   printf ("# prob. first hitting time smaller than %f\n", gate);
-  printf ("%f   %f\n", ba.getAvg(), ba.getAvgError());
+  printf ("%e   %e\n", ba.getAvg(), ba.getAvgError());
   
 
   //   double sum_j = 0.;
