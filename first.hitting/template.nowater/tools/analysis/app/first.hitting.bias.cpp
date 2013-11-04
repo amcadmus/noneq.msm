@@ -154,10 +154,6 @@ int main(int argc, char * argv[])
       }
       times .push_back (atof(words[0].c_str()));
       anglev.push_back (atof(words[1].c_str()));
-      if (ms.inSet(anglev.back())) {
-	find = true;
-	break;
-      }
       StringOperation::split (string(valueline_gxs), words);
       if (nBase < 0) {
 	nBase = cal_n_base (words.size() - 1);
@@ -176,6 +172,11 @@ int main(int argc, char * argv[])
       }
       gxs1.push_back (tmp1);
       gxs2.push_back (tmp2);
+
+      if (ms.inSet(anglev.back())) {
+	find = true;
+	break;
+      }
     }
     if (find == true){
       double sum1 = 0.;

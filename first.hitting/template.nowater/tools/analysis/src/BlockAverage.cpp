@@ -74,6 +74,12 @@ BlockAverage_acc (const unsigned & nDataInBlock_)
   reinit (nDataInBlock_);
 }
 
+BlockAverage_acc::
+BlockAverage_acc ()
+{
+  reinit (1);
+}
+
 void BlockAverage_acc::
 deposite (const double & vv)
 {
