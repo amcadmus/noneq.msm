@@ -95,8 +95,11 @@ int main(int argc, char * argv[])
   // average
   BlockAverage_acc ba (nDataInBlock);
   BlockAverage_acc ba_fht (nDataInBlock);
+  BlockAverage_acc ba_1 (nDataInBlock);
   vector<BlockAverage_acc > vecb;
   vector<vector<BlockAverage_acc > > matA;
+  vector<double > gxs1;
+  vector<vector<double > > gxs2;
   
   // analyze traj
   ifstream fpname (idfile.c_str());
@@ -134,10 +137,8 @@ int main(int argc, char * argv[])
     }
     printCount ++;
     countFile ++;
-    vector<double > times;
-    vector<double > anglev;
-    vector<vector<double > > gxs1;
-    vector<vector<vector<double > > > gxs2;
+    double times;
+    double anglev;
     char valueline_ang [MaxLineLength];
     char valueline_gxs [MaxLineLength];
     bool find = false;
@@ -154,8 +155,8 @@ int main(int argc, char * argv[])
 	cerr << "wrong file format of " << filename_ang << endl;
 	exit (1);
       }
-      times .push_back (atof(words[0].c_str()));
-      anglev.push_back (atof(words[1].c_str()));
+      times  = (atof(words[0].c_str()));
+      anglev = (atof(words[1].c_str()));
       StringOperation::split (string(valueline_gxs), words);
       if (nBase < 0) {
 	nBase = cal_n_base (words.size() - 1);
@@ -163,46 +164,48 @@ int main(int argc, char * argv[])
 	  cerr << "invalid input line of " << filename_gxs << ", may be more than 100000 bases? " << endl;
 	  return 1;
 	}
+	gxs1.resize (nBase);
+	gxs2.resize (nBase);
 	vecb.resize (nBase);
 	matA.resize (nBase);
 	for (int ii = 0; ii < nBase; ++ii){
+	  gxs2[ii].resize (nBase);
 	  matA[ii].resize (nBase);
 	}
       }
-      vector<double > tmp1 (nBase, 0.);
-      vector<vector<double > > tmp2(nBase, vector<double >(nBase, 0.)) ;
       for (int ii = 0; ii < nBase; ++ii){
-	tmp1[ii] = atof (words[1+ii].c_str());
+	gxs1[ii] = atof (words[1+ii].c_str());
 	for (int jj = 0; jj < nBase; ++jj){
-	  tmp2[ii][jj] = atof (words[1 + nBase + ii * nBase + jj].c_str());
+	  gxs2[ii][jj] = atof (words[1 + nBase + ii * nBase + jj].c_str());
 	}
       }
-      gxs1.push_back (tmp1);
-      gxs2.push_back (tmp2);
 
-      if (ms.inSet(anglev.back())) {
+      if (ms.inSet(anglev)) {
 	find = true;
 	break;
       }
     }
+
+    
     if (find == true){
       double sum1 = 0.;
       double sum2 = 0.;
       for (int ii = 0; ii < nBase; ++ii){
-	sum1 += gxs1.back()[ii];
+	sum1 += gxs1[ii];
 	for (int jj = 0; jj < nBase; ++jj){
-	  sum2 += gxs2.back()[ii][jj];
+	  sum2 += gxs2[ii][jj];
 	}
       }
-      if (times.back() < gate){
-	ba.deposite (1.0 * exp( - sum1 - 0.5 * sum2));
+      double tmpexp = exp( - sum1 - 0.5 * sum2);
+      if (times < gate){
+	ba.deposite (1.0 * tmpexp);
 	// ba.deposite (1.0 * (1. - sum1));
 	// ba.deposite (1.0 * exp( - sum1));
 	// ba.deposite (1.0);
 	for (int ii = 0; ii < nBase; ++ii){
-	  vecb[ii].deposite (1.0 * gxs1.back()[ii] * exp( - sum1 - 0.5 * sum2));
+	  vecb[ii].deposite (1.0 * gxs1[ii] * tmpexp);
 	  for (int jj = 0; jj < nBase; ++jj){
-	    matA[ii][jj].deposite(1.0 * gxs2.back()[ii][jj]  * exp( - sum1 - 0.5 * sum2));
+	    matA[ii][jj].deposite(1.0 * gxs2[ii][jj]  * tmpexp);
 	  }
 	}
       }
@@ -215,10 +218,11 @@ int main(int argc, char * argv[])
 	  }
 	}
       }
-      ba_fht.deposite (times.back() * exp( - sum1 - 0.5 * sum2));
-      // ba_fht.deposite (times.back() * (1. - sum1));
-      // ba_fht.deposite (times.back() * exp( - sum1));
-      // ba_fht.deposite (times.back());
+      ba_fht.deposite (times * tmpexp);
+      ba_1.deposite (tmpexp);
+      // ba_fht.deposite (times * (1. - sum1));
+      // ba_fht.deposite (times * exp( - sum1));
+      // ba_fht.deposite (times);
       countFound ++ ;
     }
     else {
@@ -234,9 +238,12 @@ int main(int argc, char * argv[])
 
   ba.calculate ();
   ba_fht.calculate ();
+  ba_1.calculate ();
   
   printf ("# avg. first hitting time\n");
   printf ("%f   %f\n", ba_fht.getAvg(), ba_fht.getAvgError());
+  printf ("# check one\n");
+  printf ("%f   %f\n", ba_1.getAvg(), ba_1.getAvgError());
   printf ("# prob. first hitting time smaller than %f\n", gate);
   printf ("%e   %e\n", ba.getAvg(), ba.getAvgError());
 
@@ -245,16 +252,24 @@ int main(int argc, char * argv[])
     vecb[ii].calculate();
     printf ("%e   ", vecb[ii].getAvg());
   }
-  printf ("# vect b error\n");
+  printf ("\n# vect b error\n");
   for (int ii = 0; ii < nBase; ++ii){
     printf ("%e   ", vecb[ii].getAvgError());
   }
-  printf ("#;\n");
-  printf ("# mat A error\n");
+  printf ("\n#;\n");
+  printf ("# mat A\n");
   for (int ii = 0; ii < nBase; ++ii){
     for (int jj = 0; jj < nBase; ++jj){
       matA[ii][jj].calculate();
       printf ("%e   ", matA[ii][jj].getAvg());
+    }
+    printf (";\n");
+  }
+  printf ("# mat A error\n");
+  for (int ii = 0; ii < nBase; ++ii){
+    for (int jj = 0; jj < nBase; ++jj){
+      matA[ii][jj].calculate();
+      printf ("%e   ", matA[ii][jj].getAvgError());
     }
     printf (";\n");
   }
