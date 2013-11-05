@@ -105,7 +105,7 @@ int main(int argc, char * argv[])
     }
     printCount ++;
     countFile ++;
-    double times;
+    double times = 0.;
     double anglev;
     char valueline [MaxLineLength];
     bool find = false;
@@ -123,18 +123,17 @@ int main(int argc, char * argv[])
 	find = true;
 	break;
       }
+      if (times > gate) {
+	find = false;
+	break;
+      }
     }
-    if (find == true){
-      if (times <=gate){
-	ba.deposite (1.0);
-      }
-      else {
-	ba.deposite (0.0);
-      }
-      ba_fht.deposite (times);
+    if (find == true && times <= gate){
+      ba.deposite (1.0);
       countFound ++ ;
     }
     else {
+      ba.deposite (0.0);
       countUnFound ++;
     }
   }
@@ -146,10 +145,7 @@ int main(int argc, char * argv[])
 	  countUnFound, ((double)(countUnFound))/((double)(countFile)) * 100.);
 
   ba.calculate ();
-  ba_fht.calculate ();
   
-  printf ("# avg. first hitting time\n");
-  printf ("%f   %f\n", ba_fht.getAvg(), ba_fht.getAvgError());
   printf ("# prob. first hitting time smaller than %f\n", gate);
   printf ("%e   %e\n", ba.getAvg(), ba.getAvgError());
   

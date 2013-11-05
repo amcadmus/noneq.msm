@@ -54,15 +54,15 @@ int main(int argc, char * argv[])
 
   po::options_description desc ("Allow options");
   desc.add_options()
-      ("help,h", "print this message")
-      ("gate,g",  po::value<double > (&gate)->default_value (5.0),   "the probability of first hitting time smaller than the gate")
-      ("meta-center,c",  po::value<double > (&center)->default_value (180),   "center of the metastable set")
-      ("meta-width,w",  po::value<double > (&width)->default_value (30),   "width of the metastable set")
-      ("num-in-block,n",  po::value<unsigned > (&nDataInBlock)->default_value (1),   "number of data in a block")
-      ("input-dir,d", po::value<std::string > (&idfile)->default_value ("success.dir.name"), "file including successful dir names")
-      ("input-angle-name", po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "the angle file name")
-      ("input-gxs-name", po::value<std::string > (&igxsfile)->default_value ("gxs12.out"), "the gxs file name")
-      ("output,o", po::value<std::string > (&ofile)->default_value ("fmpt.out"), "the output of first mean passage time");
+    ("help,h", "print this message")
+    ("gate,g",  po::value<double > (&gate)->default_value (5.0),   "the probability of first hitting time smaller than the gate")
+    ("meta-center,c",  po::value<double > (&center)->default_value (180),   "center of the metastable set")
+    ("meta-width,w",  po::value<double > (&width)->default_value (30),   "width of the metastable set")
+    ("num-in-block,n",  po::value<unsigned > (&nDataInBlock)->default_value (1),   "number of data in a block")
+    ("input-dir,d", po::value<std::string > (&idfile)->default_value ("success.dir.name"), "file including successful dir names")
+    ("input-angle-name", po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "the angle file name")
+    ("input-gxs-name", po::value<std::string > (&igxsfile)->default_value ("gxs12.out"), "the gxs file name")
+    ("output,o", po::value<std::string > (&ofile)->default_value ("fmpt.out"), "the output of first mean passage time");
   
       
   po::variables_map vm;
@@ -198,7 +198,7 @@ int main(int argc, char * argv[])
 	}
       }
       double tmpexp = exp( - sum1 - 0.5 * sum2);
-      if (times < gate){
+      if (times <= gate){
 	countNumInGate ++;
 	ba.deposite (1.0 * tmpexp);
 	printf ("time %f deposited: %e\n", times, tmpexp);
@@ -229,6 +229,13 @@ int main(int argc, char * argv[])
       countFound ++ ;
     }
     else {
+      ba.deposite (0.0);
+      for (int ii = 0; ii < nBase; ++ii){
+	vecb[ii].deposite (0.0);
+	for (int jj = 0; jj < nBase; ++jj){
+	  matA[ii][jj].deposite(0.0);
+	}
+      }
       countUnFound ++;
     }
   }

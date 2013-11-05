@@ -187,7 +187,7 @@ int main(int argc, char * argv[])
 	  sum2 += gxs2.back()[ii][jj];
 	}
       }
-      if (times.back() < gate){
+      if (times.back() <= gate){
 	ba.deposite (1.0 * exp( - sum1 - 0.5 * sum2));
 	// ba.deposite (1.0 * (1. - sum1));
 	// ba.deposite (1.0 * exp( - sum1));

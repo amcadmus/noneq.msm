@@ -27,24 +27,42 @@ inline int angleIdx (const double & myangle,
   return int((myangle + 180) / bin);
 }
 
+int cal_n_base (const int in)
+{
+  int value = 0;
+  bool find = false;
+  if (in == 0) return 0;
+  while ((value + value * value) != in && value < 100000){
+    value ++;
+    find = true;
+  }
+  if (find){
+    return value;
+  }
+  else {
+    return -1;
+  }
+}
+
 
 int main(int argc, char * argv[])
 {
-  std::string iffile, idfile, ofile;
+  std::string iffile, igxsfile, idfile, ofile;
   double center, width;
   double gate;
   unsigned nDataInBlock;
 
   po::options_description desc ("Allow options");
   desc.add_options()
-      ("help,h", "print this message")
-      ("gate,g",  po::value<double > (&gate)->default_value (5.0),   "the probability of first hitting time smaller than the gate")
-      ("meta-center,c",  po::value<double > (&center)->default_value (180),   "center of the metastable set")
-      ("meta-width,w",  po::value<double > (&width)->default_value (30),   "width of the metastable set")
-      ("num-in-block,n",  po::value<unsigned > (&nDataInBlock)->default_value (1),   "number of data in a block")
-      ("input-dir,d", po::value<std::string > (&idfile)->default_value ("success.dir.name"), "file including angle file names")
-      ("input-file-name,f", po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "file including traj file names")
-      ("output,o", po::value<std::string > (&ofile)->default_value ("fmpt.out"), "the output of first mean passage time");
+    ("help,h", "print this message")
+    ("gate,g",  po::value<double > (&gate)->default_value (5.0),   "the probability of first hitting time smaller than the gate")
+    ("meta-center,c",  po::value<double > (&center)->default_value (180),   "center of the metastable set")
+    ("meta-width,w",  po::value<double > (&width)->default_value (30),   "width of the metastable set")
+    ("num-in-block,n",  po::value<unsigned > (&nDataInBlock)->default_value (1),   "number of data in a block")
+    ("input-dir,d", po::value<std::string > (&idfile)->default_value ("success.dir.name"), "file including successful dir names")
+    ("input-angle-name", po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "the angle file name")
+    ("input-gxs-name", po::value<std::string > (&igxsfile)->default_value ("gxs12.out"), "the gxs file name")
+    ("output,o", po::value<std::string > (&ofile)->default_value ("fmpt.out"), "the output of first mean passage time");
   
       
   po::variables_map vm;
@@ -77,11 +95,16 @@ int main(int argc, char * argv[])
   // average
   BlockAverage_acc ba (nDataInBlock);
   BlockAverage_acc ba_fht (nDataInBlock);
+  BlockAverage_acc ba_1 (nDataInBlock);
+  vector<BlockAverage_acc > vecb;
+  vector<vector<BlockAverage_acc > > matA;
+  vector<double > gxs1;
+  vector<vector<double > > gxs2;
   
   // analyze traj
   ifstream fpname (idfile.c_str());
   if (!fpname){
-    std::cerr << "cannot open file " << idfile << std::endl;
+    std::cerr << "\n cannot open file " << idfile << std::endl;
     return 1;
   }
   char nameline [MaxLineLength];
@@ -89,52 +112,114 @@ int main(int argc, char * argv[])
   int countFile = 0;
   int countFound = 0;
   int countUnFound = 0;
+  int nBase = -1;
+  int countNumInGate = 0;
   
   while (fpname.getline(nameline, MaxLineLength)){
     if (nameline[0] == '#') continue;
-    string filename (nameline);
-    filename += string("/") + iffile;
-    ifstream angname (filename.c_str());
+    string filename_ang (nameline);
+    filename_ang += string("/") + iffile;
+    ifstream angname (filename_ang.c_str());
     if (!angname){
-      std::cerr << "cannot open file " << filename << std::endl;
+      std::cerr << "\n cannot open file " << filename_ang << std::endl;
       return 1;
     }
-    if (printCount == 10) {
-      printf ("# reading file %s       \r", nameline);
+    string filename_gxs (nameline);
+    filename_gxs += string("/") + igxsfile;
+    ifstream gxsname (filename_gxs.c_str());
+    if (!gxsname){
+      std::cerr << "\n cannot open file " << filename_gxs << std::endl;
+      return 1;
+    }
+    if (printCount == 100) {
+      printf ("# reading file %s and %s      \r", filename_ang.c_str(), filename_gxs.c_str());
+      fflush (stdout);
       printCount = 0;
     }
     printCount ++;
     countFile ++;
     double times;
     double anglev;
-    char valueline [MaxLineLength];
+    char valueline_ang [MaxLineLength];
+    char valueline_gxs [MaxLineLength];
     bool find = false;
-    while (angname.getline(valueline, MaxLineLength)){
-      if (valueline[0] == '#' || valueline[0] == '@') continue;
+    while (angname.getline(valueline_ang, MaxLineLength) &&
+	   gxsname.getline(valueline_gxs, MaxLineLength)){
+      if (valueline_ang[0] == '#' || valueline_ang[0] == '@' ||
+	  valueline_gxs[0] == '#' || valueline_gxs[0] == '@') {
+	cerr << "data files should not contain any line starting with # or @\n" << endl;
+	return 1;
+      }
       vector<string > words;
-      StringOperation::split (string(valueline), words);
+      StringOperation::split (string(valueline_ang), words);
       if (words.size() < 2) {
-	cerr << "wrong file format of " << filename << endl;
+	cerr << "wrong file format of " << filename_ang << endl;
 	exit (1);
       }
       times  = (atof(words[0].c_str()));
       anglev = (atof(words[1].c_str()));
+      StringOperation::split (string(valueline_gxs), words);
+      if (nBase < 0) {
+	nBase = cal_n_base (words.size() - 1);
+	if (nBase == -1){
+	  cerr << "invalid input line of " << filename_gxs << ", may be more than 100000 bases? " << endl;
+	  return 1;
+	}
+	gxs1.resize (nBase);
+	gxs2.resize (nBase);
+	vecb.resize (nBase);
+	matA.resize (nBase);
+	for (int ii = 0; ii < nBase; ++ii){
+	  gxs2[ii].resize (nBase);
+	  matA[ii].resize (nBase);
+	}
+      }
+      for (int ii = 0; ii < nBase; ++ii){
+	gxs1[ii] = atof (words[1+ii].c_str());
+	for (int jj = 0; jj < nBase; ++jj){
+	  gxs2[ii][jj] = atof (words[1 + nBase + ii * nBase + jj].c_str());
+	}
+      }
+
       if (ms.inSet(anglev)) {
 	find = true;
 	break;
       }
+      if (times > gate) {
+	find = false;
+	break;
+      }
     }
-    if (find == true){
-      if (times <=gate){
-	ba.deposite (1.0);
+    
+    if (find == true && times <= gate){
+      double sum1 = 0.;
+      double sum2 = 0.;
+      for (int ii = 0; ii < nBase; ++ii){
+	sum1 += gxs1[ii];
+	for (int jj = 0; jj < nBase; ++jj){
+	  sum2 += gxs2[ii][jj];
+	}
       }
-      else {
-	ba.deposite (0.0);
+      double tmpexp = exp( - sum1 - 0.5 * sum2);
+      countNumInGate ++;
+      ba.deposite (1.0 * tmpexp);
+      // printf ("time %f deposited: %e\n", times, tmpexp);
+      for (int ii = 0; ii < nBase; ++ii){
+	vecb[ii].deposite (1.0 * gxs1[ii] * tmpexp);
+	for (int jj = 0; jj < nBase; ++jj){
+	  matA[ii][jj].deposite(1.0 * gxs2[ii][jj]  * tmpexp);
+	}
       }
-      ba_fht.deposite (times);
       countFound ++ ;
     }
     else {
+      ba.deposite (0.0);
+      for (int ii = 0; ii < nBase; ++ii){
+	vecb[ii].deposite (0.0);
+	for (int jj = 0; jj < nBase; ++jj){
+	  matA[ii][jj].deposite(0.0);
+	}
+      }
       countUnFound ++;
     }
   }
@@ -144,15 +229,42 @@ int main(int argc, char * argv[])
 	  countFile,
 	  countFound, ((double)(countFound))/((double)(countFile)) * 100.,
 	  countUnFound, ((double)(countUnFound))/((double)(countFile)) * 100.);
+  printf ("# read %d files, %d ( %.1f %% ) hit meta in gate\n",
+	  countFile,
+	  countNumInGate, ((double)(countNumInGate))/((double)(countFile)) * 100.);
 
   ba.calculate ();
-  ba_fht.calculate ();
   
-  printf ("# avg. first hitting time\n");
-  printf ("%f   %f\n", ba_fht.getAvg(), ba_fht.getAvgError());
   printf ("# prob. first hitting time smaller than %f\n", gate);
   printf ("%e   %e\n", ba.getAvg(), ba.getAvgError());
-  
+
+  printf ("# vect b\n");
+  for (int ii = 0; ii < nBase; ++ii){
+    vecb[ii].calculate();
+    printf ("%e   ", vecb[ii].getAvg());
+  }
+  printf ("\n# vect b error\n");
+  for (int ii = 0; ii < nBase; ++ii){
+    printf ("%e   ", vecb[ii].getAvgError());
+  }
+  printf ("\n#;\n");
+  printf ("# mat A\n");
+  for (int ii = 0; ii < nBase; ++ii){
+    for (int jj = 0; jj < nBase; ++jj){
+      matA[ii][jj].calculate();
+      printf ("%e   ", matA[ii][jj].getAvg());
+    }
+    printf (";\n");
+  }
+  printf ("# mat A error\n");
+  for (int ii = 0; ii < nBase; ++ii){
+    for (int jj = 0; jj < nBase; ++jj){
+      matA[ii][jj].calculate();
+      printf ("%e   ", matA[ii][jj].getAvgError());
+    }
+    printf (";\n");
+  }
+
 
   //   double sum_j = 0.;
   //   if (ms.inSet(anglev[0])) {
