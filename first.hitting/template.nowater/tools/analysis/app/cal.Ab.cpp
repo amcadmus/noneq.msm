@@ -113,6 +113,7 @@ int main(int argc, char * argv[])
   int countFound = 0;
   int countUnFound = 0;
   int nBase = -1;
+  int countNumInGate = 0;
   
   while (fpname.getline(nameline, MaxLineLength)){
     if (nameline[0] == '#') continue;
@@ -131,7 +132,7 @@ int main(int argc, char * argv[])
       return 1;
     }
     if (printCount == 100) {
-      printf ("# reading file %s and %s      \r", filename_ang.c_str(), filename_gxs.c_str());
+      // printf ("# reading file %s and %s      \r", filename_ang.c_str(), filename_gxs.c_str());
       fflush (stdout);
       printCount = 0;
     }
@@ -198,7 +199,9 @@ int main(int argc, char * argv[])
       }
       double tmpexp = exp( - sum1 - 0.5 * sum2);
       if (times < gate){
+	countNumInGate ++;
 	ba.deposite (1.0 * tmpexp);
+	printf ("time %f deposited: %e\n", times, tmpexp);
 	// ba.deposite (1.0 * (1. - sum1));
 	// ba.deposite (1.0 * exp( - sum1));
 	// ba.deposite (1.0);
@@ -235,6 +238,9 @@ int main(int argc, char * argv[])
 	  countFile,
 	  countFound, ((double)(countFound))/((double)(countFile)) * 100.,
 	  countUnFound, ((double)(countUnFound))/((double)(countFile)) * 100.);
+  printf ("# read %d files, %d ( %.1f %% ) hit meta in gate\n",
+	  countFile,
+	  countNumInGate, ((double)(countNumInGate))/((double)(countFile)) * 100.);
 
   ba.calculate ();
   ba_fht.calculate ();

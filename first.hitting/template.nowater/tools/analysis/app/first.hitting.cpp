@@ -105,8 +105,8 @@ int main(int argc, char * argv[])
     }
     printCount ++;
     countFile ++;
-    vector<double > times;
-    vector<double > anglev;
+    double times;
+    double anglev;
     char valueline [MaxLineLength];
     bool find = false;
     while (angname.getline(valueline, MaxLineLength)){
@@ -117,21 +117,21 @@ int main(int argc, char * argv[])
 	cerr << "wrong file format of " << filename << endl;
 	exit (1);
       }
-      times .push_back (atof(words[0].c_str()));
-      anglev.push_back (atof(words[1].c_str()));
-      if (ms.inSet(anglev.back())) {
+      times  = (atof(words[0].c_str()));
+      anglev = (atof(words[1].c_str()));
+      if (ms.inSet(anglev)) {
 	find = true;
 	break;
       }
     }
     if (find == true){
-      if (times.back() < gate){
+      if (times < gate){
 	ba.deposite (1.0);
       }
       else {
 	ba.deposite (0.0);
       }
-      ba_fht.deposite (times.back());
+      ba_fht.deposite (times);
       countFound ++ ;
     }
     else {
