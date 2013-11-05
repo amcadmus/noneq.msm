@@ -66,11 +66,11 @@ do
 	echo "failed at mdrun exit"; exit
     fi
 
-    echo 2 2 | trjconv -center -pbc whole &> run.log
-    if [ $? -ne 0 ]; then
-	echo "failed at trjconv exit"; exit
-    fi
-    mv -f trajout.xtc butane.xtc
+    # echo 2 2 | trjconv -center -pbc whole &> run.log
+    # if [ $? -ne 0 ]; then
+    # 	echo "failed at trjconv exit"; exit
+    # fi
+    # mv -f trajout.xtc butane.xtc
     g_angle -type dihedral -od angdist.xvg  -ov angaver.xvg -xvg none &> run.log
     if [ $? -ne 0 ]; then
 	echo "failed at g_angle exit"; exit
@@ -81,7 +81,7 @@ do
     if [ $tmpid -lt $fht_parallel_num_pro ]; then
 	cp -a ..//fht.$count ..//backup.fht.$count
     fi
-    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg
+    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg    butane.xtc ener.edr
     
     cd $cwd
     # echo "$my_dir/angle.dat" >> angle.name

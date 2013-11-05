@@ -29,10 +29,14 @@ function make_top () {
     echo ''>> topol.top
     echo '[ atoms ]'>> topol.top
     echo '; nr    type    resdnr  resd    atom    cgnr    charge  mass'>> topol.top
-    echo '1       CH3     1       C4      CH3     1       0.0     15.035'>> topol.top
-    echo '2       CH2     1       C4      CH2     1       0.0     14.027'>> topol.top
-    echo '3       CH2     1       C4      CH2     1       0.0     14.027'>> topol.top
-    echo '4       CH3     1       C4      CH3     1       0.0     15.035'>> topol.top
+    # echo '1       CH3     1       C4      CH3     1       0.0     15.035'>> topol.top
+    # echo '2       CH2     1       C4      CH2     1       0.0     14.027'>> topol.top
+    # echo '3       CH2     1       C4      CH2     1       0.0     14.027'>> topol.top
+    # echo '4       CH3     1       C4      CH3     1       0.0     15.035'>> topol.top
+    echo '1       CH3     1       C4      CH3     1       0.0     1.'>> topol.top
+    echo '2       CH2     1       C4      CH2     1       0.0     1.'>> topol.top
+    echo '3       CH2     1       C4      CH2     1       0.0     1.'>> topol.top
+    echo '4       CH3     1       C4      CH3     1       0.0     1.'>> topol.top
     echo ''>> topol.top
     echo '[ bonds ]'>> topol.top
     echo '; ai    aj      funct   param'>> topol.top

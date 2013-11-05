@@ -10,7 +10,7 @@ fht_frame_feq=0.02		# ps
 fht_energy_feq=10.0		# ps
 
 fht_noSdRange=0.0		# nm
-fht_taut=1.0			# ps
+fht_taut=0.1			# ps
 fht_barostat=no			# Parrinello-Rahman or no
 fht_taup=2.0			# ps
 
