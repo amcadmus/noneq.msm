@@ -44,10 +44,27 @@ int cal_n_base (const int in)
   }
 }
 
+void
+read_base_info (const string & ibfile,
+		vector<double > & kk)
+{
+  double tmp;
+  kk.clear(); 
+  FILE * fp = fopen (ibfile.c_str(), "r");
+  if (fp == NULL){
+    cerr << "cannot open file " << ibfile << endl;
+    exit(1);
+  }
+  while (fscanf (fp, "%lf", &tmp) == 1){
+    kk.push_back (tmp);
+  }
+  fclose (fp);
+}
+
 
 int main(int argc, char * argv[])
 {
-  std::string iffile, igxsfile, idfile, ofile;
+  std::string iffile, igxsfile, idfile, ibfile, ofile;
   double center, width;
   double gate;
   unsigned nDataInBlock;
@@ -59,9 +76,10 @@ int main(int argc, char * argv[])
     ("meta-center,c",  po::value<double > (&center)->default_value (180),   "center of the metastable set")
     ("meta-width,w",  po::value<double > (&width)->default_value (30),   "width of the metastable set")
     ("num-in-block,n",  po::value<unsigned > (&nDataInBlock)->default_value (1),   "number of data in a block")
+    ("input-base-info,b", po::value<std::string > (&ibfile)->default_value ("base.info"), "the input base info")
     ("input-dir,d", po::value<std::string > (&idfile)->default_value ("success.dir.name"), "file including successful dir names")
-    ("input-angle-name", po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "the angle file name")
-    ("input-gxs-name", po::value<std::string > (&igxsfile)->default_value ("gxs12.out"), "the gxs file name")
+    ("input-angle-name,a", po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "the angle file name")
+    ("input-gxs-name,x", po::value<std::string > (&igxsfile)->default_value ("gxs12.out"), "the gxs file name")
     ("output,o", po::value<std::string > (&ofile)->default_value ("fmpt.out"), "the output of first mean passage time");
   
       
@@ -84,6 +102,11 @@ int main(int argc, char * argv[])
   // cout << "# angle names is " << ifile << endl;
   // cout << "# traj names  is " << tfile << endl;
 
+  int nBase = -1;
+  vector<double > baseKK;
+  read_base_info (ibfile, baseKK);
+  nBase = int(baseKK.size());
+  
   double metal, metau;
   metal = center - width;
   if (metal < -180) metal += 360.;
@@ -96,10 +119,18 @@ int main(int argc, char * argv[])
   BlockAverage_acc ba (nDataInBlock);
   BlockAverage_acc ba_fht (nDataInBlock);
   BlockAverage_acc ba_1 (nDataInBlock);
-  vector<BlockAverage_acc > vecb;
-  vector<vector<BlockAverage_acc > > matA;
   vector<double > gxs1;
   vector<vector<double > > gxs2;
+  vector<BlockAverage_acc > vecb;
+  vector<vector<BlockAverage_acc > > matA;
+  gxs1.resize (nBase);
+  gxs2.resize (nBase);
+  vecb.resize (nBase);
+  matA.resize (nBase);
+  for (int ii = 0; ii < nBase; ++ii){
+    gxs2[ii].resize (nBase);
+    matA[ii].resize (nBase);
+  }
   
   // analyze traj
   ifstream fpname (idfile.c_str());
@@ -112,7 +143,6 @@ int main(int argc, char * argv[])
   int countFile = 0;
   int countFound = 0;
   int countUnFound = 0;
-  int nBase = -1;
   int countNumInGate = 0;
   
   while (fpname.getline(nameline, MaxLineLength)){
@@ -159,21 +189,21 @@ int main(int argc, char * argv[])
       times  = (atof(words[0].c_str()));
       anglev = (atof(words[1].c_str()));
       StringOperation::split (string(valueline_gxs), words);
-      if (nBase < 0) {
-	nBase = cal_n_base (words.size() - 1);
-	if (nBase == -1){
-	  cerr << "invalid input line of " << filename_gxs << ", may be more than 100000 bases? " << endl;
-	  return 1;
-	}
-	gxs1.resize (nBase);
-	gxs2.resize (nBase);
-	vecb.resize (nBase);
-	matA.resize (nBase);
-	for (int ii = 0; ii < nBase; ++ii){
-	  gxs2[ii].resize (nBase);
-	  matA[ii].resize (nBase);
-	}
-      }
+      // if (nBase < 0) {
+      // 	nBase = cal_n_base (words.size() - 1);
+      // 	if (nBase == -1){
+      // 	  cerr << "invalid input line of " << filename_gxs << ", may be more than 100000 bases? " << endl;
+      // 	  return 1;
+      // 	}
+      // 	gxs1.resize (nBase);
+      // 	gxs2.resize (nBase);
+      // 	vecb.resize (nBase);
+      // 	matA.resize (nBase);
+      // 	for (int ii = 0; ii < nBase; ++ii){
+      // 	  gxs2[ii].resize (nBase);
+      // 	  matA[ii].resize (nBase);
+      // 	}
+      // }
       for (int ii = 0; ii < nBase; ++ii){
 	gxs1[ii] = atof (words[1+ii].c_str());
 	for (int jj = 0; jj < nBase; ++jj){
@@ -195,9 +225,9 @@ int main(int argc, char * argv[])
       double sum1 = 0.;
       double sum2 = 0.;
       for (int ii = 0; ii < nBase; ++ii){
-	sum1 += gxs1[ii];
+	sum1 += gxs1[ii] * baseKK[ii];
 	for (int jj = 0; jj < nBase; ++jj){
-	  sum2 += gxs2[ii][jj];
+	  sum2 += gxs2[ii][jj] * baseKK[ii] * baseKK[jj];
 	}
       }
       double tmpexp = exp( - sum1 - 0.5 * sum2);
