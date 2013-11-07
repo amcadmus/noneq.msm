@@ -22,7 +22,7 @@ fi
 #rm -f success.dir.name
 touch success.dir.name
 
-make_gaussian_tables
+make_cos_tables
 targets=`awk '{print $1}' $fht_equi_dir/equi.frame | head -n $fht_num_conf_use`
 
 fht_main_dir=result.fhts
@@ -49,7 +49,7 @@ do
     cp $fht_equi_dir/angle.ndx	$my_dir
 #    cp $fht_equi_dir/topol.top	$my_dir
     cd $my_dir
-    make_gaussian_top
+    make_cos_top
 #    make_tables
     cp $cwd/table_d*xvg .
     set_parameters_fht grompp.mdp
