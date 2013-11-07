@@ -9,7 +9,7 @@ function make_gaussian_tables () {
 	table_list="$table_list $cwd/table_d${table_count}.xvg"
 	table_scale="$table_scale 1.0"
 	table_count=$(($table_count+1))
-	cat $fht_gaussian_base_max >> base.info
+	echo $fht_gaussian_base_max >> base.info
     done
     # if test $table_count -ne 0; then
     # 	tmp_s1=" \" ${table_list} \" "
