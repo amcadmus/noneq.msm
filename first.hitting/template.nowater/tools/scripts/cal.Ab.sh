@@ -10,11 +10,10 @@ if test $# -lt 1; then
     exit
 fi
 
-rm -f base.info
-
-for ii in $fht_gaussian_base_position;
-do
-    echo $fht_gaussian_base_max >> base.info
-done
+# rm -f base.info
+# for ii in $fht_gaussian_base_position;
+# do
+#     echo $fht_gaussian_base_max >> base.info
+# done
 
 /home/mi/wanghan/study/noneq.msm/first.hitting/template.nowater/tools/analysis/cal.Ab.noAvg -g $1

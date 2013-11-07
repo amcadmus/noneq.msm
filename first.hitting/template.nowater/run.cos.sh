@@ -47,6 +47,7 @@ do
     cp $fht_equi_dir/conf.gro	$my_dir
     cp $fht_equi_dir/grompp.mdp	$my_dir
     cp $fht_equi_dir/angle.ndx	$my_dir
+    cp $cwd/$fht_cos_base_k_file $my_dir
 #    cp $fht_equi_dir/topol.top	$my_dir
     cd $my_dir
     make_cos_top
