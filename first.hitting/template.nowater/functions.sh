@@ -2,12 +2,14 @@ function make_tables () {
     table_count=0
     table_list=""
     table_scale=""
+    rm -f base.info
     for ii in $fht_gaussian_base_position;
     do
-	$cwd/tools/dihedral.table/gaussian --max $fht_gaussian_base_max --mu $ii --sigma $fht_gaussian_base_sigma -o table_d${table_count}.xvg
+	$cwd/tools/dihedral.table/gaussian --max 1.0 --mu $ii --sigma $fht_gaussian_base_sigma -o table_d${table_count}.xvg
 	table_list="$table_list $cwd/table_d${table_count}.xvg"
 	table_scale="$table_scale 1.0"
 	table_count=$(($table_count+1))
+	cat $fht_gaussian_base_max >> base.info
     done
     # if test $table_count -ne 0; then
     # 	tmp_s1=" \" ${table_list} \" "
@@ -62,7 +64,7 @@ function make_top () {
     top_item_count=0
     for i in `echo $fht_gaussian_base_position`
     do
-	echo "1      2       3       4       8	$top_item_count	1.0" >> topol.top
+	echo "1      2       3       4       8	$top_item_count	$fht_gaussian_base_max" >> topol.top
 	top_item_count=$(($top_item_count+1))
     done    
     echo ''>> topol.top
