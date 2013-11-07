@@ -18,9 +18,9 @@ fht_meta_low=150		# deg.
 fht_meta_up=-150		# deg.
 
 # parameters for gaussian base
-fht_gaussian_base_max=10
+fht_gaussian_base_max=1.0
 fht_gaussian_base_sigma=25
-fht_gaussian_base_position=
+fht_gaussian_base_position="120 -120"
 
 # parameters for cos base
 fht_cos_base_number=5
