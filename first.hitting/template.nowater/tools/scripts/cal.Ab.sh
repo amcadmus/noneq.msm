@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make -C /home/mi/wanghan/study/noneq.msm/first.hitting/template.nowater/tools/analysis -j8
+make -C /home/mi/wanghan/study/noneq.msm/first.hitting/template.nowater/tools/analysis -j8 &>/dev/null
 
 source parameters.sh
 
@@ -16,4 +16,11 @@ fi
 #     echo $fht_gaussian_base_max >> base.info
 # done
 
-/home/mi/wanghan/study/noneq.msm/first.hitting/template.nowater/tools/analysis/cal.Ab.noAvg -g $1
+filename=fht.`printf %.3f $1`.out
+
+if test -f $filename; then
+    echo "# back up $filename"
+    mv $filename $filename.`date +%s`
+fi
+
+/home/mi/wanghan/study/noneq.msm/first.hitting/template.nowater/tools/analysis/cal.Ab.noAvg -g $1 > $filename
