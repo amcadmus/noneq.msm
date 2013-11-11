@@ -99,8 +99,9 @@ int main(int argc, char * argv[])
       std::cerr << "cannot open file " << filename << std::endl;
       return 1;
     }
-    if (printCount == 10) {
+    if (printCount == 100) {
       printf ("# reading file %s       \r", nameline);
+      fflush (stdout);
       printCount = 0;
     }
     printCount ++;
