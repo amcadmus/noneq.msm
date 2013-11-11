@@ -88,7 +88,7 @@ do
 
     # hit meta, remove useless files
     if test $bool_hit_set -eq 1; then
-	rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg    butane.xtc ener.edr &
+    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg    butane.xtc ener.edr cos.k.in confout.gro &
     fi
     
     cd $cwd
