@@ -105,7 +105,7 @@ int main(int argc, char * argv[])
     else {
       if (printCount == 100) {
 	printf ("# reading file %s       \r", nameline);
-      fflush (stdout);
+	fflush (stdout);
 	printCount = 0;
       }
       printCount ++;
@@ -129,8 +129,7 @@ int main(int argc, char * argv[])
 	}
 	if (times > gate) {
 	  find = false;
-	  cerr << "false find hitting, this sould not happen! check file " << filename << endl;
-	  return 1;
+	  break;
 	}
       }
       if (find == true && times <= gate){
@@ -138,8 +137,8 @@ int main(int argc, char * argv[])
 	countFound ++ ;
       }
       else {
-	cerr << "cannot file hitting in a existing folder, this sould not happen! check file " << filename << endl;
-	return 1;
+	ba.deposite (0.0);
+	countUnFound ++;
       }
     }
   }
