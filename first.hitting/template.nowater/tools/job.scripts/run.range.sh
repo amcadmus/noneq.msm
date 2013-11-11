@@ -15,6 +15,6 @@ do
     dir=set.$printi
     echo $dir;
     cd $dir
-    nohup ./run.gaussian.sh &
+    nohup ./run.cos.sh &
     cd ..
 done

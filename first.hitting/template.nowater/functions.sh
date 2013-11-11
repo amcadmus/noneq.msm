@@ -178,6 +178,7 @@ function set_parameters_fht () {
     if ! `grep nstcalcenergy $file &>/dev/null`; then
 	echo "nstcalcenergy = 1.0" >> $file
     fi
+    fht_time=`echo "$fht_stop_time + $fht_frame_feq" | bc -l`
     fht_nstep=`echo "$fht_time / $fht_dt" | bc -l | cut -d '.' -f 1`
     fht_xtcout_feq=`echo "$fht_frame_feq / $fht_dt" | bc -l | cut -d '.' -f 1`
     fht_xvout_feq=$fht_xtcout_feq

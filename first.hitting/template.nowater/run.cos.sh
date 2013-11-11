@@ -33,14 +33,13 @@ do
     test $runid -ne $fht_parallel_my_id && continue
     test ! -d $fht_main_dir && mkdir -p $fht_main_dir
     my_dir=$fht_main_dir/fht.$count
+    if grep $my_dir success.dir.name &> /dev/null; then
+	echo "# existing successful dir $my_dir, continue"
+	continue
+    fi
     if test -d $my_dir; then
-	if grep $my_dir success.dir.name &> /dev/null; then
-	    echo "# existing successful dir $my_dir, continue"
-	    continue
-	else
-	    echo "# existing dir $my_dir, but failed, remrove"
-	    rm -fr $my_dir
-	fi
+	echo "# existing dir $my_dir, but failed, remrove"
+	rm -fr $my_dir
     fi
     echo "# doing in dir $my_dir"
     mkdir $my_dir
@@ -76,15 +75,28 @@ do
     if [ $? -ne 0 ]; then
 	echo "failed at g_angle exit"; exit
     fi
+    
+    traj_last_angle=`tail -n 1 angaver.xvg | awk '{print $1}'`
+    bool_hit_set=`echo "$traj_last_angle <= $fht_stop_time" | bc `
 
     tmpid=`echo "$count - $fht_parallel_num_pro" | bc -l`
     echo "tmpid is $tmpid"
-    if [ $tmpid -lt $fht_parallel_num_pro ]; then
+    if [ $tmpid -le 0 ]; then
 	cp -a ..//fht.$count ..//backup.fht.$count
     fi
-    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg    butane.xtc ener.edr cos.k.in confout.gro
+
+    # hit meta, remove useless files
+    if test $bool_hit_set -eq 1; then
+	rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg    butane.xtc ener.edr cos.k.in confout.gro &
+    fi
     
     cd $cwd
+
+    # does not hit, remove the dir!
+    if test $bool_hit_set -eq 0; then
+	rm -fr $my_dir &
+    fi
+	
     # echo "$my_dir/angle.dat" >> angle.name
     # echo "$my_dir/gxs.out" >> gxs.name
     echo "$my_dir" >> success.dir.name

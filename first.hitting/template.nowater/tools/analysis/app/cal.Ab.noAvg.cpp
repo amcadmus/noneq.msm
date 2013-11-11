@@ -71,16 +71,16 @@ int main(int argc, char * argv[])
 
   po::options_description desc ("Allow options");
   desc.add_options()
-    ("help,h", "print this message")
-    ("gate,g",  po::value<double > (&gate)->default_value (5.0),   "the probability of first hitting time smaller than the gate")
-    ("meta-center,c",  po::value<double > (&center)->default_value (180),   "center of the metastable set")
-    ("meta-width,w",  po::value<double > (&width)->default_value (30),   "width of the metastable set")
-    ("num-in-block,n",  po::value<unsigned > (&nDataInBlock)->default_value (1),   "number of data in a block")
-    ("input-base-info,b", po::value<std::string > (&ibfile)->default_value ("base.info"), "the input base info")
-    ("input-dir,d", po::value<std::string > (&idfile)->default_value ("success.dir.name"), "file including successful dir names")
-    ("input-angle-name,a", po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "the angle file name")
-    ("input-gxs-name,x", po::value<std::string > (&igxsfile)->default_value ("gxs12.out"), "the gxs file name")
-    ("output,o", po::value<std::string > (&ofile)->default_value ("fmpt.out"), "the output of first mean passage time");
+      ("help,h", "print this message")
+      ("gate,g",  po::value<double > (&gate)->default_value (5.0),   "the probability of first hitting time smaller than the gate")
+      ("meta-center,c",  po::value<double > (&center)->default_value (180),   "center of the metastable set")
+      ("meta-width,w",  po::value<double > (&width)->default_value (30),   "width of the metastable set")
+      ("num-in-block,n",  po::value<unsigned > (&nDataInBlock)->default_value (1),   "number of data in a block")
+      ("input-base-info,b", po::value<std::string > (&ibfile)->default_value ("base.info"), "the input base info")
+      ("input-dir,d", po::value<std::string > (&idfile)->default_value ("success.dir.name"), "file including successful dir names")
+      ("input-angle-name,a", po::value<std::string > (&iffile)->default_value ("angaver.xvg"), "the angle file name")
+      ("input-gxs-name,x", po::value<std::string > (&igxsfile)->default_value ("gxs12.out"), "the gxs file name")
+      ("output,o", po::value<std::string > (&ofile)->default_value ("fmpt.out"), "the output of first mean passage time");
   
       
   po::variables_map vm;
@@ -149,100 +149,9 @@ int main(int argc, char * argv[])
     if (nameline[0] == '#') continue;
     string filename_ang (nameline);
     filename_ang += string("/") + iffile;
+    countFile ++;
     ifstream angname (filename_ang.c_str());
     if (!angname){
-      std::cerr << "\n cannot open file " << filename_ang << std::endl;
-      return 1;
-    }
-    string filename_gxs (nameline);
-    filename_gxs += string("/") + igxsfile;
-    ifstream gxsname (filename_gxs.c_str());
-    if (!gxsname){
-      std::cerr << "\n cannot open file " << filename_gxs << std::endl;
-      return 1;
-    }
-    if (printCount == 100) {
-      printf ("# reading file %s and %s      \r", filename_ang.c_str(), filename_gxs.c_str());
-      fflush (stdout);
-      printCount = 0;
-    }
-    printCount ++;
-    countFile ++;
-    double times;
-    double anglev;
-    char valueline_ang [MaxLineLength];
-    char valueline_gxs [MaxLineLength];
-    bool find = false;
-    while (angname.getline(valueline_ang, MaxLineLength) &&
-	   gxsname.getline(valueline_gxs, MaxLineLength)){
-      if (valueline_ang[0] == '#' || valueline_ang[0] == '@' ||
-	  valueline_gxs[0] == '#' || valueline_gxs[0] == '@') {
-	cerr << "data files should not contain any line starting with # or @\n" << endl;
-	return 1;
-      }
-      vector<string > words;
-      StringOperation::split (string(valueline_ang), words);
-      if (words.size() < 2) {
-	cerr << "wrong file format of " << filename_ang << endl;
-	exit (1);
-      }
-      times  = (atof(words[0].c_str()));
-      anglev = (atof(words[1].c_str()));
-      StringOperation::split (string(valueline_gxs), words);
-      // if (nBase < 0) {
-      // 	nBase = cal_n_base (words.size() - 1);
-      // 	if (nBase == -1){
-      // 	  cerr << "invalid input line of " << filename_gxs << ", may be more than 100000 bases? " << endl;
-      // 	  return 1;
-      // 	}
-      // 	gxs1.resize (nBase);
-      // 	gxs2.resize (nBase);
-      // 	vecb.resize (nBase);
-      // 	matA.resize (nBase);
-      // 	for (int ii = 0; ii < nBase; ++ii){
-      // 	  gxs2[ii].resize (nBase);
-      // 	  matA[ii].resize (nBase);
-      // 	}
-      // }
-      for (int ii = 0; ii < nBase; ++ii){
-	gxs1[ii] = atof (words[1+ii].c_str());
-	for (int jj = 0; jj < nBase; ++jj){
-	  gxs2[ii][jj] = atof (words[1 + nBase + ii * nBase + jj].c_str());
-	}
-      }
-
-      if (ms.inSet(anglev)) {
-	find = true;
-	break;
-      }
-      if (times > gate) {
-	find = false;
-	break;
-      }
-    }
-    
-    if (find == true && times <= gate){
-      double sum1 = 0.;
-      double sum2 = 0.;
-      for (int ii = 0; ii < nBase; ++ii){
-	sum1 += gxs1[ii] * baseKK[ii];
-	for (int jj = 0; jj < nBase; ++jj){
-	  sum2 += gxs2[ii][jj] * baseKK[ii] * baseKK[jj];
-	}
-      }
-      double tmpexp = exp( - sum1 - 0.5 * sum2);
-      countNumInGate ++;
-      ba.deposite (1.0 * tmpexp);
-      // printf ("time %f deposited: %e\n", times, tmpexp);
-      for (int ii = 0; ii < nBase; ++ii){
-	vecb[ii].deposite (1.0 * gxs1[ii] * tmpexp);
-	for (int jj = 0; jj < nBase; ++jj){
-	  matA[ii][jj].deposite(1.0 * gxs2[ii][jj]  * tmpexp);
-	}
-      }
-      countFound ++ ;
-    }
-    else {
       ba.deposite (0.0);
       for (int ii = 0; ii < nBase; ++ii){
 	vecb[ii].deposite (0.0);
@@ -250,7 +159,91 @@ int main(int argc, char * argv[])
 	  matA[ii][jj].deposite(0.0);
 	}
       }
-      countUnFound ++;
+      countUnFound ++;      
+    }
+    else {
+      string filename_gxs (nameline);
+      filename_gxs += string("/") + igxsfile;
+      ifstream gxsname (filename_gxs.c_str());
+      if (!gxsname){
+	std::cerr << "\n cannot open file " << filename_gxs << std::endl;
+	return 1;
+      }
+      if (printCount == 100) {
+	printf ("# reading file %s and %s      \r", filename_ang.c_str(), filename_gxs.c_str());
+	fflush (stdout);
+	printCount = 0;
+      }
+      printCount ++;
+      double times;
+      double anglev;
+      char valueline_ang [MaxLineLength];
+      char valueline_gxs [MaxLineLength];
+      bool find = false;
+      while (angname.getline(valueline_ang, MaxLineLength) &&
+	     gxsname.getline(valueline_gxs, MaxLineLength)){
+	if (valueline_ang[0] == '#' || valueline_ang[0] == '@' ||
+	    valueline_gxs[0] == '#' || valueline_gxs[0] == '@') {
+	  cerr << "data files should not contain any line starting with # or @\n" << endl;
+	  return 1;
+	}
+	vector<string > words;
+	StringOperation::split (string(valueline_ang), words);
+	if (words.size() < 2) {
+	  cerr << "wrong file format of " << filename_ang << endl;
+	  exit (1);
+	}
+	times  = (atof(words[0].c_str()));
+	anglev = (atof(words[1].c_str()));
+	StringOperation::split (string(valueline_gxs), words);
+	for (int ii = 0; ii < nBase; ++ii){
+	  gxs1[ii] = atof (words[1+ii].c_str());
+	  for (int jj = 0; jj < nBase; ++jj){
+	    gxs2[ii][jj] = atof (words[1 + nBase + ii * nBase + jj].c_str());
+	  }
+	}
+
+	if (ms.inSet(anglev)) {
+	  find = true;
+	  break;
+	}
+	if (times > gate) {
+	  find = false;
+	  break;
+	}
+      }
+    
+      if (find == true && times <= gate){
+	double sum1 = 0.;
+	double sum2 = 0.;
+	for (int ii = 0; ii < nBase; ++ii){
+	  sum1 += gxs1[ii] * baseKK[ii];
+	  for (int jj = 0; jj < nBase; ++jj){
+	    sum2 += gxs2[ii][jj] * baseKK[ii] * baseKK[jj];
+	  }
+	}
+	double tmpexp = exp( - sum1 - 0.5 * sum2);
+	countNumInGate ++;
+	ba.deposite (1.0 * tmpexp);
+	// printf ("time %f deposited: %e\n", times, tmpexp);
+	for (int ii = 0; ii < nBase; ++ii){
+	  vecb[ii].deposite (1.0 * gxs1[ii] * tmpexp);
+	  for (int jj = 0; jj < nBase; ++jj){
+	    matA[ii][jj].deposite(1.0 * gxs2[ii][jj]  * tmpexp);
+	  }
+	}
+	countFound ++ ;
+      }
+      else {
+	ba.deposite (0.0);
+	for (int ii = 0; ii < nBase; ++ii){
+	  vecb[ii].deposite (0.0);
+	  for (int jj = 0; jj < nBase; ++jj){
+	    matA[ii][jj].deposite(0.0);
+	  }
+	}
+	countUnFound ++;
+      }
     }
   }
   

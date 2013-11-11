@@ -94,48 +94,52 @@ int main(int argc, char * argv[])
     if (nameline[0] == '#') continue;
     string filename (nameline);
     filename += string("/") + iffile;
+    countFile ++;
     ifstream angname (filename.c_str());
     if (!angname){
-      std::cerr << "cannot open file " << filename << std::endl;
-      return 1;
-    }
-    if (printCount == 100) {
-      printf ("# reading file %s       \r", nameline);
-      fflush (stdout);
-      printCount = 0;
-    }
-    printCount ++;
-    countFile ++;
-    double times = 0.;
-    double anglev;
-    char valueline [MaxLineLength];
-    bool find = false;
-    while (angname.getline(valueline, MaxLineLength)){
-      if (valueline[0] == '#' || valueline[0] == '@') continue;
-      vector<string > words;
-      StringOperation::split (string(valueline), words);
-      if (words.size() < 2) {
-	cerr << "wrong file format of " << filename << endl;
-	exit (1);
-      }
-      times  = (atof(words[0].c_str()));
-      anglev = (atof(words[1].c_str()));
-      if (ms.inSet(anglev)) {
-	find = true;
-	break;
-      }
-      if (times > gate) {
-	find = false;
-	break;
-      }
-    }
-    if (find == true && times <= gate){
-      ba.deposite (1.0);
-      countFound ++ ;
+      // std::cerr << "cannot open file " << filename << std::endl;
+      // return 1;
+      countUnFound ++;
+      ba.deposite (0.0);      
     }
     else {
-      ba.deposite (0.0);
-      countUnFound ++;
+      if (printCount == 100) {
+	printf ("# reading file %s       \r", nameline);
+	fflush (stdout);
+	printCount = 0;
+      }
+      printCount ++;
+      double times = 0.;
+      double anglev;
+      char valueline [MaxLineLength];
+      bool find = false;
+      while (angname.getline(valueline, MaxLineLength)){
+	if (valueline[0] == '#' || valueline[0] == '@') continue;
+	vector<string > words;
+	StringOperation::split (string(valueline), words);
+	if (words.size() < 2) {
+	  cerr << "wrong file format of " << filename << endl;
+	  exit (1);
+	}
+	times  = (atof(words[0].c_str()));
+	anglev = (atof(words[1].c_str()));
+	if (ms.inSet(anglev)) {
+	  find = true;
+	  break;
+	}
+	if (times > gate) {
+	  find = false;
+	  break;
+	}
+      }
+      if (find == true && times <= gate){
+	ba.deposite (1.0);
+	countFound ++ ;
+      }
+      else {
+	ba.deposite (0.0);
+	countUnFound ++;
+      }
     }
   }
   
