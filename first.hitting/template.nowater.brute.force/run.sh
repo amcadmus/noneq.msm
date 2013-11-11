@@ -33,26 +33,25 @@ do
     test $runid -ne $fht_parallel_my_id && continue
     test ! -d $fht_main_dir && mkdir -p $fht_main_dir
     my_dir=$fht_main_dir/fht.$count
+    if grep $my_dir success.dir.name &> /dev/null; then
+	echo "# existing successful dir $my_dir, continue"
+	continue
+    fi
     if test -d $my_dir; then
-	if grep $my_dir success.dir.name &> /dev/null; then
-	    echo "# existing successful dir $my_dir, continue"
-	    continue
-	else
-	    echo "# existing dir $my_dir, but failed, remrove"
-	    rm -fr $my_dir
-	fi
+	echo "# existing dir $my_dir, but failed, remrove"
+	rm -fr $my_dir
     fi
     echo "# doing in dir $my_dir"
     mkdir $my_dir
     cp $fht_equi_dir/conf.gro	$my_dir
     cp $fht_equi_dir/grompp.mdp	$my_dir
     cp $fht_equi_dir/angle.ndx	$my_dir
-    cp $cwd/$fht_cos_base_k_file $my_dir
+#    cp $cwd/$fht_cos_base_k_file $my_dir
 #    cp $fht_equi_dir/topol.top	$my_dir
     cd $my_dir
     make_cos_top
 #    make_tables
-    cp $cwd/table_d*xvg .
+#    cp $cwd/table_d*xvg .
     set_parameters_fht grompp.mdp
     
     start_time=`grep "^$count" $fht_equi_dir/equi.frame | awk '{print $2}'`
@@ -88,7 +87,7 @@ do
 
     # hit meta, remove useless files
     if test $bool_hit_set -eq 1; then
-    rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg    butane.xtc ener.edr cos.k.in confout.gro &
+	rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg    butane.xtc ener.edr cos.k.in confout.gro &
     fi
     
     cd $cwd

@@ -24,7 +24,7 @@ fht_gaussian_base_sigma=25
 fht_gaussian_base_position="120 -120"
 
 # parameters for cos base
-fht_cos_base_number=5
+fht_cos_base_number=0
 fht_cos_base_k_file=cos.k.in
 
 fht_parallel_num_pro=1		# n
