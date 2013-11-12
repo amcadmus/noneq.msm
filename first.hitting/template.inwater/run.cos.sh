@@ -24,7 +24,7 @@ touch success.dir.name
 
 make_cos_tables
 #targets=`awk '{print $1}' $fht_equi_dir/equi.frame | head -n $fht_num_conf_use`
-targets=`seq 1 $fht_num_conf_use`
+targets=`seq 0 $(($fht_num_conf_use-1))`
 
 fht_main_dir=result.fhts
 for i in $targets;
@@ -59,7 +59,7 @@ do
     equi_code=`echo "($count % $nframe_equi) + 1" | bc`
     equi_code=`printf %08d $equi_code`
     start_time=`grep "^$equi_code" $fht_equi_dir/equi.frame | awk '{print $2}'`
-    echo "# run with command `which grompp`"
+    echo "# run with command `which grompp`, starting time $start_time"
     $grompp_command -t $fht_equi_dir/traj.trr -time $start_time &> run.log
     if [ $? -ne 0 ]; then
 	echo "failed at grompp exit"; exit
@@ -85,7 +85,7 @@ do
 
     tmpid=`echo "$count - $fht_parallel_num_pro" | bc -l`
     echo "tmpid is $tmpid"
-    if [ $tmpid -le 0 ]; then
+    if [ $tmpid -lt 0 ]; then
 	cp -a ..//fht.$count ..//backup.fht.$count
     fi
 

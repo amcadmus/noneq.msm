@@ -1,25 +1,3 @@
-function make_gaussian_tables () {
-    table_count=0
-    table_list=""
-    table_scale=""
-    rm -f base.info
-    for ii in $fht_gaussian_base_position;
-    do
-	$cwd/tools/dihedral.table/gaussian --max 1.0 --mu $ii --sigma $fht_gaussian_base_sigma -o table_d${table_count}.xvg
-	table_list="$table_list $cwd/table_d${table_count}.xvg"
-	table_scale="$table_scale 1.0"
-	table_count=$(($table_count+1))
-	echo $fht_gaussian_base_max >> base.info
-    done
-    # if test $table_count -ne 0; then
-    # 	tmp_s1=" \" ${table_list} \" "
-    # 	tmp_s2=" \" ${table_scale} \" "	
-    # 	# command="$cwd/tools/dihedral.table/combine.table.1 --input-list ' ${table_list} ' --scale-list ' ${table_scale} ' -o $cwd/$my_dir/effective.table.xvg"
-    # 	# echo command is  $command
-    # 	$cwd/tools/dihedral.table/combine.table.1 --input-list $tmp_s1 --scale-list $tmp_s2
-    # fi
-}
-
 function make_cos_tables () {
     table_count=0
     if test $fht_cos_base_number -gt `grep -v \# $fht_cos_base_k_file | wc -l | awk '{print $1}'`; then
@@ -36,67 +14,6 @@ function make_cos_tables () {
 	echo $make_cos_top_kk >> base.info
 	table_count=$(($table_count+1))
     done
-}
-
-
-function make_gaussian_top () {
-    echo '; n-butane'							>  topol.top
-    echo '; by Han Wang (han.wang@fu-berlin.de) on 29.3.2013'		>> topol.top
-    echo '#include "gromos45a3.ff/forcefield.itp"'				>> topol.top
-    echo ''	>> topol.top
-    echo '[ moleculetype ]'>> topol.top
-    echo '; Name  nrexcl'>> topol.top
-    echo 'butane  3'>> topol.top
-    echo ''>> topol.top
-    echo '[ atoms ]'>> topol.top
-    echo '; nr    type    resdnr  resd    atom    cgnr    charge  mass'>> topol.top
-    echo '1       CH3     1       C4      CH3     1       0.0     15.035'>> topol.top
-    echo '2       CH2     1       C4      CH2     1       0.0     14.027'>> topol.top
-    echo '3       CH2     1       C4      CH2     1       0.0     14.027'>> topol.top
-    echo '4       CH3     1       C4      CH3     1       0.0     15.035'>> topol.top
-    # echo '1       CH3     1       C4      CH3     1       0.0     1.'>> topol.top
-    # echo '2       CH2     1       C4      CH2     1       0.0     1.'>> topol.top
-    # echo '3       CH2     1       C4      CH2     1       0.0     1.'>> topol.top
-    # echo '4       CH3     1       C4      CH3     1       0.0     1.'>> topol.top
-    echo ''>> topol.top
-    echo '[ bonds ]'>> topol.top
-    echo '; ai    aj      funct   param'>> topol.top
-    echo '1       2       2       gb_26'>> topol.top
-    echo '2       3       2       gb_26'>> topol.top
-    echo '3       4       2       gb_26'>> topol.top
-    echo ''>> topol.top
-    echo '[ pairs ]'>> topol.top
-    echo '; ai    aj      funct'>> topol.top
-    echo ';1      4       1'>> topol.top
-    echo ''>> topol.top
-    echo '[ exclusions ]'>> topol.top
-    echo '4 1'>> topol.top
-    echo ''>> topol.top
-    echo '[ angles ]'>> topol.top
-    echo '; ai    aj      ak      funct   param'>> topol.top
-    echo '1       2       3       2       ga_14'>> topol.top
-    echo '2       3       4       2       ga_14'>> topol.top
-    echo ''>> topol.top
-    echo '[ dihedrals ] '>> topol.top
-    echo '; ai    aj      ak      al      funct   tab_num k'>> topol.top
-    echo '1       2       3       4       1       gd_17'>> topol.top
-    top_item_count=0
-    for i in `echo $fht_gaussian_base_position`
-    do
-	echo "1      2       3       4       8	$top_item_count	$fht_gaussian_base_max" >> topol.top
-	top_item_count=$(($top_item_count+1))
-    done    
-    echo ''>> topol.top
-    echo '#include "gromos45a3.ff/spce.itp"'>> topol.top
-    echo ''>> topol.top
-    echo '[ system ]'>> topol.top
-    echo 'Butane in vacumm'>> topol.top
-    echo ''>> topol.top
-    echo '[ molecules ]'>> topol.top
-    echo 'butane  1'>> topol.top
-    echo 'SOL     0 '>> topol.top
-    echo ''>> topol.top
-    echo ''>> topol.top
 }
 
 
@@ -158,7 +75,7 @@ function make_cos_top () {
     echo ''>> topol.top
     echo '[ molecules ]'>> topol.top
     echo 'butane  1'>> topol.top
-    echo 'SOL     0 '>> topol.top
+    echo 'SOL     899 '>> topol.top
     echo ''>> topol.top
     echo ''>> topol.top
 }
@@ -193,8 +110,8 @@ function set_parameters_fht () {
     sed -e "/^tau_t/s/=.*/= $fht_taut/g" |\
     sed -e "/^tau_p/s/=.*/= $fht_taup/g" |\
     sed -e "/^nstep/s/=.*/= $fht_nstep/g" |\
-    sed -e "/^nstxout/s/=.*/= $fht_xvout_feq/g" |\
-    sed -e "/^nstvout/s/=.*/= $fht_xvout_feq/g" |\
+    sed -e "/^nstxout/s/=.*/= 0/g" |\
+    sed -e "/^nstvout/s/=.*/= 0/g" |\
     sed -e "/^nstfout/s/=.*/= 0/g" |\
     sed -e "/^nstenergy/s/=.*/= $fht_energy_feq_r/g" |\
     sed -e "/^nstcalcenergy/s/=.*/= $fht_energy_feq_r/g" |\
