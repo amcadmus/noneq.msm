@@ -1,0 +1,47 @@
+; n-butane
+; by Han Wang (han.wang@fu-berlin.de) on 29.3.2013
+#include "gromos45a3.ff/forcefield.itp"
+
+[ moleculetype ]
+; Name  nrexcl
+butane  3
+
+[ atoms ]
+; nr	type	resdnr	resd	atom	cgnr	charge	mass
+1	CH3	1	C4	CH3	1	0.0	15.035
+2	CH2	1	C4	CH2	1	0.0	14.027
+3	CH2	1	C4	CH2	1	0.0	14.027
+4	CH3	1	C4	CH3	1	0.0	15.035
+
+[ bonds ]
+; ai	aj	funct	param
+1	2	2	gb_26
+2	3	2	gb_26
+3	4	2	gb_26
+
+[ pairs ]
+; ai	aj	funct
+;1	4	1
+
+[ exclusions ]
+4 1
+
+[ angles ]
+; ai	aj	ak	funct	param
+1	2	3	2	ga_14
+2	3	4	2	ga_14
+
+[ dihedrals ] 
+; ai	aj	ak	al	funct	tab_num	k
+1       2       3       4       1       gd_17
+;1	2	3	4	8	0	0.5
+;1	2	3	4	8	1	0.5
+
+#include "gromos45a3.ff/spce.itp"
+
+[ system ]
+Butane in water
+
+[ molecules ]
+butane	1
+SOL	899
