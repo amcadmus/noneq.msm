@@ -259,7 +259,8 @@ int main(int argc, char * argv[])
   ba.calculate ();
   
   printf ("# prob. first hitting time smaller than %f\n", gate);
-  printf ("%e   %e\n", ba.getAvg(), ba.getAvgError());
+  printf ("# value   var    error\n");
+  printf ("%e   %e   %e\n", ba.getAvg(), ba.getVar(), ba.getAvgError());
 
   printf ("# vect b\n");
   for (int ii = 0; ii < nBase; ++ii){

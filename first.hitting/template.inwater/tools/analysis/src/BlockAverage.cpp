@@ -56,7 +56,7 @@ processData (const std::vector<double > & vec,
 void BlockAverage_acc::
 clear ()
 {
-  sum = blockSum2 = currentBlockSum = 0.;
+  sum = sum2 = blockSum2 = currentBlockSum = currentSum2 = 0.;
   nBlock = currentNDataInBlock = 0;
 }
 
@@ -64,7 +64,7 @@ void BlockAverage_acc::
 reinit (const unsigned & nDataInBlock_)
 {
   clear ();
-  avg = error_avg = 0.;
+  avg = var = error_avg = 0.;
   nDataInBlock = nDataInBlock_;
 }
 
@@ -84,14 +84,17 @@ void BlockAverage_acc::
 deposite (const double & vv)
 {
   currentBlockSum += vv;
+  currentSum2 += vv * vv;
   currentNDataInBlock ++;
   if (currentNDataInBlock == nDataInBlock){
     currentBlockSum /= double (currentNDataInBlock);
     sum += currentBlockSum;
     blockSum2 += currentBlockSum * currentBlockSum;
+    sum2 += currentSum2;
     nBlock ++;
     currentBlockSum = 0.;
-    currentNDataInBlock = 0;
+    currentSum2 = 0.;
+    currentNDataInBlock = 0.;
   }
 }
 
@@ -101,6 +104,9 @@ calculate ()
   avg = sum / double (nBlock);
   error_avg = ( blockSum2 - double(nBlock) * avg * avg ) / (double(nBlock) - 1.) / double(nBlock);
   error_avg = sqrt(error_avg);
+
+  int totNumData = nBlock * nDataInBlock;
+  var = (sum2 - double(totNumData) * avg * avg ) / (double(totNumData) - 1.); 
 }
 
 
