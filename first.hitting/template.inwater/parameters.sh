@@ -1,6 +1,7 @@
 #!/bin/bash
 
 fht_equi_dir=/home/mi/wanghan/study/noneq.msm/first.hitting/equi.systems/inwater.gromos.45a3.new/
+fht_equi_frame_name=equi.frame
 fht_num_conf_use=200
 
 fht_integrator=sd1

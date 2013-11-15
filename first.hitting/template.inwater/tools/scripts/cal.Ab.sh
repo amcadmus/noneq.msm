@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make -C /home/mi/wanghan/study/noneq.msm/first.hitting/template.nowater/tools/analysis -j8 &>/dev/null
+make -C /home/mi/wanghan/study/noneq.msm/first.hitting/template.inwater/tools/analysis -j8 &>/dev/null
 
 source parameters.sh
 
@@ -23,4 +23,4 @@ if test -f $filename; then
     mv $filename $filename.`date +%s`
 fi
 
-/home/mi/wanghan/study/noneq.msm/first.hitting/template.nowater/tools/analysis/cal.Ab.noAvg -g $1 > $filename
+/home/mi/wanghan/study/noneq.msm/first.hitting/template.inwater/tools/analysis/cal.Ab.noAvg -g $1 > $filename
