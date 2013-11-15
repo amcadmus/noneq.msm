@@ -182,6 +182,7 @@ function set_parameters_fht () {
     fht_nstep=`echo "$fht_time / $fht_dt" | bc -l | cut -d '.' -f 1`
     fht_xtcout_feq=`echo "$fht_frame_feq / $fht_dt" | bc -l | cut -d '.' -f 1`
     fht_xvout_feq=$fht_xtcout_feq
+    fht_xvout_feq=0
     fht_energy_feq_r=`echo "$fht_energy_feq / $fht_dt" | bc -l | cut -d '.' -f 1`
     fht_seed=`date +%s`
     fht_seed=`echo "$fht_seed + $fht_num_conf_use * 10 * $fht_parallel_my_id" | bc`

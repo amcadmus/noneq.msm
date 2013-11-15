@@ -13,8 +13,8 @@ if test ! -d $fht_equi_dir ; then
     echo "no dir $fht_equi_dir, exit"
     exit
 fi
-if test ! -f $fht_equi_dir/equi.frame ; then
-    echo "no file $fht_equi_dir/equi.frame, exit"
+if test ! -f $fht_equi_dir/$fht_equi_frame_name ; then
+    echo "no file $fht_equi_dir/$fht_equi_frame_name, exit"
     exit
 fi
 #rm -f angle.name
@@ -23,7 +23,7 @@ fi
 touch success.dir.name
 
 make_cos_tables
-targets=`awk '{print $1}' $fht_equi_dir/equi.frame | head -n $fht_num_conf_use`
+targets=`awk '{print $1}' $fht_equi_dir/$fht_equi_frame_name | head -n $fht_num_conf_use`
 
 fht_main_dir=result.fhts
 for i in $targets;
@@ -54,7 +54,7 @@ do
     cp $cwd/table_d*xvg .
     set_parameters_fht grompp.mdp
     
-    start_time=`grep "^$count" $fht_equi_dir/equi.frame | awk '{print $2}'`
+    start_time=`grep "^$count" $fht_equi_dir/$fht_equi_frame_name | awk '{print $2}'`
     echo "# run with command `which grompp`"
     $grompp_command -t $fht_equi_dir/traj.trr -time $start_time &> run.log
     if [ $? -ne 0 ]; then
