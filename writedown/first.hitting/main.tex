@@ -1,0 +1,117 @@
+\documentclass[aip,jcp,a4paper,reprint,onecolumn]{revtex4-1}
+
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage[dvips]{graphicx}
+\usepackage{color}
+\usepackage{tabularx}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\makeatletter
+\makeatother
+
+\newcommand{\recheck}[1]{{\color{red} #1}}
+\newcommand{\redc}[1]{{\color{red} #1}}
+\newcommand{\bluec}[1]{{\color{blue} #1}}
+\newcommand{\vect}[1]{\textbf{\textit{#1}}}
+\newcommand{\dd}{\textsf{d}}
+\newcommand{\inv}{\textrm{inv}}
+\newcommand{\hard}{\textrm{h}}
+\newcommand{\soft}{\textrm{s}}
+\newcommand{\vdw}{\textrm{vdw}}
+\newcommand{\ele}{\textrm{ele}}
+\newcommand{\dir}{\textrm{dir}}
+\newcommand{\rec}{\textrm{rec}}
+\newcommand{\corr}{\textrm{corr}}
+
+\newcommand{\mh}{\mathcal H}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\ml}{\mathcal L}
+\newcommand{\me}{\mathcal E}
+\newcommand{\mt}{\mathcal T}
+\newcommand{\mo}{\mathcal O}
+\newcommand{\mi}{\mathcal I}
+\newcommand{\mc}{\mathcal C}
+\newcommand{\proj}{\mathit\Pi}
+\newcommand{\fwg}{{\mathcal A}}
+\newcommand{\bwg}{{\mathcal B}}
+\newcommand{\bsigma}{\boldsymbol\sigma}
+\newcommand{\pathmeas}{\mathcal P}
+
+
+\begin{document}
+
+
+\title{Report: Important sampling by the cross-entropy method}
+\author{Han Wang}
+\affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Germany}
+% \author{Christof Sch\"utte}
+% \affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Germany}
+% \affiliation{Zuse Institute Berlin (ZIB), Germany}
+% \affiliation{Institute for Mathematics, Freie Universit\"at Berlin, Germany}
+
+\date{\today}
+
+\begin{abstract}
+\end{abstract}
+
+\maketitle
+
+
+\section{Results}
+The numerical results are summarized in the tables.
+\begin{table}[th]
+  \centering
+  \caption{Free molecule}
+  \begin{tabular*}{0.8\textwidth}{@{\extracolsep{\fill}}lcccrr}
+    \hline\hline
+    $b$ & $P (\tau \leq b)$ & error & Var & accel. & Traj. Usage \\\hline
+    0.1 & $6.38\times 10^{-5}$ & $1.75\times 10^{-5}$ & $1.23\times10^{-5}$ & 5.2 & 0.5\%\\
+    0.2 & $1.59\times 10^{-3}$ & $0.17\times 10^{-3}$ & $4.79\times10^{-4}$ & 3.3 & 9.3\%\\
+    0.5 & $8.27\times 10^{-3}$ & $0.49\times 10^{-3}$ & $4.75\times10^{-3}$ & 1.7 &11.8\%\\
+    1.0 & $2.21\times 10^{-2}$ & $0.09\times 10^{-2}$ & $1.49\times10^{-2}$ & 1.5 &14.3\%\\
+    \hline\hline
+  \end{tabular*}
+  \label{tab:tmp1}
+  \caption{Free molecule after variance reduction}
+  \begin{tabular*}{0.8\textwidth}{@{\extracolsep{\fill}}lcccrr}
+    \hline\hline
+    $b$ & $P (\tau \leq b)$ & error & Var & accel. & Traj. Usage \\\hline
+    0.1 & $5.76\times 10^{-5}$ & $0.70\times 10^{-5}$ & $3.73\times10^{-6}$ &15.6 & 1.2\%\\
+    0.2 & $1.35\times 10^{-3}$ & $0.09\times 10^{-3}$ & $1.55\times10^{-4}$ & 8.7 &17.1\%\\
+    0.5 & $9.32\times 10^{-3}$ & $0.40\times 10^{-3}$ & $3.27\times10^{-3}$ & 2.9 &16.9\%\\
+    1.0 & $2.19\times 10^{-2}$ & $0.07\times 10^{-2}$ & $1.03\times10^{-2}$ & 2.1 &18.5\%\\
+    \hline\hline
+  \end{tabular*}
+  \caption{Two points fixed molecule}
+  \begin{tabular*}{0.8\textwidth}{@{\extracolsep{\fill}}lcccrr}
+    \hline\hline
+    $b$ & $P (\tau \leq b)$ & error & Var & accel. & Traj. Usage \\\hline
+    0.1 & $2.23\times 10^{-6}$ & $1.49\times 10^{-6}$ & $1.26\times10^{-7}$ & 17.7 & 0.1\%\\
+    0.2 & $3.27\times 10^{-4}$ & $0.27\times 10^{-4}$ & $2.42\times10^{-5}$ & 13.5  & 43.0\%\\
+    0.5 & $4.58\times 10^{-3}$ & $0.18\times 10^{-4}$ & $6.55\times10^{-4}$ & 7.0 & 68.6\%\\
+    1.0 & $1.21\times 10^{-2}$ & $0.07\times 10^{-2}$ & $2.19\times10^{-3}$ & 5.5  & 47.5\%\\
+    \hline\hline
+  \end{tabular*}
+  \caption{Three points fixed molecule}
+  \begin{tabular*}{0.8\textwidth}{@{\extracolsep{\fill}}lcccrr}
+    \hline\hline
+    $b$ & $P (\tau \leq b)$ & error & Var & accel. & Traj. Usage \\\hline
+    % 0.1 & $2.23\times 10^{-6}$ & $1.49\times 10^{-6}$ & $1.26\times10^{-7}$ & 17.7 & 0.1\%\\
+    0.2 & $5.60\times 10^{-5}$ & $0.35\times 10^{-5}$ & $2.41\times10^{-7}$ & 231.4  & 44.8\%\\
+    0.5 & $3.42\times 10^{-3}$ & $0.07\times 10^{-3}$ & $6.60\times10^{-5}$ & 49.3 & 74.0\%\\
+    1.0 & $8.72\times 10^{-3}$ & $0.29\times 10^{-3}$ & $1.73\times10^{-3}$ & 5.0  & 82.2\%\\
+    \hline\hline
+  \end{tabular*}
+\end{table}
+
+
+\section*{References}
+\bibliography{ref}{}
+\bibliographystyle{unsrt}
+
+
+
+
+\end{document}
