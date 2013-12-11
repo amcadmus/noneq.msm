@@ -203,7 +203,7 @@ int main(int argc, char * argv[])
 	  }
 	}
 
-	if (ms.inSet(anglev)) {
+	if (ms.inSet(anglev) && anglev < 0) {
 	  find = true;
 	  break;
 	}
