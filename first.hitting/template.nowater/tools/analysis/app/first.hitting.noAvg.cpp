@@ -95,6 +95,12 @@ int main(int argc, char * argv[])
     string filename (nameline);
     filename += string("/") + iffile;
     countFile ++;
+    if (printCount == 10000) {
+      printf ("# reading file %s       \r", nameline);
+      fflush (stdout);
+      printCount = 0;
+    }
+    printCount ++;
     ifstream angname (filename.c_str());
     if (!angname){
       // std::cerr << "cannot open file " << filename << std::endl;
@@ -103,12 +109,6 @@ int main(int argc, char * argv[])
       ba.deposite (0.0);      
     }
     else {
-      if (printCount == 100) {
-	printf ("# reading file %s       \r", nameline);
-	fflush (stdout);
-	printCount = 0;
-      }
-      printCount ++;
       double times = 0.;
       double anglev;
       char valueline [MaxLineLength];
@@ -152,7 +152,9 @@ int main(int argc, char * argv[])
   ba.calculate ();
   
   printf ("# prob. first hitting time smaller than %f\n", gate);
-  printf ("%e   %e\n", ba.getAvg(), ba.getAvgError());
+  // printf ("%e   %e\n", ba.getAvg(), ba.getAvgError());
+  printf ("# value   var    error\n");
+  printf ("%e   %e   %e\n", ba.getAvg(), ba.getVar(), ba.getAvgError());
   
 
   //   double sum_j = 0.;

@@ -151,8 +151,8 @@ int main(int argc, char * argv[])
   
   printf ("# avg. first hitting time\n");
   printf ("%f   %f\n", ba_fht.getAvg(), ba_fht.getAvgError());
-  printf ("# prob. first hitting time smaller than %f\n", gate);
-  printf ("%e   %e\n", ba.getAvg(), ba.getAvgError());
+  printf ("# value   var    error\n");
+  printf ("%e   %e   %e\n", ba.getAvg(), ba.getVar(), ba.getAvgError());
   
 
   //   double sum_j = 0.;

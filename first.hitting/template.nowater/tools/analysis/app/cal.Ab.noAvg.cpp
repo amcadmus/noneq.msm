@@ -170,8 +170,8 @@ int main(int argc, char * argv[])
 	return 1;
       }
       if (printCount == 100) {
-	printf ("# reading file %s and %s      \r", filename_ang.c_str(), filename_gxs.c_str());
-	fflush (stdout);
+	// printf ("# reading file %s and %s      \r", filename_ang.c_str(), filename_gxs.c_str());
+	// fflush (stdout);
 	printCount = 0;
       }
       printCount ++;
@@ -203,7 +203,7 @@ int main(int argc, char * argv[])
 	  }
 	}
 
-	if (ms.inSet(anglev)) {
+	if (ms.inSet(anglev) && anglev < 0) {
 	  find = true;
 	  break;
 	}
@@ -225,7 +225,7 @@ int main(int argc, char * argv[])
 	double tmpexp = exp( - sum1 - 0.5 * sum2);
 	countNumInGate ++;
 	ba.deposite (1.0 * tmpexp);
-	// printf ("time %f deposited: %e\n", times, tmpexp);
+	printf ("file %s time %f deposited: %e\n", filename_gxs.c_str(), times, tmpexp);
 	for (int ii = 0; ii < nBase; ++ii){
 	  vecb[ii].deposite (1.0 * gxs1[ii] * tmpexp);
 	  for (int jj = 0; jj < nBase; ++jj){
@@ -259,7 +259,8 @@ int main(int argc, char * argv[])
   ba.calculate ();
   
   printf ("# prob. first hitting time smaller than %f\n", gate);
-  printf ("%e   %e\n", ba.getAvg(), ba.getAvgError());
+  printf ("# value   var    error\n");
+  printf ("%e   %e   %e\n", ba.getAvg(), ba.getVar(), ba.getAvgError());
 
   printf ("# vect b\n");
   for (int ii = 0; ii < nBase; ++ii){
