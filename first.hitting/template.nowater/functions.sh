@@ -38,6 +38,12 @@ function make_cos_tables () {
     done
 }
 
+function make_central_tables () {
+    rm -f base.info
+    central_nlines=`wc -l $fht_central_base_k_file`
+    central_nlines=`echo "$central_nlines - 4" | bc`
+    tail -n $central_nlines $fht_central_base_k_file > base.info
+}
 
 function make_gaussian_top () {
     echo '; n-butane'							>  topol.top
@@ -150,6 +156,60 @@ function make_cos_top () {
 	echo "1      2       3       4       8	$top_item_count	$make_cos_top_kk" >> topol.top
 	top_item_count=$(($top_item_count+1))
     done    
+    echo ''>> topol.top
+    echo '#include "gromos45a3.ff/spce.itp"'>> topol.top
+    echo ''>> topol.top
+    echo '[ system ]'>> topol.top
+    echo 'Butane in vacumm'>> topol.top
+    echo ''>> topol.top
+    echo '[ molecules ]'>> topol.top
+    echo 'butane  1'>> topol.top
+    echo 'SOL     0 '>> topol.top
+    echo ''>> topol.top
+    echo ''>> topol.top
+}
+
+function make_central_top () {
+    echo '; n-butane'							>  topol.top
+    echo '; by Han Wang (han.wang@fu-berlin.de) on 29.3.2013'		>> topol.top
+    echo '#include "gromos45a3.ff/forcefield.itp"'				>> topol.top
+    echo ''	>> topol.top
+    echo '[ moleculetype ]'>> topol.top
+    echo '; Name  nrexcl'>> topol.top
+    echo 'butane  3'>> topol.top
+    echo ''>> topol.top
+    echo '[ atoms ]'>> topol.top
+    echo '; nr    type    resdnr  resd    atom    cgnr    charge  mass'>> topol.top
+    echo '1       CH3     1       C4      CH3     1       0.0     15.035'>> topol.top
+    echo '2       CH2     1       C4      CH2     1       0.0     14.027'>> topol.top
+    echo '3       CH2     1       C4      CH2     1       0.0     14.027'>> topol.top
+    echo '4       CH3     1       C4      CH3     1       0.0     15.035'>> topol.top
+    # echo '1       CH3     1       C4      CH3     1       0.0     1.'>> topol.top
+    # echo '2       CH2     1       C4      CH2     1       0.0     1.'>> topol.top
+    # echo '3       CH2     1       C4      CH2     1       0.0     1.'>> topol.top
+    # echo '4       CH3     1       C4      CH3     1       0.0     1.'>> topol.top
+    echo ''>> topol.top
+    echo '[ bonds ]'>> topol.top
+    echo '; ai    aj      funct   param'>> topol.top
+    echo '1       2       2       gb_26'>> topol.top
+    echo '2       3       2       gb_26'>> topol.top
+    echo '3       4       2       gb_26'>> topol.top
+    echo ''>> topol.top
+    echo '[ pairs ]'>> topol.top
+    echo '; ai    aj      funct'>> topol.top
+    echo ';1      4       1'>> topol.top
+    echo ''>> topol.top
+    echo '[ exclusions ]'>> topol.top
+    echo '4 1'>> topol.top
+    echo ''>> topol.top
+    echo '[ angles ]'>> topol.top
+    echo '; ai    aj      ak      funct   param'>> topol.top
+    echo '1       2       3       2       ga_14'>> topol.top
+    echo '2       3       4       2       ga_14'>> topol.top
+    echo ''>> topol.top
+    echo '[ dihedrals ] '>> topol.top
+    echo '; ai    aj      ak      al      funct   tab_num k'>> topol.top
+    echo '1       2       3       4       1       gd_17'>> topol.top
     echo ''>> topol.top
     echo '#include "gromos45a3.ff/spce.itp"'>> topol.top
     echo ''>> topol.top

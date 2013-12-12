@@ -28,6 +28,9 @@ fht_gaussian_base_position="120 -120"
 fht_cos_base_number=8
 fht_cos_base_k_file=cos.k.in
 
+# parameters for central base
+fht_central_base_k_file=central.gaussian.in
+
 fht_parallel_num_pro=1		# n
 fht_parallel_my_id=0		# n
 

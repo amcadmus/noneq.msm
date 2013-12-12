@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source env.cos.sh
+source env.central.sh
 source parameters.sh
 source functions.sh
 
@@ -22,7 +22,6 @@ fi
 #rm -f success.dir.name
 touch success.dir.name
 
-make_cos_tables
 targets=`awk '{print $1}' $fht_equi_dir/$fht_equi_frame_name | head -n $fht_num_conf_use`
 
 fht_main_dir=result.fhts
@@ -46,10 +45,10 @@ do
     cp $fht_equi_dir/conf.gro	$my_dir
     cp $fht_equi_dir/grompp.mdp	$my_dir
     cp $fht_equi_dir/angle.ndx	$my_dir
-    cp $cwd/$fht_cos_base_k_file $my_dir
+    cp $cwd/$fht_central_base_k_file $my_dir
 #    cp $fht_equi_dir/topol.top	$my_dir
     cd $my_dir
-    make_cos_top
+    make_central_top
 #    make_tables
     cp $cwd/table_d*xvg .
     set_parameters_fht grompp.mdp
@@ -87,7 +86,7 @@ do
 
     # hit meta, remove useless files
     if test $bool_hit_set -eq 1; then
-	rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg    butane.xtc ener.edr cos.k.in confout.gro &
+	rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg    butane.xtc ener.edr $fht_central_base_k_file confout.gro &
     fi
     
     cd $cwd
