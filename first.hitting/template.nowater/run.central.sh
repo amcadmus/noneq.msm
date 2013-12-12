@@ -22,6 +22,7 @@ fi
 #rm -f success.dir.name
 touch success.dir.name
 
+make_central_tables
 targets=`awk '{print $1}' $fht_equi_dir/$fht_equi_frame_name | head -n $fht_num_conf_use`
 
 fht_main_dir=result.fhts
@@ -50,7 +51,6 @@ do
     cd $my_dir
     make_central_top
 #    make_tables
-    cp $cwd/table_d*xvg .
     set_parameters_fht grompp.mdp
     
     start_time=`grep "^$count" $fht_equi_dir/$fht_equi_frame_name | awk '{print $2}'`
@@ -86,7 +86,7 @@ do
 
     # hit meta, remove useless files
     if test $bool_hit_set -eq 1; then
-	rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg    butane.xtc ener.edr $fht_central_base_k_file confout.gro &
+	rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out butane.xtc ener.edr $fht_central_base_k_file confout.gro &
     fi
     
     cd $cwd
