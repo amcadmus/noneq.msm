@@ -40,7 +40,7 @@ function make_cos_tables () {
 
 function make_central_tables () {
     rm -f base.info
-    central_nlines=`wc -l $fht_central_base_k_file`
+    central_nlines=`wc -l $fht_central_base_k_file | awk '{print $1}'`
     central_nlines=`echo "$central_nlines - 4" | bc`
     tail -n $central_nlines $fht_central_base_k_file > base.info
 }
