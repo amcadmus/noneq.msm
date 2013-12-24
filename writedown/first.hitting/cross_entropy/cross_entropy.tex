@@ -1110,12 +1110,16 @@ choices.
 \begin{table}[t]
   \centering
   \caption{
-    Butane dissolved in water. The variance reduced estimate of the probability
-    $\mathcal{P} (\tau \leq \lambda)$ by applying control on the dihedral angle.
+    Butane dissolved in water. The probability
+    $\mathcal{P} (\tau \leq \lambda)$ calculated by the important sampling with
+    control on the dihedral angle.
     See the text for more details of the definition of the control.
-    Column ``Error'' denotes the standard deviation of
+    Column ``Error'' denotes the statistical uncertainty of
     estimating the probablity $\mathcal{P} (\tau \leq \lambda)$.
-    Column ``Var'' denotes the reduced variation of the esimate.
+    If the  trajectories are statistically independent, the expected error is $\sqrt{\textrm{Var}/M}$, where
+    $M$ is the number of trajectories. If the trajectories are not independent, the error
+    can be estimated by the block average method~\cite{frenkel2001understanding}.
+    Column ``Var'' denotes the reduced variance of the esimate.
     ``Accel.''(acceleration) is the ratio between
     the reduced variance and the brute force variance (see Tab.~\ref{tab:tmp2}),
     which is the actual speed-up of the simulation.
@@ -1134,7 +1138,7 @@ choices.
   \end{tabular*}
   \caption{
     Butane dissolved in water, brute force simulations
-    without any variance reduction. The meaning of the columns are the same
+    without any important sampling, i.e.~standard Monte Carlo. The meaning of the columns are the same
     as Tab.~\ref{tab:tmp1}.}\label{tab:tmp2}
   \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}lcccrr}
     \hline\hline
@@ -1159,15 +1163,15 @@ from the one-dimensional case, where the barrier is lowered, in this
 case, only the potential well around $\phi = 60^\circ$ is fill, and
 the barrier around $\phi = 120^\circ$ is almost kept the same.  The
 resultant probability $\mathcal{P} (\tau \leq \lambda)$ calculated by the
-variance reduced simulation is summarized in Tab.~\ref{tab:tmp1},
+important sampling simulation is summarized in Tab.~\ref{tab:tmp1},
 which is consistent with Tab.~\ref{tab:tmp2} that presents the
 brute force results. Since the variance is redueced, the error of the
-statistical esitmate is more precise in the variance reduced case. The
+statistical esitmate is more precise in the important sampling case. The
 reduced variance is shown in the fourth column of Tab.~\ref{tab:tmp1},
 which is much smaller than the brute force case (the fourth column of
 Tab.~\ref{tab:tmp2}). The fifth column presents the acceleration ratio
 with respect to the brute force simulation or the benefit from the
-variance reduction, which is exactly the ratio between the brute force
+important sampling, which is exactly the ratio between the brute force
 variance and the reduced variance. The column of trajectory usage
 presents the percentage of the trajectories that changes to the trans
 conformation within time interval $[0, \lambda]$. It is increased by
