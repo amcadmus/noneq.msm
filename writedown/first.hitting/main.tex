@@ -78,13 +78,15 @@ $c(x_t)$ to the system, i.e.
 Now the probability measure of the trajectories is denoted by
 $\pathmeas_c[x_t]$. The observable is calculated by
 \begin{align}
-  I = \int F[x_t] \frac{\pathmeas[x_t]}{\pathmeas_c[x_t]} \pathmeas_c[x_t]
+  O = \int F[x_t] \frac{\pathmeas[x_t]}{\pathmeas_c[x_t]} \pathmeas_c[x_t]
 \end{align}
 By the Girsanov transformation, we have
 \begin{align}
   \frac{\pathmeas[x_t]}{\pathmeas_c[x_t]} = 
   \exp \Big\{ - \frac 1\sigma \int_0^t c(x_s) dw_s - \frac1{2\sigma^2} \int_0^t c^2(x_s) ds\Big\}
-\end{align}
+\end{align}\\
+
+\noindent
 The optimal control that minimized the variance of calculting the observable is reached when
 \begin{align}\label{eqn:min-cond-1}
   \pathmeas_c^\ast[x_t] =\textrm{C} F[x_t] \pathmeas[x_t]
@@ -106,7 +108,7 @@ constant in the equation:
 \end{align}
 which is equivalent to the problem
 \begin{align}\label{eqn:max-1}
-  \max_c \int \log \Big(\frac{\pathmeas_c[x_t]}{\pathmeas[x_t]} \Big) F[x_t]\pathmeas[x_t],
+  \max_c \int \log \Big(\frac{\pathmeas_c[x_t]}{\pathmeas[x_t]} \Big) F[x_t]\pathmeas[x_t].
 \end{align}
 Computationally, we provide an intial guess for the control $c_0$, then we can change Eq.~\eqref{eqn:max-1} to
 \begin{align}
@@ -123,7 +125,7 @@ A step with the Girsanov transformation
   \,F[x_t]\,
   \exp
   \Big\{ -\frac1\sigma\int_0^t c_0(x_s) dw_s - \frac 1{2\sigma^2} \int_0^t c_0^2(x_s) ds \Big \}
-  \,\pathmeas_{c_0}[x_t],
+  \,\pathmeas_{c_0}[x_t].
 \end{align}
 where we denote the increment of the control by
 \begin{align}
@@ -142,8 +144,8 @@ We then have the optimization problem
   \,\pathmeas_{c_0}[x_t]
 \end{align}
 with
-\begin{align}
-  g_i[x_t] & = \frac 1\sigma\int_0^t \varphi_i(x_s) dw_s \\
+\begin{align}\label{eqn:gi}
+  g_i[x_t] & = \frac 1\sigma\int_0^t \varphi_i(x_s) dw_s \\\label{eqn:hij}
   h_{ij}[x_t] & = \frac1{\sigma^2} \int_0^t \varphi_i(x_s)  \varphi_j(x_s) ds
 \end{align}
 Now define
@@ -168,7 +170,120 @@ be solve exactly, so we need a iterative process:
 \begin{align}
   w_{i+1} = w_i + A^{-1}b
 \end{align}
+After we have got the converged control $w_i^\ast$,
+i.e.~the optimal one, we have
+the observable calculated by
+\begin{align}\label{eqn:fin-obs}
+  O = \int F[x_t]\,
+  \exp\Big\{
+  -\sum_iw^\ast_i g_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
+  \Big\}\,
+  \pathmeas_{c^\ast}[x_t]
+\end{align}
 
+\subsection{Variance reduction}
+
+The calculation of the observable, i.e.~Eq.~\eqref{eqn:fin-obs} can be
+optimized by a variance reduction technique, which is computationally
+very cheap, and can increase the accuracy significantly. We assume
+that the noise $dw_t$ can be divided into two parts,
+\begin{align}
+  dw_s = f(dw_s) + [\,dw_s - f(dw_s)\,].
+\end{align}
+The first part is statistically independent with the functional
+$F[x_t]$ and the second part. For simplicity, we assume this splitting
+is the same for all the base functions $\varphi_i$. It can be, take the
+butane system for example, the translational component of $dw_s$, then
+it is independent with $F[x_t]$, if the latter is the dihedral angle
+of the butane.  We then have the splitting of $g_i$:
+\begin{align}
+  g_i[x_t]
+  = g_i^i[x_t] + g_i^d[x_t]
+  = \frac1\sigma\int_0^t\varphi_i(x_s) f(dw_s)
+  + \frac1\sigma\int_0^t\varphi_i(x_s) [1 - f(dw_s)]
+\end{align}
+We want to prove that
+\begin{align}\label{eqn:o-approx}
+  O \approx \int F[x_t]
+  \exp\Big\{
+  -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
+  \Big\}\,
+  \pathmeas_{c^\ast}[x_t]    
+\end{align}
+We start from Eq.~\eqref{eqn:fin-obs}:
+\begin{align}
+  O = \int F[x_t]
+  \exp\Big\{
+  -\sum_i w^\ast_ig^i_i
+  -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
+  \Big\}\,
+  \pathmeas_{c^\ast}[x_t]  
+\end{align}
+If we further assume that $w_i^\ast$ is small, the Taylor expansion to
+the first order gives
+\begin{align}
+  O \approx \int F[x_t]
+  \Big( 1 - \sum_i w_i^\ast g_i^i   -\sum_iw^\ast_i g^d_i\Big)
+  \pathmeas_{c^\ast}[x_t]    
+\end{align}
+Take the term with $g_i^i$, it gives
+\begin{align}
+  w_i^\ast \frac1\sigma
+  \int F[x_t] 
+  \Big[ \int_0^t\varphi_i(x_s)f(dw_s)
+  \Big]
+  \pathmeas_{c^\ast}[x_t].
+\end{align}
+Due to the statistical independency, it is equal to
+\begin{align}\label{eqn:tmp28}
+  w_i^\ast \frac1\sigma
+  \int
+    \Big[ \int_0^t\varphi_i(x_s)f(dw_s)
+  \Big]
+  \pathmeas_{c^\ast}[x_t]
+  \cdot
+  \int F[x_t] 
+  \pathmeas_{c^\ast}[x_t] = 0, 
+\end{align}
+because the first expectation value in Eq.~\eqref{eqn:tmp28} is equal to 0.
+Therefore, Eq.~\eqref{eqn:o-approx} holds.
+% If we further assume that $w_i^\ast g_i^i$ is small, the Taylor expansion of
+% the first exponent gives
+% \begin{align}
+%   O \approx \int F[x_t]
+%   \Big( 1 - \sum_i w_i^\ast g_i^i \Big)
+%   \exp\Big\{
+%   -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
+%   \Big\}\,
+%   \pathmeas_{c^\ast}[x_t]    
+% \end{align}
+% Take one of the term in the first sum for example
+% \begin{align}
+%   w_i^\ast \frac1\sigma
+%   \int F[x_t] 
+%   \Big[ \int_0^t\varphi_i(x_s)f(dw_s)
+%   \Big]
+%   \exp\Big\{
+%   -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
+%   \Big\}\,
+%   \pathmeas_{c^\ast}[x_t],
+% \end{align}
+% which is equal to
+% \begin{align}\label{eqn:tmp28}
+%   w_i^\ast \frac1\sigma
+%   \int
+%     \Big[ \int_0^t\varphi_i(x_s)f(dw_s)
+%   \Big]
+%   \pathmeas_{c^\ast}[x_t]
+%   \cdot
+%   \int F[x_t] 
+%   \exp\Big\{
+%   -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
+%   \Big\}\,
+%   \pathmeas_{c^\ast}[x_t] = 0, 
+% \end{align}
+% because the first expectation value in Eq.~\eqref{eqn:tmp28} is equal to 0.
+% Therefore, Eq.~\eqref{eqn:o-approx} holds.
 
 \section{Results}
 The numerical results are summarized in the tables.
@@ -241,6 +356,10 @@ The numerical results are summarized in the tables.
 \end{table}
 
 
+
+
+
+\newpage
 \section*{References}
 \bibliography{ref}{}
 \bibliographystyle{unsrt}
