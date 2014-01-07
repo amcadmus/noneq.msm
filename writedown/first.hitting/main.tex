@@ -39,6 +39,7 @@
 \newcommand{\bsigma}{\boldsymbol\sigma}
 \newcommand{\pathmeas}{d\mathcal P}
 \newcommand{\dist}{\textrm{dist}}
+\newcommand{\randomf}{d\vect w}
 
 
 \begin{document}
@@ -172,8 +173,8 @@ be solve exactly, so we need a iterative process:
 \end{align}
 After we have got the converged control $w_i^\ast$,
 i.e.~the optimal one, we have
-the observable calculated by
-\begin{align}\label{eqn:fin-obs}
+the observable calculated by the important sampling formula:
+\begin{align}\label{eqn:import-samp}
   O = \int F[x_t]\,
   \exp\Big\{
   -\sum_iw^\ast_i g_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
@@ -181,94 +182,132 @@ the observable calculated by
   \pathmeas_{c^\ast}[x_t]
 \end{align}
 
+
 \subsection{Variance reduction}
 
-The calculation of the observable, i.e.~Eq.~\eqref{eqn:fin-obs} can be
-optimized by a variance reduction technique, which is computationally
-very cheap, and can increase the accuracy significantly. We assume
-that the noise $dw_t$ can be divided into two parts,
+We firstly consider the change of variable due to the rule:
 \begin{align}
-  dw_s = f(dw_s) + [\,dw_s - f(dw_s)\,].
+  y = f(x).
 \end{align}
-The first part is statistically independent with the functional
-$F[x_t]$ and the second part. For simplicity, we assume this splitting
-is the same for all the base functions $\varphi_i$. It can be, take the
-butane system for example, the translational component of $dw_s$, then
-it is independent with $F[x_t]$, if the latter is the dihedral angle
-of the butane.  We then have the splitting of $g_i$:
+The observable is then defined with respect to the new variable $y$
+instead of $x$:
 \begin{align}
-  g_i[x_t]
-  = g_i^i[x_t] + g_i^d[x_t]
-  = \frac1\sigma\int_0^t\varphi_i(x_s) f(dw_s)
-  + \frac1\sigma\int_0^t\varphi_i(x_s) [1 - f(dw_s)]
+  I = \int F[y_t] \pathmeas[y_t]
 \end{align}
-We want to prove that
-\begin{align}\label{eqn:o-approx}
-  O \approx \int F[x_t]
-  \exp\Big\{
-  -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
-  \Big\}\,
-  \pathmeas_{c^\ast}[x_t]    
-\end{align}
-We start from Eq.~\eqref{eqn:fin-obs}:
+where $\pathmeas[y_t]$ is the probability measure of the trajectories
+governed by
 \begin{align}
-  O = \int F[x_t]
-  \exp\Big\{
-  -\sum_i w^\ast_ig^i_i
-  -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
-  \Big\}\,
-  \pathmeas_{c^\ast}[x_t]  
+  dy_t = \hat b(y_t) dt + \hat\sigma (y_t) dw_t
 \end{align}
-If we further assume that $w_i^\ast$ is small, the Taylor expansion to
-the first order gives
+where $\hat b(y_t) = [\nabla f b + \frac12\sigma^2\nabla^2f]$ and
+$\hat\sigma(y_t) = \nabla f\sigma$.
+Here we assume that some DOFs of $y$ are independent from others, i.e.
 \begin{align}
-  O \approx \int F[x_t]
-  \Big( 1 - \sum_i w_i^\ast g_i^i   -\sum_iw^\ast_i g^d_i\Big)
-  \pathmeas_{c^\ast}[x_t]    
+  y = [y^1, y^2].
 \end{align}
-Take the term with $g_i^i$, it gives
+For instance, $y^1$ can be translational DOFs of a molecule, while
+$y^2$ are the internal DOFs that describe the molecular configuration.
+We usually have
 \begin{align}
-  w_i^\ast \frac1\sigma
-  \int F[x_t] 
-  \Big[ \int_0^t\varphi_i(x_s)f(dw_s)
-  \Big]
-  \pathmeas_{c^\ast}[x_t].
+  dy^1_t &= \hat b^1dt + \hat\sigma^{11} dw^1_t + \hat\sigma^{12}dw^2_t\\
+  dy^2_t &= \hat b^2dt + \hat\sigma^{21} dw^1_t + \hat\sigma^{22}dw^2_t
 \end{align}
-Due to the statistical independency, it is equal to
-\begin{align}\label{eqn:tmp28}
-  w_i^\ast \frac1\sigma
-  \int
-    \Big[ \int_0^t\varphi_i(x_s)f(dw_s)
-  \Big]
-  \pathmeas_{c^\ast}[x_t]
-  \cdot
-  \int F[x_t] 
-  \pathmeas_{c^\ast}[x_t] = 0, 
+Note that both $\hat b$ and $\hat \sigma$ can be $y$ dependent.
+We assume the coupling between the DOFs $y^1$ and $y^2$ is weak,
+then, the probability measure of the trajectories therefore has
+\begin{align}  
+\quad \pathmeas[y_t] \approx \pathmeas[y^1_t]\pathmeas[y^2_t].
 \end{align}
-because the first expectation value in Eq.~\eqref{eqn:tmp28} is equal to 0.
-Therefore, Eq.~\eqref{eqn:o-approx} holds.
-% If we further assume that $w_i^\ast g_i^i$ is small, the Taylor expansion of
-% the first exponent gives
+The control should also be designed on the variable $y^2$
+\begin{align}
+  dy^2_t &= \hat b^2dt + \hat c(y^2_t)dt + \hat\sigma^{21} dw^1_t + \hat\sigma^{22}dw^2_t
+\end{align}
+% With the optimal control, the important sampling for the observable is
 % \begin{align}
+%   O = \int F[y_t]
+%   \exp\Big\{
+%   -\sum_i w_i^\ast\int_0^t \hat\sigma^{-1}\hat\varphi_i(y_t) dw^2_s
+%   - \frac12 \sum_{ij}w^\ast_iw^\ast_j \int_0^t\hat\sigma^{-2}\hat\varphi_i(y_t)\hat\varphi_j(y_t) ds
+%   \Big\} \pathmeas_{c^\ast}[y_t]
+% \end{align}
+We assume that the instantaneous observable $F$ depends only on DOFs $y^2$, then
+the important sampling calculation of the observable is
+\begin{align}\label{eqn:eqn-diff}
+  O &= \int F[y^2_t]
+  \exp\Big\{
+  -\sum_i w_i^\ast\int_0^t \hat\sigma^{-1}\hat\varphi_i(y^2_t) dw^2_s
+  - \frac12 \sum_{ij}w^\ast_iw^\ast_j \int_0^t[\hat\sigma^{-1}\hat\varphi_i(y^2_t)] [\hat\sigma^{-1}\hat\varphi_j(y^2_t)] ds
+  \Big\} \pathmeas_{c^\ast}[y^1_t]  \pathmeas_{c^\ast}[y^2_t] 
+\end{align}
+If $y^1$ are the translational DOFs, $y = f(x)$ can be a linear
+transformation~\cite{littlejohn1997gauge}, then one can show that $\hat\sigma$ is independent
+with $y$,
+% \begin{align}
+%   \hat\sigma^{11} = \hat\sigma^{11}(y^1), \quad
+%   \hat\sigma^{22} = \hat\sigma^{22}(y^2), \quad
+%   \hat\sigma^{12} = \hat\sigma^{21} = 0
+% \end{align}
+then the integral over $\pathmeas_{c^\ast}[y^1_t]$ in
+Eq.~\eqref{eqn:eqn-diff} is trival, which implies the translational
+DOFs contribute trivally when one compute $g_i$ (Eq.~\eqref{eqn:gi})
+in coordinate $x$, and the translational contribution in $dw_t$ should
+be manually removed. \recheck{For the rotational DOFs, the couplping
+  is not simple... how to prove...}
+
+% \subsection{Variance reduction}
+
+% The calculation of the observable, i.e.~Eq.~\eqref{eqn:import-samp} can be
+% optimized by a variance reduction technique, which is computationally
+% very cheap, and can increase the accuracy significantly. We assume
+% that the noise $dw_t$ can be divided into two parts,
+% \begin{align}
+%   dw_s = f(dw_s) + [\,dw_s - f(dw_s)\,].
+% \end{align}
+% The first part is statistically independent with the functional
+% $F[x_t]$ and the second part. For simplicity, we assume this splitting
+% is the same for all the base functions $\varphi_i$. It can be, take the
+% butane system for example, the translational component of $dw_s$, then
+% it is independent with $F[x_t]$, if the latter is the dihedral angle
+% of the butane.  We then have the splitting of $g_i$:
+% \begin{align}
+%   g_i[x_t]
+%   = g_i^i[x_t] + g_i^d[x_t]
+%   = \frac1\sigma\int_0^t\varphi_i(x_s) f(dw_s)
+%   + \frac1\sigma\int_0^t\varphi_i(x_s) [1 - f(dw_s)]
+% \end{align}
+% We want to prove that
+% \begin{align}\label{eqn:o-approx}
 %   O \approx \int F[x_t]
-%   \Big( 1 - \sum_i w_i^\ast g_i^i \Big)
 %   \exp\Big\{
 %   -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
 %   \Big\}\,
 %   \pathmeas_{c^\ast}[x_t]    
 % \end{align}
-% Take one of the term in the first sum for example
+% We start from Eq.~\eqref{eqn:import-samp}:
+% \begin{align}
+%   O = \int F[x_t]
+%   \exp\Big\{
+%   -\sum_i w^\ast_ig^i_i
+%   -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
+%   \Big\}\,
+%   \pathmeas_{c^\ast}[x_t]  
+% \end{align}
+% If we further assume that $w_i^\ast$ is small, the Taylor expansion to
+% the first order gives
+% \begin{align}
+%   O \approx \int F[x_t]
+%   \Big( 1 - \sum_i w_i^\ast g_i^i   -\sum_iw^\ast_i g^d_i\Big)
+%   \pathmeas_{c^\ast}[x_t]    
+% \end{align}
+% Take the term with $g_i^i$, it gives
 % \begin{align}
 %   w_i^\ast \frac1\sigma
 %   \int F[x_t] 
 %   \Big[ \int_0^t\varphi_i(x_s)f(dw_s)
 %   \Big]
-%   \exp\Big\{
-%   -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
-%   \Big\}\,
-%   \pathmeas_{c^\ast}[x_t],
+%   \pathmeas_{c^\ast}[x_t].
 % \end{align}
-% which is equal to
+% Due to the statistical independency, it is equal to
 % \begin{align}\label{eqn:tmp28}
 %   w_i^\ast \frac1\sigma
 %   \int
@@ -277,13 +316,209 @@ Therefore, Eq.~\eqref{eqn:o-approx} holds.
 %   \pathmeas_{c^\ast}[x_t]
 %   \cdot
 %   \int F[x_t] 
-%   \exp\Big\{
-%   -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
-%   \Big\}\,
 %   \pathmeas_{c^\ast}[x_t] = 0, 
 % \end{align}
 % because the first expectation value in Eq.~\eqref{eqn:tmp28} is equal to 0.
 % Therefore, Eq.~\eqref{eqn:o-approx} holds.
+% % If we further assume that $w_i^\ast g_i^i$ is small, the Taylor expansion of
+% % the first exponent gives
+% % \begin{align}
+% %   O \approx \int F[x_t]
+% %   \Big( 1 - \sum_i w_i^\ast g_i^i \Big)
+% %   \exp\Big\{
+% %   -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
+% %   \Big\}\,
+% %   \pathmeas_{c^\ast}[x_t]    
+% % \end{align}
+% % Take one of the term in the first sum for example
+% % \begin{align}
+% %   w_i^\ast \frac1\sigma
+% %   \int F[x_t] 
+% %   \Big[ \int_0^t\varphi_i(x_s)f(dw_s)
+% %   \Big]
+% %   \exp\Big\{
+% %   -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
+% %   \Big\}\,
+% %   \pathmeas_{c^\ast}[x_t],
+% % \end{align}
+% % which is equal to
+% % \begin{align}\label{eqn:tmp28}
+% %   w_i^\ast \frac1\sigma
+% %   \int
+% %     \Big[ \int_0^t\varphi_i(x_s)f(dw_s)
+% %   \Big]
+% %   \pathmeas_{c^\ast}[x_t]
+% %   \cdot
+% %   \int F[x_t] 
+% %   \exp\Big\{
+% %   -\sum_iw^\ast_i g^d_i -\frac12\sum_{ij}w^\ast_iw^\ast_jh_{ij}
+% %   \Big\}\,
+% %   \pathmeas_{c^\ast}[x_t] = 0, 
+% % \end{align}
+% % because the first expectation value in Eq.~\eqref{eqn:tmp28} is equal to 0.
+% % Therefore, Eq.~\eqref{eqn:o-approx} holds.
+
+
+
+\subsection{Practical details of the variance reduction}
+
+We denote the four carbon atoms on the molecules by indexes 0--4. The
+position of them are donted by $\vect r_0$, $\vect r_1$, $\vect r_2$
+and $\vect r_3$. The three bonds connecting the atoms are denoted by
+\begin{align}
+  \vect r_{01} = \vect r_1 - \vect r_0, \quad
+  \vect r_{12} = \vect r_2 - \vect r_1, \quad
+  \vect r_{23} = \vect r_3 - \vect r_2
+\end{align}
+We let $\vect e_{12} = \vect r_{12} / \vert\vect r_{12}\vert$.  The
+normal vector of the planes formed by atom 0, 1, 2 and 1, 2, 3 are
+denoted by $\vect u_0$ and $\vect u_1$, respectively. They are
+calculated by
+\begin{align}
+  \vect u_0 = \frac{\vect r_{01} \times\vect r_{12}}{\vert \vect r_{01} \times\vect r_{12}\vert},\quad
+  \vect u_1 = \frac{\vect r_{12} \times\vect r_{23}}{\vert \vect r_{12} \times\vect r_{23}\vert}
+\end{align}
+The dihedral angle is calculated by
+\begin{align}
+  \phi = \arccos\Big(\frac{\vect u_0\cdot\vect u_1}{\vert \vect u_0\vert\,\vert\vect u_1\vert}\Big)
+\end{align}
+The random force exerting on the four atoms are denoted by
+$\randomf_0$, $\randomf_1$, $\randomf_2$ and $\randomf_3$, respectively. We
+further assume that $\vect u_0$ and $\vect u_1$ are not linearly
+dependent, which is true unless $\phi = 0^\circ$ or $180^\circ$.  It
+can be shown that the control force exerting on each atom is
+perpendicular to $\vect e_{12}$, and only the inner produce of the
+control force and the random force matters, therefore, it is safe to
+further assume that the $\vect e_{12}$ compenent of the random force
+$\randomf_i$ vanishes. Moreover, it can be shown that the control force
+$\randomf_0$ and $\randomf_3$ are perpendicular to the plane of 0, 1, 2
+and 1, 2, 3, respectively, so $\randomf_0$ does not have $\vect u_1$
+component and $\randomf_3$ does not have $\vect u_0$ component.  We have the
+decomposition of the random force:
+\begin{align}
+  \randomf_0 &= f_0 \vect u_0\\
+  \randomf_1 &= f_{10}\vect u_0 + f_{11}\vect u_1\\
+  \randomf_2 &= f_{20}\vect u_0 + f_{21}\vect u_1\\
+  \randomf_3 &= f_3 \vect u_1
+\end{align}
+
+Since the translational DOFs are note ralevant to the conformational
+transition of the molecules, therefore, the translational contribution
+of the random force should be removed when computing the integral
+Eq.~\eqref{eqn:gi}. That means the random force should satisfy
+\begin{align}\label{eqn:cond-trans-0}
+  f_0 + f_{10} + f_{20} &= 0\\\label{eqn:cond-trans-1}
+  f_{11} + f_{21} + f_3 &= 0
+\end{align}
+They can be achieved by the following transforms:
+\begin{align}
+  f_0 &= f_0 - \frac{f_0 + f_{10} + f_{20}}3,\quad 
+  f_{10} = f_{10} - \frac{f_0 + f_{10} + f_{20}}3,\quad 
+  f_{20} = f_{20} - \frac{f_0 + f_{10} + f_{20}}3\\
+  f_{11} &= f_{11} - \frac{f_{11} + f_{21} + f_3}3,\quad 
+  f_{21} = f_{21} - \frac{f_{11} + f_{21} + f_3}3,\quad 
+  f_{3} = f_{3} - \frac{f_{11} + f_{21} + f_3}3
+\end{align}
+
+We assume that the origin of the coordinate is the COM of the
+molecule, then the torque of on the molecule with repect to the COM is
+calculated by:
+\begin{align}
+  \boldsymbol\tau
+  =
+  f_0 \vect r_0\times \vect u_0 + 
+  f_{10} \vect r_1\times \vect u_0 + 
+  f_{11} \vect r_1\times \vect u_1 + 
+  f_{20} \vect r_2\times \vect u_0 + 
+  f_{21} \vect r_2\times \vect u_1 + 
+  f_3 \vect r_3\times \vect u_1 
+\end{align}
+By using conditions Eq.~\eqref{eqn:cond-trans-0} and
+\eqref{eqn:cond-trans-1}, we have
+\begin{align}
+  \boldsymbol\tau =
+  (f_{10}\vect r_{01} + f_{20} \vect r_{02})\times \vect u_0 +
+  (f_{11}\vect r_{31} + f_{21} \vect r_{32})\times \vect u_1
+\end{align}
+The rotational with respect to the axis $\vect e_{12}$ is independent with
+the conformational transition of the molecule, therefore, we let
+$\vect e_{12}\cdot \boldsymbol\tau  = 0$, which means
+\begin{align}
+  f_{10} \vect e_{12}\cdot(\vect r_{01}\times\vect u_0) + 
+  f_{20} \vect e_{12}\cdot(\vect r_{02}\times\vect u_0) + 
+  f_{11} \vect e_{12}\cdot(\vect r_{31}\times\vect u_1) + 
+  f_{21} \vect e_{12}\cdot(\vect r_{32}\times\vect u_1)  = 0
+\end{align}
+which is equavalent to
+\begin{align}\label{eqn:cond-rot-e12-0}
+  f_{10} \vect r_{01}\cdot(\vect u_0\times\vect e_{12}) + 
+  f_{20} \vect r_{02}\cdot(\vect u_0\times\vect e_{12}) + 
+  f_{11} \vect r_{31}\cdot(\vect u_1\times\vect e_{12}) + 
+  f_{21} \vect r_{32}\cdot(\vect u_1\times\vect e_{12}) = 0
+\end{align}
+It is easy (almost obvious) to show that
+\begin{align}
+  \vect r_{01}\cdot(\vect u_0\times\vect e_{12}) = \vect r_{02}\cdot(\vect u_0\times\vect e_{12}) & = h_0, \\
+  \vect r_{31}\cdot(\vect u_1\times\vect e_{12}) = \vect r_{32}\cdot(\vect u_1\times\vect e_{12}) & = h_3,
+\end{align}
+where $h_0$ ($h_3$) is the distance between atom 1 (atom 3) and vector
+$\vect e_{12}$. The condition Eq.~\eqref{eqn:cond-rot-e12-0} becomes
+\begin{align}\label{eqn:tmp49}
+  (f_{10} + f_{20}) h_0 + (f_{11} + f_{21}) h_3 = 0
+\end{align}
+or
+\begin{align}
+  f_0h_0 + f_3h_3 = 0
+\end{align}
+% With these conditions, it can be easily show that
+If we require the $\vect e_{12}$ conponent of relative torque of plane
+012 to 123 (controls the change of dihedral angle $\phi$) is constant, then we have
+\begin{align}\label{eqn:tmp51}
+  (f_{10} + f_{20}) h_0 - (f_{11} + f_{21}) h_3 = C
+\end{align}
+or
+\begin{align}
+  f_0h_0 - f_3h_3 = -C
+\end{align}
+where $C$ is a constant.
+We further calculate
+\begin{align}\nonumber
+  (\vect u_1 + \vect u_0) \cdot\boldsymbol\tau
+  &=
+  f_{10} \vect r_{01}\cdot(\vect u_0\times\vect u_{1}) + 
+  f_{20} \vect r_{02}\cdot(\vect u_0\times\vect u_{1}) + 
+  f_{11} \vect r_{31}\cdot(\vect u_1\times\vect u_{0}) + 
+  f_{21} \vect r_{32}\cdot(\vect u_1\times\vect u_{0})  \\
+  &  =
+  (f_{10} \vect r_{01} + f_{20} \vect r_{02} - f_{11} \vect r_{31} - f_{21} \vect r_{32}) \cdot \vect e_{12} \\\nonumber
+  (\vect u_1 - \vect u_0) \cdot\boldsymbol\tau
+  &=
+  f_{10} \vect r_{01}\cdot(\vect u_0\times\vect u_{1}) + 
+  f_{20} \vect r_{02}\cdot(\vect u_0\times\vect u_{1}) - 
+  f_{11} \vect r_{31}\cdot(\vect u_1\times\vect u_{0}) -
+  f_{21} \vect r_{32}\cdot(\vect u_1\times\vect u_{0})  \\
+  &  =
+  (f_{10} \vect r_{01} + f_{20} \vect r_{02} + f_{11} \vect r_{31} + f_{21} \vect r_{32}) \cdot \vect e_{12} 
+\end{align}
+Requiring the torque on $\vect u_1 + \vect u_0$ and $\vect u_1 + \vect
+u_0$ directions vanish, we have conditions:
+\begin{align}\label{eqn:tmp55}
+  f_{10} d_{01} + f_{20} d_{02} &= 0\\\label{eqn:tmp56}
+  f_{11} d_{31} + f_{21} d_{32} &= 0
+\end{align}
+where $d_{01}$, $d_{02}$, $d_{31}$ and $d_{32}$ are the length of
+projections (absolute value) of $\vect r_{01}$, $\vect r_{02}$, $\vect
+r_{31}$ and $\vect r_{32}$ on vector $\vect e_{12}$.
+
+By solving Eqs.~\eqref{eqn:tmp49}, \eqref{eqn:tmp51},
+\eqref{eqn:tmp55} and \eqref{eqn:tmp56}, we finally have
+\begin{align}
+  &f_{10} = \frac{C d_{02}}{2h_0 d_{12}}, \quad f_{20} = -\frac{C d_{01}}{2h_0 d_{12}},\quad
+  f_{11} = \frac{C d_{32}}{2h_3 d_{12}}, \quad f_{21} = -\frac{C d_{31}}{2h_3 d_{12}},\quad\\
+  &f_{0} = - \frac{C d_{02}}{2h_0 d_{12}} + \frac{C d_{01}}{2h_0 d_{12}}, \quad
+  f_{20} = - \frac{C d_{32}}{2h_3 d_{12}} + \frac{C d_{31}}{2h_3 d_{12}}
+\end{align}
+
 
 \section{Results}
 The numerical results are summarized in the tables.
@@ -293,7 +528,7 @@ The numerical results are summarized in the tables.
   \begin{tabular*}{0.8\textwidth}{@{\extracolsep{\fill}}lcccrr}
     \hline\hline
     $b$ & $P (\tau \leq b)$ & error & Var & accel. & Traj. Usage \\\hline
-    0.1 & $4.34\times 10^{-5}$ & $1.16\times 10^{-5}$ & $2.31\times10^{-6}$ &18.8 & 0.7\%\\
+    0.1 & $4.61\times 10^{-5}$ & $1.11\times 10^{-5}$ & $2.45\times10^{-6}$ &18.8 & 0.7\%\\
     0.2 & $9.03\times 10^{-4}$ & $0.77\times 10^{-4}$ & $1.19\times10^{-4}$ & 7.6 &10.0\%\\
     0.5 & $6.96\times 10^{-3}$ & $0.34\times 10^{-3}$ & $2.21\times10^{-3}$ & 3.1 &11.9\%\\
     1.0 & $1.68\times 10^{-2}$ & $0.06\times 10^{-2}$ & $6.30\times10^{-3}$ & 2.7 &13.4\%\\
@@ -303,9 +538,9 @@ The numerical results are summarized in the tables.
   \begin{tabular*}{0.8\textwidth}{@{\extracolsep{\fill}}lcccrr}
     \hline\hline
     $b$ & $P (\tau \leq b)$ & error & Var & accel. & Traj. Usage \\\hline
-    0.2 & $7.46\times 10^{-4}$ & $2.36\times 10^{-4}$ & $7.46\times10^{-4}$ & 1.0 & 0.1\%\\
-    0.5 & $6.94\times 10^{-3}$ & $0.72\times 10^{-3}$ & $6.89\times10^{-3}$ & 1.0 & 0.7\%\\
-    1.0 & $1.61\times 10^{-2}$ & $0.11\times 10^{-2}$ & $1.59\times10^{-3}$ & 1.0 & 1.6\%\\
+    0.2 & $9.00\times 10^{-4}$ & $2.12\times 10^{-4}$ & $8.99\times10^{-4}$ & 1.0 & 0.1\%\\
+    0.5 & $7.40\times 10^{-3}$ & $0.61\times 10^{-3}$ & $7.35\times10^{-3}$ & 1.0 & 0.7\%\\
+    1.0 & $1.71\times 10^{-2}$ & $0.09\times 10^{-2}$ & $1.68\times10^{-2}$ & 1.0 & 1.7\%\\
     \hline\hline
   \end{tabular*}
 \end{table}
