@@ -153,10 +153,12 @@ int main (int argc, char **argv) {
 	realScale = sbond;
 	diffScale = 0.;
       }
-      params.resize(4);
-      params[2] = (params[0]);
-      params[3] = (params[1] * diffScale);      
-      params[1] *= realScale;
+      if (systop.moles[mol_idx].name != string("SOL")){
+	params.resize(4);
+	params[2] = (params[0]);
+	params[3] = (params[1] * diffScale);      
+	params[1] *= realScale;
+      }
       systop.moles[mol_idx].bonds[ii].params = params;
 
       double period2new = cal_period_bond2 (iiatom.mass, jjatom.mass, params[1]);
@@ -294,20 +296,22 @@ int main (int argc, char **argv) {
       
       if (funct == 5){
 	// split angle type 5 into angle type 1 and bond type 1
-	gmx_bonds_item tmpbond;
-	tmpbond.ii = systop.moles[mol_idx].angles[ii].ii;
-	tmpbond.jj = systop.moles[mol_idx].angles[ii].kk;
-	tmpbond.funct = 1;
-	tmpbond.params.resize (4);
-	tmpbond.params[0] = params[2];
-	tmpbond.params[1] = params[3];
-	tmpbond.params[2] = params[2];
-	tmpbond.params[3] = params[3] / realScale * diffScale;
-	systop.moles[mol_idx].bonds.push_back (tmpbond);
-	systop.moles[mol_idx].angles[ii].funct = 1;
-	systop.moles[mol_idx].angles[ii].params.resize(4);
-	systop.moles[mol_idx].angles[ii].params[2] = systop.moles[mol_idx].angles[ii].params[0];
-	systop.moles[mol_idx].angles[ii].params[3] = systop.moles[mol_idx].angles[ii].params[1] / realScale * diffScale;
+	if (systop.moles[mol_idx].name != string("SOL")){
+	  gmx_bonds_item tmpbond;
+	  tmpbond.ii = systop.moles[mol_idx].angles[ii].ii;
+	  tmpbond.jj = systop.moles[mol_idx].angles[ii].kk;
+	  tmpbond.funct = 1;
+	  tmpbond.params.resize (4);
+	  tmpbond.params[0] = params[2];
+	  tmpbond.params[1] = params[3];
+	  tmpbond.params[2] = params[2];
+	  tmpbond.params[3] = params[3] / realScale * diffScale;
+	  systop.moles[mol_idx].bonds.push_back (tmpbond);
+	  systop.moles[mol_idx].angles[ii].funct = 1;
+	  systop.moles[mol_idx].angles[ii].params.resize(4);
+	  systop.moles[mol_idx].angles[ii].params[2] = systop.moles[mol_idx].angles[ii].params[0];
+	  systop.moles[mol_idx].angles[ii].params[3] = systop.moles[mol_idx].angles[ii].params[1] / realScale * diffScale;
+	}
 	// double period01a = cal_period_bond (iiatom.mass, params[3]);
 	// double period01b = cal_period_bond (kkatom.mass, params[3]);
 	double period012new = cal_period_bond2 (iiatom.mass, kkatom.mass, params[3]);
