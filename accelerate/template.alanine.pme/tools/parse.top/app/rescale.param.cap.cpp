@@ -159,6 +159,12 @@ int main (int argc, char **argv) {
 	params[3] = (params[1] * diffScale);      
 	params[1] *= realScale;
       }
+      else {
+	params.resize(4);
+	params[2] = (params[0]);
+	params[3] = (params[1] * 0.);	// do not calculate the response from the water bonds
+	params[1] *= realScale;
+      }
       systop.moles[mol_idx].bonds[ii].params = params;
 
       double period2new = cal_period_bond2 (iiatom.mass, jjatom.mass, params[1]);
@@ -293,7 +299,13 @@ int main (int argc, char **argv) {
       systop.moles[mol_idx].angles[ii].params = params;      
 
       double period2new = cal_period_angle2 (iiatom.mass, params0[0], kkatom.mass, params1[0], params[1]);
-      
+
+      // do not calculate the response from water!
+      if (funct == 1 && systop.moles[mol_idx].name == string("SOL")){
+	  systop.moles[mol_idx].angles[ii].params.resize(4);
+	  systop.moles[mol_idx].angles[ii].params[2] = systop.moles[mol_idx].angles[ii].params[0];
+	  systop.moles[mol_idx].angles[ii].params[3] = 0.;
+      }
       if (funct == 5){
 	// split angle type 5 into angle type 1 and bond type 1
 	if (systop.moles[mol_idx].name != string("SOL")){
