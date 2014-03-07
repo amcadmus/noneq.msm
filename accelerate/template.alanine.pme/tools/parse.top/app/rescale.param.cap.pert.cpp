@@ -8,17 +8,17 @@ using namespace std;
 using namespace GmxTop;
 
 // return in unit s
-static double
-cal_period_bond (const double & mass,
-		 const double & kk)
-{
-  if (kk != 0){
-    return 2. * M_PI * sqrt(mass / (kk * 1e24));
-  }
-  else {
-    return 0;
-  }
-}
+// static double
+// cal_period_bond (const double & mass,
+// 		 const double & kk)
+// {
+//   if (kk != 0){
+//     return 2. * M_PI * sqrt(mass / (kk * 1e24));
+//   }
+//   else {
+//     return 0;
+//   }
+// }
 
 static double
 cal_period_bond2 (const double & mass0,
@@ -35,19 +35,19 @@ cal_period_bond2 (const double & mass0,
 }
 
 // return in unit s
-static double
-cal_period_angle (const double & mass,
-		  const double & ll,
-		  const double & kk)
-{
-  double II = mass * ll * ll;
-  if (kk != 0){
-    return 2. * M_PI * sqrt(II / (kk * 1e24));
-  }
-  else {
-    return 0;
-  }
-}
+// static double
+// cal_period_angle (const double & mass,
+// 		  const double & ll,
+// 		  const double & kk)
+// {
+//   double II = mass * ll * ll;
+//   if (kk != 0){
+//     return 2. * M_PI * sqrt(II / (kk * 1e24));
+//   }
+//   else {
+//     return 0;
+//   }
+// }
 
 static double
 cal_period_angle2 (const double & mass0,
@@ -143,14 +143,28 @@ int main (int argc, char **argv) {
 
       double periodScale = period2 / capTbond;
       periodScale = periodScale * periodScale;
-      double realScale = 0;
+      double realScale = 0.;
+      double diffScale = 0.;
       if (periodScale < sbond) {
 	realScale = periodScale;
+	diffScale = sbond - periodScale;
       }
       else {
 	realScale = sbond;
+	diffScale = 0.;
       }
-      params[1] *= realScale;
+      if (systop.moles[mol_idx].name != string("SOL")){
+	params.resize(4);
+	params[2] = (params[0]);
+	params[3] = (params[1] * diffScale);      
+	params[1] *= realScale;
+      }
+      else {
+	params.resize(4);
+	params[2] = (params[0]);
+	params[3] = (params[1] * 0.);	// do not calculate the response from the water bonds
+	params[1] *= realScale;
+      }
       systop.moles[mol_idx].bonds[ii].params = params;
 
       double period2new = cal_period_bond2 (iiatom.mass, jjatom.mass, params[1]);
@@ -265,12 +279,15 @@ int main (int argc, char **argv) {
       
       double periodScale = periodmin / capTangle;
       periodScale = periodScale * periodScale;
-      double realScale = 0;
+      double realScale = 0.;
+      double diffScale = 0.;
       if (periodScale < sangle) {
 	realScale = periodScale;
+	diffScale = sangle - periodScale;
       }
       else {
 	realScale = sangle;
+	diffScale = 0.;
       }
       if (funct == 5){
 	params[1] *= realScale;
@@ -282,12 +299,35 @@ int main (int argc, char **argv) {
       systop.moles[mol_idx].angles[ii].params = params;      
 
       double period2new = cal_period_angle2 (iiatom.mass, params0[0], kkatom.mass, params1[0], params[1]);
-      
+
+      // do not calculate the response from water!
+      if (funct == 1 && systop.moles[mol_idx].name == string("SOL")){
+	  systop.moles[mol_idx].angles[ii].params.resize(4);
+	  systop.moles[mol_idx].angles[ii].params[2] = systop.moles[mol_idx].angles[ii].params[0];
+	  systop.moles[mol_idx].angles[ii].params[3] = 0.;
+      }
       if (funct == 5){
+	// split angle type 5 into angle type 1 and bond type 1
+	if (systop.moles[mol_idx].name != string("SOL")){
+	  gmx_bonds_item tmpbond;
+	  tmpbond.ii = systop.moles[mol_idx].angles[ii].ii;
+	  tmpbond.jj = systop.moles[mol_idx].angles[ii].kk;
+	  tmpbond.funct = 1;
+	  tmpbond.params.resize (4);
+	  tmpbond.params[0] = params[2];
+	  tmpbond.params[1] = params[3];
+	  tmpbond.params[2] = params[2];
+	  tmpbond.params[3] = params[3] / realScale * diffScale;
+	  systop.moles[mol_idx].bonds.push_back (tmpbond);
+	  systop.moles[mol_idx].angles[ii].funct = 1;
+	  systop.moles[mol_idx].angles[ii].params.resize(4);
+	  systop.moles[mol_idx].angles[ii].params[2] = systop.moles[mol_idx].angles[ii].params[0];
+	  systop.moles[mol_idx].angles[ii].params[3] = systop.moles[mol_idx].angles[ii].params[1] / realScale * diffScale;
+	}
 	// double period01a = cal_period_bond (iiatom.mass, params[3]);
 	// double period01b = cal_period_bond (kkatom.mass, params[3]);
 	double period012new = cal_period_bond2 (iiatom.mass, kkatom.mass, params[3]);
-	printf ("find angle between %s %s and %s, type %d, params: ",
+	printf ("find and split angle between %s %s and %s, type %d, params: ",
 		iiatom.at_name.c_str(), jjatom.at_name.c_str(), kkatom.at_name.c_str(), funct);
 	for (unsigned kk = 0; kk < params.size(); ++kk){
 		printf (" %e ", params[kk]);
