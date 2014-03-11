@@ -119,9 +119,16 @@ deposite (const double & psi,
     if (iv < 0) iv += int(nv);
     if (iv >= int(nv)) iv -= int(nv);
   }
-  {
-    nframe += 1.;
-    values[ix][iv].deposite(valuepp * scale);
+  nframe += 1.;
+  for (int ii = 0; ii < int(nx); ++ii){
+    for (int jj = 0; jj < int(nv); ++jj){
+      if (ii == ix && jj == iv){
+	values[ix][iv].deposite(valuepp * scale);
+      }
+      else {
+	values[ii][jj].deposite(0.);
+      }
+    }
   }
 }
 

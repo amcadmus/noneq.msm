@@ -96,7 +96,13 @@ int main(int argc, char * argv[])
   }
   
   dist.average ();
-    
+  printf ("sum: %f, nblock %d avg: %f avgerr: %f, nframe: %f\n",
+	  dist.values[0][0].sum,
+	  dist.values[0][0].nBlock,
+	  dist.values[0][0].getAvg(),
+	  dist.values[0][0].getAvgError(),
+	  dist.nframe);
+     
   char frameFileName [MaxLineLength];
   sprintf (frameFileName, "%s", ofile.c_str());
   dist.print_xv (frameFileName);

@@ -32,7 +32,7 @@ class BlockAverage_acc
   double avg;
   double error_avg;
   unsigned nDataInBlock;
-private:
+public:
   double sum;
   double blockSum2;
   unsigned nBlock;
