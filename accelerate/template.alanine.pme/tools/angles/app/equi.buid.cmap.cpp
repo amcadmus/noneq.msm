@@ -80,7 +80,7 @@ int main(int argc, char * argv[])
   while (fpname.getline(nameline, MaxLineLength)){
     if (nameline[0] == '#') continue;
     FILE *fp = fopen (nameline, "r");
-    cout << "reading file " << ifile << endl;
+    cout << "reading file " << nameline << endl;
     if (fp == NULL){
       std::cerr << "cannot open file " << ifile << std::endl;
       return 1;
