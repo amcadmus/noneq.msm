@@ -115,7 +115,11 @@ deposite (const double & psi,
   int ix = (psi - x0) / hx;
   int iv = (phi - v0) / hv;
   if ((ix < 0 || ix >= int(nx)) || (iv < 0 || iv >= int(nv))){
-    return;
+    // return;
+    if (ix < 0) ix += int(nx);
+    if (ix >= int(nx)) ix -= int(nx);
+    if (iv < 0) iv += int(nv);
+    if (iv >= int(nv)) iv -= int(nv);
   }
   else {
     nframe += 1.;
