@@ -57,8 +57,10 @@ public:
   void average ();
   void calTraj ();
   void print_x  (const string & filename) const;
+  void print_v  (const string & filename) const;
   void print_xv (const string & filename) const;
   void print_x  (FILE * fp) const;
+  void print_v  (FILE * fp) const;
   void print_xv (FILE * fp) const;
   void substract (const Distribution_1d & d);
   void add (const double & scalor,

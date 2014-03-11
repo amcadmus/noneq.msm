@@ -179,6 +179,18 @@ print_x (const string & filename) const
   fclose(fp);
 }
 
+void Distribution_1d::
+print_v (const string & filename) const
+{
+  FILE * fp = fopen (filename.c_str(), "w");
+  if (fp == NULL){
+    std::cerr << "Distribution_1d::print_x: cannot open file " << std::endl;
+    return;
+  }
+  print_v (fp);
+  fclose(fp);
+}
+
 
 void Distribution_1d::
 print_xv (FILE * fp) const
@@ -200,6 +212,18 @@ print_x (FILE * fp) const
       avg += values[ii][jj] * hv;
     }
     fprintf (fp, "%f %.16e\n", gridx[ii], avg);
+  }
+}
+
+void Distribution_1d::
+print_v (FILE * fp) const
+{
+  for (unsigned ii = 0; ii < nx; ++ii){
+    double avg = 0.;
+    for (unsigned jj = 0; jj < nv; ++jj){
+      avg += values[jj][ii] * hx;
+    }
+    fprintf (fp, "%f %.16e\n", gridv[ii], avg);
   }
 }
 
