@@ -68,8 +68,10 @@ int main(int argc, char * argv[])
   refh = 360. / double(nbin);
   float time;
   ValueType phi, psi;
+  // Distribution_1d  dist (-180 - 0.0 * refh, 180 - 0.0 * refh, nbin,
+  // 			 -180 - 0.0 * refh, 180 - 0.0 * refh, nbin);
   Distribution_1d  dist (-180 - 0.5 * refh, 180 - 0.5 * refh, nbin,
-			 -180 - 0.5 * refh, 180 - 0.5 * refh, nbin);
+  			 -180 - 0.5 * refh, 180 - 0.5 * refh, nbin);
 
   ifstream fpname (ifile.c_str());
   if (!fpname){

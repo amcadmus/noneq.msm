@@ -121,7 +121,7 @@ deposite (const double & psi,
     if (iv < 0) iv += int(nv);
     if (iv >= int(nv)) iv -= int(nv);
   }
-  else {
+  {
     nframe += 1.;
     backup_unbacked_count += 1.;
     values[ix][iv] += valuepp * scale;
