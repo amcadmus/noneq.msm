@@ -17,6 +17,8 @@
 #include <vector>
 #include <cmath>
 
+#include "BlockAverage.h"
+
 using namespace std;
 
 class Distribution_1d
@@ -26,10 +28,10 @@ public:
   double hx, hv;
   double valuepp;
   unsigned nx, nv;
-  vector<vector<double > > values;
-  vector<vector<double > > backup_values;
-  double backup_number;
-  double backup_unbacked_count;
+  vector<vector<BlockAverage_acc > > values;
+  // vector<vector<double > > backup_values;
+  // double backup_number;
+  // double backup_unbacked_count;
   vector<double > gridx;
   vector<double > gridv;
   double nframe;
@@ -40,13 +42,15 @@ public:
 		   const unsigned nx = 36,
 		   const double v0 = -180,
 		   const double v1 = 180.,
-		   const unsigned nv = 36);
+		   const unsigned nv = 36,
+		   const unsigned nDataInBlock = 100);
   void reinit (const double & x0,
 	       const double & x1,
 	       const unsigned & nx,
 	       const double & v0,
 	       const double & v1,
-	       const unsigned & nv);
+	       const unsigned & nv,
+	       const unsigned nDataInBlock = 100);
 public:
   void clear ();
   void deposite (const double & psi,
@@ -62,13 +66,13 @@ public:
   void print_x  (FILE * fp) const;
   void print_v  (FILE * fp) const;
   void print_xv (FILE * fp) const;
-  void substract (const Distribution_1d & d);
-  void add (const double & scalor,
-	    const Distribution_1d & d);
+  // void substract (const Distribution_1d & d);
+  // void add (const double & scalor,
+  // 	    const Distribution_1d & d);
   double getNframe () const {return nframe;}
 public:
-  void save (FILE * fp) const;
-  bool load (FILE * fp);
+  // void save (FILE * fp) const;
+  // bool load (FILE * fp);
 }
     ;
 

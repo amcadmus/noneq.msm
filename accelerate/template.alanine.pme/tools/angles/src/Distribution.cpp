@@ -38,9 +38,10 @@ Distribution_1d (const double x0_,
 		 const unsigned nx_,
 		 const double v0_,
 		 const double v1_,
-		 const unsigned nv_)
+		 const unsigned nv_,
+		 const unsigned nDataInBlock)
 {
-  reinit (x0_, x1_, nx_, v0_, v1_, nv_);
+  reinit (x0_, x1_, nx_, v0_, v1_, nv_, nDataInBlock);
 }
 
 
@@ -50,7 +51,8 @@ reinit (const double & x0_,
 	const unsigned & nx_,
 	const double & v0_,
 	const double & v1_,
-	const unsigned & nv_)
+	const unsigned & nv_,
+	const unsigned nDataInBlock)
 {
   x0 = x0_;
   x1 = x1_;
@@ -76,14 +78,11 @@ reinit (const double & x0_,
   values.resize(nx);
   for (unsigned ii = 0; ii < nx; ++ii){
     values[ii].resize(nv);
-  }
-  backup_values.resize(nx);
-  for (unsigned ii = 0; ii < nx; ++ii){
-    backup_values[ii].resize(nv);
+    for (unsigned jj = 0; jj < nv; ++jj){
+      values[ii][jj].reinit (nDataInBlock);
+    }
   }
 
-  backup_number = 1e6;
-  backup_unbacked_count = 0.;
   clear ();
 }
 
@@ -94,8 +93,7 @@ clear ()
   nframe = 0.;
   for (unsigned ii = 0; ii < nx; ++ii){
     for (unsigned jj = 0; jj < nv; ++jj){
-      values[ii][jj] = 0.;
-      backup_values[ii][jj] = 0.;
+      values[ii][jj].clear ();
     }
   }
 }
@@ -123,22 +121,7 @@ deposite (const double & psi,
   }
   {
     nframe += 1.;
-    backup_unbacked_count += 1.;
-    values[ix][iv] += valuepp * scale;
-    if (backup_unbacked_count >= backup_number){
-      // std::cout << "backuped" << std::endl;
-      /* fprintf (stderr, "backup: %.16e %.16e\n", backup_unbacked_count, backup_number); */
-      for (unsigned ii = 0; ii < nx; ++ii){
-	for (unsigned jj = 0; jj < nv; ++jj){
-	  /* if (ii == nx/2 && jj == nv/2){ */
-	  /*   fprintf (stderr,"average: %.16e %.16e    %.16e\n" , backup_values[ii][jj], values[ii][jj], nframe); */
-	  /* } */
-	  backup_values[ii][jj] += values[ii][jj];
-	  values[ii][jj] = 0.;
-	}
-      }
-      backup_unbacked_count = 0.;
-    }
+    values[ix][iv].deposite(valuepp * scale);
   }
 }
 
@@ -148,11 +131,7 @@ average ()
   if (nframe == 0.) return;
   for (unsigned ii = 0; ii < nx; ++ii){
     for (unsigned jj = 0; jj < nv; ++jj){
-      // if (ii == nx/2 && jj == nv/2){
-      // 	fprintf (stderr,"average: %.16e %.16e     %.16e\n" , backup_values[ii][jj], values[ii][jj], nframe);
-      // }
-      values[ii][jj] += backup_values[ii][jj];
-      values[ii][jj] /= double(nframe);
+      values[ii][jj].calculate ();
     }
   }  
 }
@@ -201,7 +180,7 @@ print_xv (FILE * fp) const
 {
   for (unsigned ii = 0; ii < nx; ++ii){
     for (unsigned jj = 0; jj < nv; ++jj){
-      fprintf (fp, "%f %f %.16e\n", gridx[ii], gridv[jj], values[ii][jj]);
+      fprintf (fp, "%f %f %.16e %.16e\n", gridx[ii], gridv[jj], values[ii][jj].getAvg(), values[ii][jj].getAvgError());
     }
     fprintf (fp, "\n");
   }
@@ -212,10 +191,12 @@ print_x (FILE * fp) const
 {
   for (unsigned ii = 0; ii < nx; ++ii){
     double avg = 0.;
+    double avgerr = 0.;
     for (unsigned jj = 0; jj < nv; ++jj){
-      avg += values[ii][jj] * hv;
+      avg += values[ii][jj].getAvg() * hv;
+      avgerr += values[ii][jj].getAvgError() * values[ii][jj].getAvgError() * hv * hv;
     }
-    fprintf (fp, "%f %.16e\n", gridx[ii], avg);
+    fprintf (fp, "%f %.16e %.16e\n", gridx[ii], avg, sqrt(avgerr));
   }
 }
 
@@ -224,147 +205,149 @@ print_v (FILE * fp) const
 {
   for (unsigned ii = 0; ii < nx; ++ii){
     double avg = 0.;
+    double avgerr = 0.;
     for (unsigned jj = 0; jj < nv; ++jj){
-      avg += values[jj][ii] * hx;
+      avg += values[jj][ii].getAvg() * hx;
+      avgerr += values[jj][ii].getAvgError() * values[jj][ii].getAvgError() * hx * hx;
     }
-    fprintf (fp, "%f %.16e\n", gridv[ii], avg);
+    fprintf (fp, "%f %.16e %.16e\n", gridv[ii], avg, sqrt(avgerr));
   }
 }
 
 
-void Distribution_1d::
-substract (const Distribution_1d & d)
-{
-  if (d.nx != nx || d.nv != nv){
-    std::cerr << "unmatch distributions, do nothing" << std::endl;
-    return;
-  }
+// void Distribution_1d::
+// substract (const Distribution_1d & d)
+// {
+//   if (d.nx != nx || d.nv != nv){
+//     std::cerr << "unmatch distributions, do nothing" << std::endl;
+//     return;
+//   }
 
-  for (unsigned ii = 0; ii < nx; ++ii){
-    for (unsigned jj = 0; jj < nv; ++jj){
-      values[ii][jj] -= d.values[ii][jj];
-    }
-  }
-}
+//   for (unsigned ii = 0; ii < nx; ++ii){
+//     for (unsigned jj = 0; jj < nv; ++jj){
+//       values[ii][jj] -= d.values[ii][jj];
+//     }
+//   }
+// }
 
-void Distribution_1d::
-add (const double & scalor,
-     const Distribution_1d & d)
-{
-  if (d.nx != nx || d.nv != nv){
-    std::cerr << "unmatch distributions, do nothing" << std::endl;
-    return;
-  }
+// void Distribution_1d::
+// add (const double & scalor,
+//      const Distribution_1d & d)
+// {
+//   if (d.nx != nx || d.nv != nv){
+//     std::cerr << "unmatch distributions, do nothing" << std::endl;
+//     return;
+//   }
 
-  for (unsigned ii = 0; ii < nx; ++ii){
-    for (unsigned jj = 0; jj < nv; ++jj){
-      values[ii][jj] += scalor * d.values[ii][jj];
-    }
-  }
-}
-
-
-void Distribution_1d::
-save (FILE * fp) const
-{
-  size_t rv;
-  rv = fwrite (&x0, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-  rv = fwrite (&x1, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-  rv = fwrite (&v0, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-  rv = fwrite (&v1, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-  rv = fwrite (&nx, sizeof(unsigned), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-  rv = fwrite (&nv, sizeof(unsigned), 1, fp);
-  if (rv != 1){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-
-  double * buff = (double *) malloc (sizeof(double) * nx * nv);
-  for (unsigned ii = 0; ii < nx; ++ii) {
-    for (unsigned jj = 0; jj < nv; ++jj) {
-      buff[ii*nv +jj] = values[ii][jj];
-    }
-  }
-  rv = fwrite (buff, sizeof(double), nx*nv, fp);
-  if (rv != nx*nv){
-    cerr << "error writing corr file " << endl;
-    exit(1);
-  }
-
-  free (buff);
-}
+//   for (unsigned ii = 0; ii < nx; ++ii){
+//     for (unsigned jj = 0; jj < nv; ++jj){
+//       values[ii][jj] += scalor * d.values[ii][jj];
+//     }
+//   }
+// }
 
 
-bool Distribution_1d::
-load (FILE * fp)
-{
-  size_t rv;
-  rv = fread (&x0, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file or EOF is reached" << endl;
-    return false;
-  }
-  rv = fread (&x1, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  rv = fread (&v0, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  rv = fread (&v1, sizeof(double), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  rv = fread (&nx, sizeof(unsigned), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  rv = fread (&nv, sizeof(unsigned), 1, fp);
-  if (rv != 1){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  reinit (x0, x1, nx, v0, v1, nv);
+// void Distribution_1d::
+// save (FILE * fp) const
+// {
+//   size_t rv;
+//   rv = fwrite (&x0, sizeof(double), 1, fp);
+//   if (rv != 1){
+//     cerr << "error writing corr file " << endl;
+//     exit(1);
+//   }
+//   rv = fwrite (&x1, sizeof(double), 1, fp);
+//   if (rv != 1){
+//     cerr << "error writing corr file " << endl;
+//     exit(1);
+//   }
+//   rv = fwrite (&v0, sizeof(double), 1, fp);
+//   if (rv != 1){
+//     cerr << "error writing corr file " << endl;
+//     exit(1);
+//   }
+//   rv = fwrite (&v1, sizeof(double), 1, fp);
+//   if (rv != 1){
+//     cerr << "error writing corr file " << endl;
+//     exit(1);
+//   }
+//   rv = fwrite (&nx, sizeof(unsigned), 1, fp);
+//   if (rv != 1){
+//     cerr << "error writing corr file " << endl;
+//     exit(1);
+//   }
+//   rv = fwrite (&nv, sizeof(unsigned), 1, fp);
+//   if (rv != 1){
+//     cerr << "error writing corr file " << endl;
+//     exit(1);
+//   }
 
-  double * buff = (double *) malloc (sizeof(double) * nx * nv);
-  rv = fread (buff, sizeof(double), nx*nv, fp);
-  if (rv != nx*nv){
-    cerr << "error reading corr file " << endl;
-    exit(1);
-  }
-  for (unsigned ii = 0; ii < nx; ++ii) {
-    for (unsigned jj = 0; jj < nv; ++jj) {
-      values[ii][jj] = buff[ii*nv +jj];
-    }
-  }
-  free (buff);
+//   double * buff = (double *) malloc (sizeof(double) * nx * nv);
+//   for (unsigned ii = 0; ii < nx; ++ii) {
+//     for (unsigned jj = 0; jj < nv; ++jj) {
+//       buff[ii*nv +jj] = values[ii][jj];
+//     }
+//   }
+//   rv = fwrite (buff, sizeof(double), nx*nv, fp);
+//   if (rv != nx*nv){
+//     cerr << "error writing corr file " << endl;
+//     exit(1);
+//   }
 
-  return true;
-}
+//   free (buff);
+// }
+
+
+// bool Distribution_1d::
+// load (FILE * fp)
+// {
+//   size_t rv;
+//   rv = fread (&x0, sizeof(double), 1, fp);
+//   if (rv != 1){
+//     cerr << "error reading corr file or EOF is reached" << endl;
+//     return false;
+//   }
+//   rv = fread (&x1, sizeof(double), 1, fp);
+//   if (rv != 1){
+//     cerr << "error reading corr file " << endl;
+//     exit(1);
+//   }
+//   rv = fread (&v0, sizeof(double), 1, fp);
+//   if (rv != 1){
+//     cerr << "error reading corr file " << endl;
+//     exit(1);
+//   }
+//   rv = fread (&v1, sizeof(double), 1, fp);
+//   if (rv != 1){
+//     cerr << "error reading corr file " << endl;
+//     exit(1);
+//   }
+//   rv = fread (&nx, sizeof(unsigned), 1, fp);
+//   if (rv != 1){
+//     cerr << "error reading corr file " << endl;
+//     exit(1);
+//   }
+//   rv = fread (&nv, sizeof(unsigned), 1, fp);
+//   if (rv != 1){
+//     cerr << "error reading corr file " << endl;
+//     exit(1);
+//   }
+//   reinit (x0, x1, nx, v0, v1, nv);
+
+//   double * buff = (double *) malloc (sizeof(double) * nx * nv);
+//   rv = fread (buff, sizeof(double), nx*nv, fp);
+//   if (rv != nx*nv){
+//     cerr << "error reading corr file " << endl;
+//     exit(1);
+//   }
+//   for (unsigned ii = 0; ii < nx; ++ii) {
+//     for (unsigned jj = 0; jj < nv; ++jj) {
+//       values[ii][jj] = buff[ii*nv +jj];
+//     }
+//   }
+//   free (buff);
+
+//   return true;
+// }
 
 

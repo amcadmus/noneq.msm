@@ -48,11 +48,12 @@ int main(int argc, char * argv[])
 {
   std::string ifile, ofile;
   double refh;
-  int nbin;
+  int nbin, nDataInBlock;
   
   po::options_description desc ("Allow options");
   desc.add_options()
     ("help,h", "print this message")
+    ("nDataInBlock",  po::value<int > (&nDataInBlock)->default_value(100), "number of data in block")
     ("nbin,n",  po::value<int > (&nbin)->default_value(24), "number of bins")
     ("output,o", po::value<std::string > (&ofile)->default_value ("avg.angle.out"), "the output of average angle")
     ("input,f",  po::value<std::string > (&ifile)->default_value ("traj.name"), "the file of traj names");
@@ -71,7 +72,8 @@ int main(int argc, char * argv[])
   // Distribution_1d  dist (-180 - 0.0 * refh, 180 - 0.0 * refh, nbin,
   // 			 -180 - 0.0 * refh, 180 - 0.0 * refh, nbin);
   Distribution_1d  dist (-180 - 0.5 * refh, 180 - 0.5 * refh, nbin,
-  			 -180 - 0.5 * refh, 180 - 0.5 * refh, nbin);
+  			 -180 - 0.5 * refh, 180 - 0.5 * refh, nbin,
+			 nDataInBlock);
 
   ifstream fpname (ifile.c_str());
   if (!fpname){
