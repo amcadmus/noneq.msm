@@ -917,3 +917,27 @@ matchAngleType (const string & iitype,
 }
 
 
+bool GmxTop::
+matchCMAPType (const string & iitype,
+	       const string & jjtype,
+	       const string & kktype,
+	       const string & lltype,
+	       const string & mmtype,
+	       const gmx_sys_types & systypes,
+	       gmx_cmaptypes_item & cmaptype,
+	       int & idx)
+{
+  for (unsigned ii = 0; ii < systypes.cmaptypes.size(); ++ii){
+    if ((iitype == systypes.cmaptypes[ii].name0 &&
+	 jjtype == systypes.cmaptypes[ii].name1 &&
+	 kktype == systypes.cmaptypes[ii].name2 &&
+	 lltype == systypes.cmaptypes[ii].name3 &&
+	 mmtype == systypes.cmaptypes[ii].name4)){
+      cmaptype = systypes.cmaptypes[ii];
+      idx = ii;
+      return true;
+    }
+  }
+  return false;	
+}
+

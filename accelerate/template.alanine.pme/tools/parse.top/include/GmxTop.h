@@ -84,6 +84,10 @@ namespace GmxTop {
     int			funct;
     vector<double >	params;
     void		print (FILE * fp) const;
+    int			atom_idx_ii () const {return ii-1;}
+    int			atom_idx_jj () const {return jj-1;}
+    int			atom_idx_kk () const {return kk-1;}
+    int			atom_idx_ll () const {return ll-1;}
   }
       ;
   
@@ -100,6 +104,11 @@ namespace GmxTop {
     vector<double >	params;
     gmx_cmap_item	();
     void		print (FILE * fp) const;
+    int			atom_idx_ii () const {return ii-1;}
+    int			atom_idx_jj () const {return jj-1;}
+    int			atom_idx_kk () const {return kk-1;}
+    int			atom_idx_ll () const {return ll-1;}
+    int			atom_idx_mm () const {return mm-1;}
   }
       ;
   
@@ -146,6 +155,14 @@ namespace GmxTop {
 		       const string & kktype,
 		       const gmx_sys_types & systypes,
 		       gmx_angletypes_item & angletype);
+  bool matchCMAPType (const string & iitype,
+		      const string & jjtype,
+		      const string & kktype,
+		      const string & lltype,
+		      const string & mmtype,
+		      const gmx_sys_types & systypes,
+		      gmx_cmaptypes_item & cmaptype,
+		      int & idx);
 };
 
 #endif
