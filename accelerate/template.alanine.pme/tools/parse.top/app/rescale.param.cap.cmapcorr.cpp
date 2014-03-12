@@ -131,7 +131,9 @@ void read_angle (const string & filename_o,
       }
     }
   }
-  
+
+  FILE * fp = fopen ("dpangle.out", "w");
+  double hx = 360. / double(cmap.ngrid0);
   for (int ii = 0; ii < cmap.ngrid0; ++ii){
     for (int jj = 0; jj < cmap.ngrid1; ++jj){
       int idx = ii * cmap.ngrid1 + jj;
@@ -144,8 +146,11 @@ void read_angle (const string & filename_o,
       else {
 	data_p[idx] = 0.;
       }
+      fprintf (fp, "%f %f %f\n", ii * hx, jj * hx, data_p[idx]);
     }
+    fprintf (fp, "\n");
   }
+  fclose(fp);
 
   // double hi = 360. / cmap.ngrid0;
   // double hj = 360. / cmap.ngrid1;
