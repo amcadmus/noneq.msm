@@ -83,11 +83,12 @@ void read_angle (const string & filename_o,
 {
   vector<double > data_o, data_r;
   vector<double > data_p;
+  vector<bool > data_valid;
   FILE * fp;
   double xx, yy, vv, ee;
   double kbT = 2.5;
   double eps = 1e-12;
-  double max = -kbT * log(eps);
+  // double max = -kbT * log(eps);
 
   printf ("size of cmap param is %d\n", cmap.params.size());
   
@@ -117,24 +118,32 @@ void read_angle (const string & filename_o,
   }
 
   data_p.resize (cmap.ngrid0 * cmap.ngrid1 );
+  data_valid.resize (cmap.ngrid0 * cmap.ngrid1 );
   
   for (int ii = 0; ii < cmap.ngrid0; ++ii){
     for (int jj = 0; jj < cmap.ngrid1; ++jj){
       int idx = ii * cmap.ngrid1 + jj;
-      double pot_o, pot_r;
-      if (data_o[idx] < eps){
-	pot_o = max;
+      if (data_o[idx] < eps || data_o[idx] < eps){
+	data_valid[idx] = false;
       }
       else {
+	data_valid[idx] = true;
+      }
+    }
+  }
+  
+  for (int ii = 0; ii < cmap.ngrid0; ++ii){
+    for (int jj = 0; jj < cmap.ngrid1; ++jj){
+      int idx = ii * cmap.ngrid1 + jj;
+      if (data_valid[idx]){
+	double pot_o, pot_r;
 	pot_o = -kbT * log (data_o[idx]);
-      }
-      if (data_r[idx] < eps){
-	pot_r = max;
+	pot_r = -kbT * log (data_r[idx]);
+	data_p[idx] = pot_r - pot_o;
       }
       else {
-	pot_r = -kbT * log (data_r[idx]);
+	data_p[idx] = 0.;
       }
-      data_p[idx] = pot_r - pot_o;
     }
   }
 
