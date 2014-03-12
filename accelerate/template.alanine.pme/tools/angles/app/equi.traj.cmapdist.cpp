@@ -71,8 +71,8 @@ int main(int argc, char * argv[])
   ValueType phi, psi;
   // Distribution_1d  dist (-180 - 0.0 * refh, 180 - 0.0 * refh, nbin,
   // 			 -180 - 0.0 * refh, 180 - 0.0 * refh, nbin);
-  Distribution_1d  dist (-180 - 0.5 * refh, 180 - 0.5 * refh, nbin,
-  			 -180 - 0.5 * refh, 180 - 0.5 * refh, nbin,
+  Distribution_1d  dist (0 - 0.5 * refh, 360 - 0.5 * refh, nbin,
+  			 0 - 0.5 * refh, 360 - 0.5 * refh, nbin,
 			 nDataInBlock);
 
   ifstream fpname (ifile.c_str());
@@ -90,6 +90,10 @@ int main(int argc, char * argv[])
       return 1;
     }
     while (myread(fp, time, phi, psi)){
+      if (phi < 0) phi += 360;
+      if (psi < 0) psi += 360;
+      if (phi >= 360) phi -= 360;
+      if (psi >= 360) psi -= 360;
       dist.deposite (psi, phi);
     }
     fclose (fp);
