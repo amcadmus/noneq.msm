@@ -123,7 +123,7 @@ void read_angle (const string & filename_o,
   for (int ii = 0; ii < cmap.ngrid0; ++ii){
     for (int jj = 0; jj < cmap.ngrid1; ++jj){
       int idx = ii * cmap.ngrid1 + jj;
-      if (data_o[idx] < eps || data_o[idx] < eps){
+      if (data_o[idx] < eps || data_r[idx] < eps){
 	data_valid[idx] = false;
       }
       else {
