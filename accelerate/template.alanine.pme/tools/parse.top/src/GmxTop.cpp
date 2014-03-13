@@ -271,8 +271,12 @@ print (FILE * fp) const
   if (ngrid1 != 0) {
     fprintf (fp, "\t%d", ngrid1);
   }
+  fprintf (fp, "\\\n");
   for (unsigned ii = 0; ii < params.size(); ++ii){
-    fprintf (fp, "\t%.10e", params[ii]);
+    fprintf (fp, "%.10f ", params[ii]);
+    if ((ii+1) % 10 == 0){
+      fprintf (fp, "\\\n");
+    }
   }
   fprintf (fp, "\n");
 }
