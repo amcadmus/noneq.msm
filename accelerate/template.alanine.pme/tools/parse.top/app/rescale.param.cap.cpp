@@ -253,34 +253,36 @@ int main (int argc, char **argv) {
 
       // double period0 = cal_period_angle (iiatom.mass, params0[0], params[1]);
       // double period1 = cal_period_angle (kkatom.mass, params1[0], params[1]);
-      double period2 = cal_period_angle2 (iiatom.mass, params0[0], kkatom.mass, params1[0], params[1]);
-      double periodmin = period2;
-      double period012 = 0.;
-      if (funct == 5){	
-	period012 = cal_period_bond2 (iiatom.mass, kkatom.mass, params[3]);
-	if (period012 != 0){
-	  if (period012 < periodmin) periodmin = period012;
-	}
-      }
+      double period2Angle = cal_period_angle2 (iiatom.mass, params0[0], kkatom.mass, params1[0], params[1]);
       double effCapAngle = capTangle * sangle;
       double realScale = 0;
       double realPeriod;
-      if (periodmin > effCapAngle){
+      if (period2Angle > effCapAngle){
 	realScale = sangle;
-	realPeriod = periodmin / sangle;
+	realPeriod = period2Angle / sangle;
       }
       else {
-	realScale = sangle * (periodmin / effCapAngle) * (periodmin / effCapAngle);
+	realScale = sangle * (period2Angle / effCapAngle) * (period2Angle / effCapAngle);
 	realPeriod = capTangle;
       }
-      
+      params[1] *= realScale;
+      double realPeriod012 = 0.;
+      double period012  = 0.;
       if (funct == 5){
-	params[1] *= realScale;
-	params[3] *= realScale;
+	period012 = cal_period_bond2 (iiatom.mass, kkatom.mass, params[3]);
+	double effCapBond = capTbond * sbond;
+	double realScale012 = 1.;
+	if (period012 > effCapBond) {
+	  realScale012 = sbond;
+	  realPeriod012 = period012 / sbond;
+	}
+	else {
+	  realScale012 = sbond * (period012 / effCapBond) * (period012 / effCapBond);
+	  realPeriod012 = capTbond;
+	}
+	params[3] *= realScale012;
       }
-      else {
-	params[1] *= realScale;
-      }
+      
       systop.moles[mol_idx].angles[ii].params = params;      
 
       if (funct == 5){
@@ -290,8 +292,8 @@ int main (int argc, char **argv) {
 		printf (" %e ", params[kk]);
 	}
 	printf ("   periods %f -> %f    %f -> %f fs",
-		period2 * 1e15, realPeriod * 1e15,
-		period012 * 1e15, realPeriod * 1e15);
+		period2Angle * 1e15, realPeriod * 1e15,
+		period012 * 1e15, realPeriod012 * 1e15);
       }
       else {
 	printf ("find angle between %s %s and %s, type %d, params: ",
@@ -300,7 +302,7 @@ int main (int argc, char **argv) {
 		printf (" %e ", params[kk]);
 	}
 	printf ("   periods %f -> %f fs",
-		period2 * 1e15, realPeriod * 1e15);
+		period2Angle * 1e15, realPeriod * 1e15);
       }
       
       
