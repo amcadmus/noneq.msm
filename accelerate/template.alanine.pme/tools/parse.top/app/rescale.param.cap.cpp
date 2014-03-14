@@ -140,21 +140,21 @@ int main (int argc, char **argv) {
       // double period0 = cal_period_bond (iiatom.mass, params[1]);
       // double period1 = cal_period_bond (jjatom.mass, params[1]);
       double period2 = cal_period_bond2 (iiatom.mass, jjatom.mass, params[1]);
-
-      double periodScale = period2 / capTbond;
-      periodScale = periodScale * periodScale;
+      double effCapBond = capTbond * sbond;
       double realScale = 0;
-      if (periodScale < sbond) {
-	realScale = periodScale;
+      double realPeriod;
+      if (period2 > effCapBond) {
+	realScale = sbond;
+	realPeriod = period2 / sbond;
       }
       else {
-	realScale = sbond;
+	realScale = sbond * (period2 / effCapBond) * (period2 / effCapBond);
+	realPeriod = capTbond;
       }
+
       params[1] *= realScale;
       systop.moles[mol_idx].bonds[ii].params = params;
 
-      double period2new = cal_period_bond2 (iiatom.mass, jjatom.mass, params[1]);
-      
       printf ("find bond between %s and %s, mass: %f %f, type %d, params: ",
 	      iiatom.at_name.c_str(), jjatom.at_name.c_str(),
 	      iiatom.mass, jjatom.mass,
@@ -162,7 +162,7 @@ int main (int argc, char **argv) {
       for (unsigned kk = 0; kk < params.size(); ++kk){
 	printf (" %e ", params[kk]);
       }
-      printf ("   periods: %f -> %f fs", period2 * 1e15, period2new * 1e15);
+      printf ("   periods: %f -> %f fs", period2 * 1e15, realPeriod * 1e15);
       cout << endl;
     }
     cout << endl;    
