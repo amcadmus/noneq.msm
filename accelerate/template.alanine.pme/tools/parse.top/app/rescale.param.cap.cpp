@@ -268,7 +268,7 @@ int main (int argc, char **argv) {
       params[1] *= realScale;
       double realPeriod012 = 0.;
       double period012  = 0.;
-      if (funct == 5){
+      if (funct == 5 && params[3] != 0.){
 	period012 = cal_period_bond2 (iiatom.mass, kkatom.mass, params[3]);
 	double effCapBond = capTbond * sbond;
 	double realScale012 = 1.;
