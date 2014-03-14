@@ -8,17 +8,17 @@ using namespace std;
 using namespace GmxTop;
 
 // return in unit s
-static double
-cal_period_bond (const double & mass,
-		 const double & kk)
-{
-  if (kk != 0){
-    return 2. * M_PI * sqrt(mass / (kk * 1e24));
-  }
-  else {
-    return 0;
-  }
-}
+// static double
+// cal_period_bond (const double & mass,
+// 		 const double & kk)
+// {
+//   if (kk != 0){
+//     return 2. * M_PI * sqrt(mass / (kk * 1e24));
+//   }
+//   else {
+//     return 0;
+//   }
+// }
 
 static double
 cal_period_bond2 (const double & mass0,
@@ -35,19 +35,19 @@ cal_period_bond2 (const double & mass0,
 }
 
 // return in unit s
-static double
-cal_period_angle (const double & mass,
-		  const double & ll,
-		  const double & kk)
-{
-  double II = mass * ll * ll;
-  if (kk != 0){
-    return 2. * M_PI * sqrt(II / (kk * 1e24));
-  }
-  else {
-    return 0;
-  }
-}
+// static double
+// cal_period_angle (const double & mass,
+// 		  const double & ll,
+// 		  const double & kk)
+// {
+//   double II = mass * ll * ll;
+//   if (kk != 0){
+//     return 2. * M_PI * sqrt(II / (kk * 1e24));
+//   }
+//   else {
+//     return 0;
+//   }
+// }
 
 static double
 cal_period_angle2 (const double & mass0,
@@ -262,16 +262,18 @@ int main (int argc, char **argv) {
 	  if (period012 < periodmin) periodmin = period012;
 	}
       }
-      
-      double periodScale = periodmin / capTangle;
-      periodScale = periodScale * periodScale;
+      double effCapAngle = capTangle * sangle;
       double realScale = 0;
-      if (periodScale < sangle) {
-	realScale = periodScale;
+      double realPeriod;
+      if (periodmin > effCapAngle){
+	realScale = sangle;
+	realPeriod = periodmin / sangle;
       }
       else {
-	realScale = sangle;
+	realScale = sangle * (periodmin / effCapAngle) * (periodmin / effCapAngle);
+	realPeriod = capTangle;
       }
+      
       if (funct == 5){
 	params[1] *= realScale;
 	params[3] *= realScale;
@@ -281,20 +283,15 @@ int main (int argc, char **argv) {
       }
       systop.moles[mol_idx].angles[ii].params = params;      
 
-      double period2new = cal_period_angle2 (iiatom.mass, params0[0], kkatom.mass, params1[0], params[1]);
-      
       if (funct == 5){
-	// double period01a = cal_period_bond (iiatom.mass, params[3]);
-	// double period01b = cal_period_bond (kkatom.mass, params[3]);
-	double period012new = cal_period_bond2 (iiatom.mass, kkatom.mass, params[3]);
 	printf ("find angle between %s %s and %s, type %d, params: ",
 		iiatom.at_name.c_str(), jjatom.at_name.c_str(), kkatom.at_name.c_str(), funct);
 	for (unsigned kk = 0; kk < params.size(); ++kk){
 		printf (" %e ", params[kk]);
 	}
 	printf ("   periods %f -> %f    %f -> %f fs",
-		period2 * 1e15, period2new * 1e15,
-		period012 * 1e15, period012new * 1e15);
+		period2 * 1e15, realPeriod * 1e15,
+		period012 * 1e15, realPeriod * 1e15);
       }
       else {
 	printf ("find angle between %s %s and %s, type %d, params: ",
@@ -303,7 +300,7 @@ int main (int argc, char **argv) {
 		printf (" %e ", params[kk]);
 	}
 	printf ("   periods %f -> %f fs",
-		period2 * 1e15, period2new * 1e15);
+		period2 * 1e15, realPeriod * 1e15);
       }
       
       
