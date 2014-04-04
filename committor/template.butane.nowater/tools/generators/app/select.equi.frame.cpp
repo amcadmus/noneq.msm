@@ -91,7 +91,7 @@ int main(int argc, char * argv[])
   }
   
   if (fclose(fp) != 0) {
-      std::cerr << "ERROR: " << " calling fclose()"
+    std::cerr << "ERROR: " << " calling fclose()"
                 << " at " << __FILE__ << ":" << __LINE__
                 << std::endl << std::flush;
       exit(1);
