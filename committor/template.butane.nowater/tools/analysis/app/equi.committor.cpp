@@ -25,10 +25,12 @@ int main(int argc, char * argv[])
 {
   std::string itfile, icfile, ofile;
   unsigned nDataBlock;
+  double begin;
 
   po::options_description desc ("Allow options");
   desc.add_options()
       ("help,h", "print this message")
+      ("begin,b",  po::value<double > (&begin)->default_value (0.), "start of the traj")
       ("num-data-block,n",  po::value<unsigned > (&nDataBlock)->default_value (1), "number of data in block")
       ("input-angle,a", po::value<std::string > (&itfile)->default_value ("angaver.xvg"), "the angle file name")
       ("input-coreset-file,f", po::value<std::string > (&icfile)->default_value ("coreset.dat"), "the file of core sets")
@@ -62,6 +64,7 @@ int main(int argc, char * argv[])
   char valueline_ang [MaxLineLength];
   int prev_indicate = -10;
   vector<int > index_traj;
+  unsigned countTraj = 0;
   
   while (angle.getline(valueline_ang, MaxLineLength)){
     if (valueline_ang[0] == '#' || valueline_ang[0] == '@'){
@@ -73,8 +76,21 @@ int main(int argc, char * argv[])
       cerr << "wrong file format of " << itfile << endl;
       exit (1);
     }
-    double anglev;
+    double time, anglev;
+    time   = (atof(words[0].c_str()));
     anglev = (atof(words[1].c_str()));
+    
+    if (time < begin - 1e-3){
+      continue;
+    }
+    else {
+      if (countTraj %1000 == 0){
+	printf ("read traj at %f     \r", time);
+	fflush (stdout);
+      }
+    }
+    countTraj ++;
+    
     int index = stable.calIndex (anglev);
     int indicate = stable.calIndicate (index);
 

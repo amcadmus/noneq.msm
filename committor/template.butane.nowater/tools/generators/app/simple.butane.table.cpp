@@ -12,9 +12,6 @@
 #include <vector>
 #include <cmath>
 #include <boost/program_options.hpp>
-#include "StringSplit.h"
-#include "BlockAverage.h"
-#include "SetTable.h"
 
 #define MaxLineLength 2048
 
