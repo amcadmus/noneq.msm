@@ -53,6 +53,7 @@ int main(int argc, char * argv[])
   char valueline_ang [MaxLineLength];
   double prev_time = 0;
   int countTraj = 0;
+  int countSel = 0;
   FILE * fp = fopen (ofile.c_str(), "w");
 
   while (angle.getline(valueline_ang, MaxLineLength)){
@@ -85,7 +86,8 @@ int main(int argc, char * argv[])
     }
 
     if (stable.calIndicate (anglev) == 2){
-      fprintf (fp, "%08d\t%f\n", countTraj, time - 0.5 * (time - prev_time));
+      countSel ++;
+      fprintf (fp, "%08d\t%f\n", countSel, time - 0.5 * (time - prev_time));
     }
     
   }
