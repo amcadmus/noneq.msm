@@ -90,6 +90,7 @@ int main(int argc, char * argv[])
       fprintf (fp, "%08d\t%f\n", countSel, time - 0.5 * (time - prev_time));
     }
     
+    prev_time = time;
   }
   
   if (fclose(fp) != 0) {
