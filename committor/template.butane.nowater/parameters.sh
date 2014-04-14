@@ -1,7 +1,8 @@
 #!/bin/bash
 
-fht_equi_dir=/home/mi/wanghan/study/noneq.msm/first.hitting/equi.systems/inwater.gromos.45a3.new/
-fht_equi_frame_name=equi.frame
+fht_equi_dir=/home/mi/wanghan/study/noneq.msm/committor/equi.system/nowater.gromos.45a3.confs
+fht_equi_frame_name=equi.frame.080-085
+fht_coreset_data=coreset.dat
 fht_num_conf_use=200
 
 fht_integrator=sd1
