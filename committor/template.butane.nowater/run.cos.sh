@@ -83,7 +83,12 @@ do
     
     traj_last_angle=`tail -n 1 angaver.xvg | awk '{print $2}'`
     last_angle_ind=`$cwd/tools/analysis/angle.ind --input-angle $traj_last_angle --input-coreset-file coreset.dat`
-    bool_hit_set=`echo "$traj_last_angle == 1" | bc `
+    bool_hit_set=`echo "$last_angle_ind == 1" | bc `
+    bool_time_out=`echo "$last_angle_ind == 0" | bc `
+
+    if [ $bool_time_out -eq 1 ]; then
+	echo "WARNING: find traj out of time"
+    fi
 
     tmpid=`echo "$count - $fht_parallel_num_pro" | bc -l`
     echo "tmpid is $tmpid"

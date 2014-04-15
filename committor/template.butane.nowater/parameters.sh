@@ -3,7 +3,7 @@
 fht_equi_dir=/home/mi/wanghan/study/noneq.msm/committor/equi.system/nowater.gromos.45a3.confs
 fht_equi_frame_name=equi.frame.080-085
 fht_coreset_data=`pwd`/coreset.dat
-fht_num_conf_use=200
+fht_num_conf_use=5000
 
 fht_integrator=sd1
 fht_dt=0.0005			# ps

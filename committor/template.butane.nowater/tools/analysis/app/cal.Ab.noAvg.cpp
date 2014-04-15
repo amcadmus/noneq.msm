@@ -192,7 +192,7 @@ int main(int argc, char * argv[])
 	  }
 	}
 
-	if (stable.calIndex(anglev) == 1) {
+	if (stable.calIndicate(anglev) == 1) {
 	  find = true;
 	  break;
 	}
@@ -237,9 +237,9 @@ int main(int argc, char * argv[])
 	  countFile,
 	  countFound, ((double)(countFound))/((double)(countFile)) * 100.,
 	  countUnFound, ((double)(countUnFound))/((double)(countFile)) * 100.);
-  printf ("# read %d files, %d ( %.1f %% ) hit meta in gate\n",
-	  countFile,
-	  countNumInGate, ((double)(countNumInGate))/((double)(countFile)) * 100.);
+  // printf ("# read %d files, %d ( %.1f %% ) hit meta in gate\n",
+  // 	  countFile,
+  // 	  countNumInGate, ((double)(countNumInGate))/((double)(countFile)) * 100.);
 
   ba.calculate ();
   
