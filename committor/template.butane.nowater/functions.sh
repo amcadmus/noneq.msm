@@ -75,7 +75,7 @@ function make_cos_top () {
     echo ''>> topol.top
     echo '[ molecules ]'>> topol.top
     echo 'butane  1'>> topol.top
-    echo 'SOL     899 '>> topol.top
+    echo 'SOL     0 '>> topol.top
     echo ''>> topol.top
     echo ''>> topol.top
 }

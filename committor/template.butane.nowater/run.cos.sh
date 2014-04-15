@@ -49,6 +49,7 @@ do
     cp $fht_equi_dir/angle.ndx	$my_dir
     cp $cwd/$fht_cos_base_k_file $my_dir
 #    cp $fht_equi_dir/topol.top	$my_dir
+    cp $fht_coreset_data $my_dir
     cd $my_dir
     make_cos_top
 #    make_tables
@@ -80,8 +81,9 @@ do
 	echo "failed at g_angle exit"; exit
     fi
     
-    traj_last_angle=`tail -n 1 angaver.xvg | awk '{print $1}'`
-    bool_hit_set=`echo "$traj_last_angle <= $fht_stop_time" | bc `
+    traj_last_angle=`tail -n 1 angaver.xvg | awk '{print $2}'`
+    last_angle_ind=`$cwd/tools/analysis/angle.ind --input-angle $traj_last_angle --input-coreset-file coreset.dat`
+    bool_hit_set=`echo "$traj_last_angle == 1" | bc `
 
     tmpid=`echo "$count - $fht_parallel_num_pro" | bc -l`
     echo "tmpid is $tmpid"
