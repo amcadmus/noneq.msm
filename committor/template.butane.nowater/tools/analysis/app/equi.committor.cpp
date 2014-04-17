@@ -126,19 +126,23 @@ int main(int argc, char * argv[])
   for (int ii = 0; ii < nbin; ++ii){
     double xx = -180 + 0.5 * hbin + ii * hbin;
     double vv, ee;
+    double var;
     if (stable.calIndicate(ii) == -1){
       vv = 0;
       ee = 0;
+      var = 0;
     }
     else if (stable.calIndicate(ii) == 1){
       vv = 1;
       ee = 0;
+      var = 0;
     }
     else {
       vv = bas[ii].getAvg();
       ee = bas[ii].getAvgError();
+      var = bas[ii].getVar();
     }
-    fprintf (fp, "%f %e %e\n", xx, vv, ee);
+    fprintf (fp, "%f %e %e %e\n", xx, vv, var, ee);
   }
   fclose (fp);
   
