@@ -125,13 +125,14 @@ int main(int argc, char * argv[])
     }
     else {
       if (countTraj %1000 == 0){
-	printf ("read traj at %f     \r", timephi);
-	fflush (stdout);
+	// printf ("read traj at %f     \r", timephi);
+	// fflush (stdout);
       }
     }
 
     if (stable.calIndicate (anglevphi, anglevpsi) == targetInd){
       countSel ++;
+      printf ("select time %f, print as %f\n", timephi, float(countSel));
       write_trr (fpo, natoms, countSel, float(countSel), lambda, box, xx, vv, ff);
     }
   }  
