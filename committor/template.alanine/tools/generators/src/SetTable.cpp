@@ -117,10 +117,10 @@ print (const string & filename)
     for (int jj = 0; jj < ny; ++jj){
       int idx = ii * ny + jj;
       if (idx >= 0){
-      fprintf (fp, "   %d", data[idx]);
+      fprintf (fp, "  %d", data[idx]);
       }
       else {
-      fprintf (fp, "  %d", data[idx]);
+      fprintf (fp, " %d", data[idx]);
       }
     }
     fprintf (fp, "\n");
