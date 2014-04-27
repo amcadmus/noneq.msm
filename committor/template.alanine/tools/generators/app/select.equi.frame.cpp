@@ -37,7 +37,7 @@ int main(int argc, char * argv[])
       ("input-phi", po::value<string > (&phifile)->default_value ("angaver.phi.xvg"), "input angle phi")
       ("input-psi", po::value<string > (&psifile)->default_value ("angaver.psi.xvg"), "input angle psi")
       ("input-traj,f", po::value<string > (&itfile)->default_value ("traj.trr"), "input trajectory")
-      ("output,o", po::value<string > (&ofile)->default_value ("equi.frame"), "output equi frames");
+      ("output,o", po::value<string > (&ofile)->default_value ("equi.frame.trr"), "output equi frames");
       
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
