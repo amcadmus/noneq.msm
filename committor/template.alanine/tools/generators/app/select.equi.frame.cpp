@@ -114,7 +114,12 @@ int main(int argc, char * argv[])
       return 1;
     }
 
-    read_trr (xdrfp, natoms, &step, &trajtime, &lambda, box, xx, vv, ff);
+    int rv = read_trr (xdrfp, natoms, &step, &trajtime, &lambda, box, xx, vv, ff);
+    if (rv != exdrOK){
+      cerr << "error of reading trr file, return " << endl;
+      return 1;
+    }
+    
     if (fabs(trajtime - timephi) > 1e-3){
       cerr << "inconsistent time in the traj file and the angle file, something goes wrong, exit" << endl;
       return 1;
@@ -133,7 +138,11 @@ int main(int argc, char * argv[])
     if (stable.calIndicate (anglevphi, anglevpsi) == targetInd){
       countSel ++;
       printf ("select time %f, print as %f\n", timephi, float(countSel));
-      write_trr (fpo, natoms, countSel, float(countSel), lambda, box, xx, vv, ff);
+      rv = write_trr (fpo, natoms, countSel, float(countSel), lambda, box, xx, vv, ff);
+      if (rv != exdrOK){
+	cerr << "error of writing trr file, return " << endl;
+	return 1;
+      }
     }
   }  
 
