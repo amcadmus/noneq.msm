@@ -137,7 +137,10 @@ int main(int argc, char * argv[])
 
     if (stable.calIndicate (anglevphi, anglevpsi) == targetInd){
       countSel ++;
-      printf ("select time %f, print as %f\n", timephi, float(countSel));
+      printf ("select time %f, angle: %f %f, print as %f\n",
+	      timephi,
+	      anglevphi, anglevpsi,
+	      float(countSel));
       rv = write_trr (fpo, natoms, countSel, float(countSel), lambda, box, xx, vv, ff);
       if (rv != exdrOK){
 	cerr << "error of writing trr file, return " << endl;
