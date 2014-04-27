@@ -39,6 +39,8 @@ class AngleSetTable2D
   double binx, biny;
 public:
   void reinit (const string & file);
+  void print  (const string & file);
+  void plus   (const AngleSetTable2D & table);
   int calIndex (const double & phi,
 		const double & psi);
   int calIndicate (const double & phi,

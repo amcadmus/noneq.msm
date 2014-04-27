@@ -31,7 +31,7 @@ int main(int argc, char * argv[])
   
   po::options_description desc ("Allow options");
   desc.add_options()
-      ("help,h", "print this message")
+      ("help,h", "print coreset from Ramanchandran plot")
       ("begin,b",  po::value<double > (&begin)->default_value (0.), "start of the traj")
       ("end,e",  po::value<double > (&end)->default_value (0.), "end of the traj")
       ("threshold,t",  po::value<double > (&threshold)->default_value (0.01), "start of the traj")

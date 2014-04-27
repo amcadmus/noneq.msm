@@ -93,7 +93,7 @@ reinit (const string & filename)
       ny = words.size();
     }
     else {
-if (ny != int(words.size())){
+      if (ny != int(words.size())){
 	cerr << "lines of " << filename << " does not have the same number of indicators, format wrong, exit" << endl;
 	exit(1);
       }
@@ -108,3 +108,38 @@ if (ny != int(words.size())){
   biny = 360. / (double(ny));
 }
 
+
+void AngleSetTable2D::
+print (const string & filename)
+{
+  FILE * fp = fopen (filename.c_str(), "w");
+  for (int ii = 0; ii < nx; ++ii){
+    for (int jj = 0; jj < ny; ++jj){
+      int idx = ii * ny + jj;
+      if (idx >= 0){
+      fprintf (fp, "   %d", data[idx]);
+      }
+      else {
+      fprintf (fp, "  %d", data[idx]);
+      }
+    }
+    fprintf (fp, "\n");
+  }
+  fclose (fp);
+}
+
+void AngleSetTable2D::
+plus   (const AngleSetTable2D & table)
+{
+  if (nx != table.nx || ny != table.ny){
+    cerr << "tables are not match, cannot add" << endl;
+    return ;
+  }
+
+  for (int ii = 0; ii < nx; ++ii){
+    for (int jj = 0; jj < ny; ++jj){
+      int idx = ii * ny + jj;
+      data[idx] += table.data[idx];
+    }
+  }
+}
