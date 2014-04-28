@@ -228,9 +228,9 @@ Protein             3
 
 [ system ]
 ; Name
-Protein in water
+Protein in vacuum
 
 [ molecules ]
 ; Compound        #mols
 Protein             1
-SOL               651
+SOL                 0
