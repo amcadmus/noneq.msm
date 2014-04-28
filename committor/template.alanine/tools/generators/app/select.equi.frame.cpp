@@ -24,7 +24,7 @@ using namespace std;
 
 int main(int argc, char * argv[])
 {
-  std::string icfile, phifile, psifile, itfile, ofile;
+  std::string icfile, phifile, psifile, itfile, ofile, ocfile;
   double begin;
   int targetInd;
   
@@ -37,7 +37,8 @@ int main(int argc, char * argv[])
       ("input-phi", po::value<string > (&phifile)->default_value ("angaver.phi.xvg"), "input angle phi")
       ("input-psi", po::value<string > (&psifile)->default_value ("angaver.psi.xvg"), "input angle psi")
       ("input-traj,f", po::value<string > (&itfile)->default_value ("traj.trr"), "input trajectory")
-      ("output,o", po::value<string > (&ofile)->default_value ("equi.frame.trr"), "output equi frames");
+      ("output,o", po::value<string > (&ofile)->default_value ("equi.frame.trr"), "output equi frames")
+      ("output-count", po::value<string > (&ocfile)->default_value ("equi.frame.cnt"), "count of the output equi frames");
       
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -147,7 +148,15 @@ int main(int argc, char * argv[])
 	return 1;
       }
     }
-  }  
+  }
+
+  FILE * fpoc = fopen (ocfile.c_str(), "w");
+  if (fpoc == NULL){
+    cerr << "cannot open file " << ocfile << endl;
+    return 1;
+  }
+  fprintf (fpoc, "%d\n", countSel);
+  fclose (fpoc);
 
   xdrfile_close (xdrfp);
   xdrfile_close (fpo);
