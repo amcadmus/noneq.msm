@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
       ("num-data-block,n",  po::value<unsigned > (&nDataBlock)->default_value (1), "number of data in block")
       ("input-angle-phi", po::value<std::string > (&phifile)->default_value ("angaver.phi.xvg"), "the angle file name")
       ("input-angle-psi", po::value<std::string > (&psifile)->default_value ("angaver.psi.xvg"), "the angle file name")
-      ("input-coreset-file,f", po::value<std::string > (&icfile)->default_value ("coreset.dat"), "the file of core sets")
+      ("input-coreset-file,c", po::value<std::string > (&icfile)->default_value ("coreset.dat"), "the file of core sets")
       ("to-indicator",   po::value<int > (&toind  )->default_value (3), "to core set with this indicator")
       ("notin-indicator",   po::value<int > (&notinind)->default_value (0), "indicator for not in any core set")
       ("output,o", po::value<std::string > (&ofile)->default_value ("committor.out"), "the output of the committor");
@@ -121,6 +121,8 @@ int main(int argc, char * argv[])
     
     int index = stable.calIndex (anglevphi, anglevpsi);
     int indicate = stable.calIndicate (index);
+    // printf ("%f %d   ", timephi, indicate);
+    // printf ("%f %d \n", timephi, indicate);
 
     if (indicate == notinind){
       index_traj.push_back (index);
@@ -128,7 +130,9 @@ int main(int argc, char * argv[])
     else {
       if (prev_indicate == notinind){ // end of a nontrivial traj
 	if (indicate == toind){ // hit!
+	  // printf (" hit ");
 	  for (unsigned ii = 0; ii < index_traj.size(); ++ii){
+	    // printf (" %d ", stable.calIndicate(index_traj[ii]));
 	    bas[index_traj[ii]].deposite (1.);
 	  }
 	}
@@ -142,9 +146,11 @@ int main(int argc, char * argv[])
 	index_traj.reserve (1000);
       }
     }
+    // printf ("\n");
     
     prev_indicate = indicate;
   }
+  printf ("\n");
 
   for (int ii = 0; ii < nbinphi * nbinpsi; ++ii){
     bas[ii].calculate ();
@@ -163,15 +169,15 @@ int main(int argc, char * argv[])
 	ee = 0;
 	var = 0;
       }
-      else if (stable.calIndicate(ii) == toind){
+      else if (stable.calIndicate(index) == toind){
 	vv = 1;
 	ee = 0;
 	var = 0;
       }
       else {
-	vv = bas[ii].getAvg();
-	ee = bas[ii].getAvgError();
-	var = bas[ii].getVar();
+	vv = bas[index].getAvg();
+	ee = bas[index].getAvgError();
+	var = bas[index].getVar();
       }
       fprintf (fp, "%f %f  %e %e %e\n", xx, yy, vv, var, ee);
     }

@@ -101,7 +101,19 @@ deposite (const double & vv)
 void BlockAverage_acc::
 calculate ()
 {
+  if (nBlock == 0){
+    if (currentNDataInBlock != 0){
+      avg = currentBlockSum / double(currentNDataInBlock);
+    }
+    return;
+  }
+  
   avg = sum / double (nBlock);
+
+  if (nBlock == 1){
+    return;
+  }
+  
   error_avg = ( blockSum2 - double(nBlock) * avg * avg ) / (double(nBlock) - 1.) / double(nBlock);
   error_avg = sqrt(error_avg);
 
