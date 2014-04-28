@@ -121,7 +121,7 @@ int main(int argc, char * argv[])
     }
     
     if (fabs(trajtime - timephi) > 1e-3){
-      cerr << "inconsistent time in the traj file and the angle file, something goes wrong, exit" << endl;
+      cerr << "inconsistent time in the traj file " << trajtime << "  and the angle file " << timephi << " , something goes wrong, exit" << endl;
       return 1;
     }
 
