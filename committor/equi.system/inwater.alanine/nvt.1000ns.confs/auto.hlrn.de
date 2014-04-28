@@ -1,0 +1,32 @@
+#!/bin/bash
+
+cwd=`pwd`
+jobname=${cwd##*/}
+
+echo "#!/bin/bash"				>  submit.sh
+echo "#PBS -N $jobname"				>> submit.sh
+echo "#PBS -j oe"				>> submit.sh
+echo "#PBS -q mpp1q"				>> submit.sh
+echo "#PBS -M han.wang@fu-berlin.de"		>> submit.sh
+echo "#PBS -l walltime=12:00:00"		>> submit.sh
+echo "#PBS -l nodes=1:ppn=24"			>> submit.sh
+#echo "#PBS -l mem=1000mb"			>> submit.sh
+
+echo "hostname"					>> submit.sh
+echo "date"					>> submit.sh
+echo "pwd"					>> submit.sh
+echo "source $WORK/local/gromacs/4.6.5//bin/GMXRC.bash">> submit.sh
+
+echo "if test -f state.cpt; then"		>> submit.sh
+echo "echo restart from checkpoint"		>> submit.sh
+echo "aprun -B mdrun -cpi state.cpt -notunepme"	>> submit.sh
+echo "else"					>> submit.sh
+echo "echo new start"				>> submit.sh
+echo "grompp"					>> submit.sh
+echo "aprun -B g_pme_error -tune -self 1e-3"	>> submit.sh
+echo "mv -f tuned.tpr topol.tpr"		>> submit.sh
+echo "aprun -B mdrun -notunepme"		>> submit.sh
+echo "fi"					>> submit.sh
+
+msub submit.sh &> jobid
+
