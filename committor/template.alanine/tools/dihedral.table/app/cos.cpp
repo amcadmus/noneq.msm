@@ -47,7 +47,7 @@ int main(int argc, char * argv[])
     cout << "cannot open file " << ofile<< endl;
     exit (1);
   }
-  fprintf (fout, "# table of sin shaped potential wave number gamma: %f\n",
+  fprintf (fout, "# table of cos shaped potential wave number gamma: %f\n",
 	   gamma);
   for (unsigned ii = 0; ii < ndata; ++ii){
     double myangle = -180. + ii * bin;    
