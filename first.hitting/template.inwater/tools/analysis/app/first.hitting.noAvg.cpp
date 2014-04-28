@@ -123,7 +123,8 @@ int main(int argc, char * argv[])
 	}
 	times  = (atof(words[0].c_str()));
 	anglev = (atof(words[1].c_str()));
-	if (ms.inSet(anglev)) {
+	// if (ms.inSet(anglev)) {
+	if (ms.inSet(anglev) && anglev < 0) {
 	  find = true;
 	  break;
 	}

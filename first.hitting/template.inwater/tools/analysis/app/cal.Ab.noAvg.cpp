@@ -203,7 +203,8 @@ int main(int argc, char * argv[])
 	  }
 	}
 
-	if (ms.inSet(anglev)) {
+	// if (ms.inSet(anglev)) {
+	if (ms.inSet(anglev) && anglev < 0) {
 	  find = true;
 	  break;
 	}
@@ -218,6 +219,7 @@ int main(int argc, char * argv[])
 	double sum2 = 0.;
 	for (int ii = 0; ii < nBase; ++ii){
 	  sum1 += gxs1[ii] * baseKK[ii];
+	  // printf ("inc %f\n", gxs1[ii] * baseKK[ii]);
 	  for (int jj = 0; jj < nBase; ++jj){
 	    sum2 += gxs2[ii][jj] * baseKK[ii] * baseKK[jj];
 	  }
