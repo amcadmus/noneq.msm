@@ -112,7 +112,7 @@ function set_parameters_fht () {
     fht_nstep=`echo "$fht_time / $fht_dt" | bc -l | cut -d '.' -f 1`
     fht_xtcout_feq=`echo "$fht_frame_feq / $fht_dt" | bc -l | cut -d '.' -f 1`
     fht_xvout_feq=$fht_xtcout_feq
-    fht_xvout_feq=0
+#    fht_xvout_feq=0
     fht_energy_feq_r=`echo "$fht_energy_feq / $fht_dt" | bc -l | cut -d '.' -f 1`
     fht_seed=`date +%s`
     fht_seed=`echo "$fht_seed + $fht_num_conf_use * 10 * $fht_parallel_my_id" | bc`
@@ -132,7 +132,7 @@ function set_parameters_fht () {
     # sed -e "/^userreal1/s/=.*/= $fht_noSdRange/g" |\
     # sed -e "/^userreal2/s/=.*/= $fht_ele_rescale_start/g" |\
     # sed -e "/^userreal3/s/=.*/= $fht_ele_rescale_end/g" |\
-    # sed -e "/^userreal4/s/=.*/= $fht_rescale/g" |\
+    sed -e "/^userreal4/s/=.*/= 1.0/g" |\
     # sed -e "/^userreal5/s/=.*/= $fht_ele_rescale_scale0/g" |\
     sed -e "/^userreal6/s/=.*/= $fht_meta_low/g" |\
     sed -e "/^userreal7/s/=.*/= $fht_meta_up/g" |\

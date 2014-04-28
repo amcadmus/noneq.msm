@@ -43,7 +43,7 @@ do
 	rm -fr $my_dir
     fi
     echo "# doing in dir $my_dir"
-    mkdir $my_dir
+    mkdir -p $my_dir
     cp $fht_equi_dir/conf.gro	 $my_dir
     cp $fht_equi_dir/grompp.mdp	 $my_dir
     cp $fht_equi_dir/angle.ndx	 $my_dir
@@ -51,7 +51,7 @@ do
     cp $cwd/$fht_base_phi_k_file $my_dir
     cp $cwd/$fht_base_psi_k_file $my_dir
 #    cp $fht_equi_dir/topol.top	$my_dir
-    cp $fht_coreset_data $my_dir
+    cp $fht_coreset_data $my_dir/coreset.dat
     cd $my_dir
     make_top
 #    make_tables
@@ -62,12 +62,12 @@ do
     equi_code=`echo "($count % $nframe_equi) + 1" | bc`
     start_time=`echo "$equi_code - 0.5" | bc -l`
     echo "# run with command `which grompp`, starting time $start_time"
-    $grompp_command -t $fht_equi_dir/traj.trr -time $start_time &> run.log
+    $grompp_command -t $fht_equi_frame_traj -time $start_time &> run.log
     if [ $? -ne 0 ]; then
 	echo "failed at grompp exit"; exit
     fi
     echo "# run with command `which mdrun`"
-    $mdrun_command &> run.log
+    $mdrun_command &> mdrun.log
     if [ $? -ne 0 ]; then
 	echo "failed at mdrun exit"; exit
     fi
@@ -77,13 +77,17 @@ do
     # 	echo "failed at trjconv exit"; exit
     # fi
     # mv -f trajout.xtc butane.xtc
-    echo 0 | g_angle -n angle.ndx -type dihedral -od angdist.xvg  -ov angaver.xvg -xvg none &> run.log
+    trajfile=traj.xtc
+    if test -f traj.trr; then
+	trajfile=traj.trr;
+    fi
+    echo 0 | g_angle -f $trajfile -n angle.ndx -type dihedral -od angdist.xvg  -ov angaver.xvg -xvg none &> run.log
     if [ $? -ne 0 ]; then
 	echo "failed at g_angle exit"; exit
     fi
     mv -f angdist.xvg angdist.phi.xvg
     mv -f angaver.xvg angaver.phi.xvg
-    echo 1 | g_angle -n angle.ndx -type dihedral -od angdist.xvg  -ov angaver.xvg -xvg none &> run.log
+    echo 1 | g_angle -f $trajfile -n angle.ndx -type dihedral -od angdist.xvg  -ov angaver.xvg -xvg none &> run.log
     if [ $? -ne 0 ]; then
 	echo "failed at g_angle exit"; exit
     fi
@@ -108,7 +112,7 @@ do
 
     # hit meta, remove useless files
     if test $bool_hit_set -eq 1; then
-	rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.xvg angle.ndx gxs.out table_d*xvg    butane.xtc ener.edr cos.k.in confout.gro &
+	rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.*.xvg angle.ndx gxs.out table_d*xvg ener.edr cos.k.in confout.gro coreset.dat &
     fi
     
     cd $cwd
