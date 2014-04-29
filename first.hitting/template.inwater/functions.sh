@@ -99,6 +99,7 @@ function set_parameters_fht () {
     fht_nstep=`echo "$fht_time / $fht_dt" | bc -l | cut -d '.' -f 1`
     fht_xtcout_feq=`echo "$fht_frame_feq / $fht_dt" | bc -l | cut -d '.' -f 1`
     fht_xvout_feq=$fht_xtcout_feq
+    fht_xvout_feq=0
     fht_energy_feq_r=`echo "$fht_energy_feq / $fht_dt" | bc -l | cut -d '.' -f 1`
     fht_seed=`date +%s`
     fht_seed=`echo "$fht_seed + $fht_num_conf_use * 10 * $fht_parallel_my_id" | bc`
@@ -110,8 +111,8 @@ function set_parameters_fht () {
     sed -e "/^tau_t/s/=.*/= $fht_taut/g" |\
     sed -e "/^tau_p/s/=.*/= $fht_taup/g" |\
     sed -e "/^nstep/s/=.*/= $fht_nstep/g" |\
-    sed -e "/^nstxout/s/=.*/= 0/g" |\
-    sed -e "/^nstvout/s/=.*/= 0/g" |\
+    sed -e "/^nstxout/s/=.*/= $fht_xvout_feq/g" |\
+    sed -e "/^nstvout/s/=.*/= $fht_xvout_feq/g" |\
     sed -e "/^nstfout/s/=.*/= 0/g" |\
     sed -e "/^nstenergy/s/=.*/= $fht_energy_feq_r/g" |\
     sed -e "/^nstcalcenergy/s/=.*/= $fht_energy_feq_r/g" |\
