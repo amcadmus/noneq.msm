@@ -5,7 +5,7 @@ function make_tables () {
 	echo "input number of base $fht_base_phi_number is larger than the number of base in file $fht_base_phi_k_file, do nothing";
 	exit
     fi
-    rm -f base.phi.info
+    rm -f base.info
     table_count=0
     for ii in `seq 1 $fht_base_phi_number`;
     do
@@ -23,7 +23,7 @@ function make_tables () {
 	    echo "unknow type: $make_top_type"
 	fi
 	fi
-	echo $make_top_kk >> base.phi.info
+	echo $make_top_kk >> base.info
 	table_count=$(($table_count+1))
     done
 
@@ -31,7 +31,6 @@ function make_tables () {
 	echo "input number of base $fht_base_psi_number is larger than the number of base in file $fht_base_psi_k_file, do nothing";
 	exit
     fi
-    rm -f base.psi.info
     for ii in `seq 1 $fht_base_psi_number`;
     do
 	make_top_line=`grep -v \# $fht_base_psi_k_file | head -n $ii | tail -n 1`
@@ -48,7 +47,7 @@ function make_tables () {
 	    echo "unknow type: $make_top_type"
 	fi
 	fi
-	echo $make_top_kk >> base.psi.info
+	echo $make_top_kk >> base.info
 	table_count=$(($table_count+1))
     done
 }
