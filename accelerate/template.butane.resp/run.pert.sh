@@ -54,7 +54,7 @@ do
     cp $pert_equi_result/grompp.mdp	$my_dir
     cp $pert_equi_result/angle.ndx	$my_dir
     cp $pert_equi_result/topol.top	$my_dir
-    cd $my_dir
+    cd $my_dir    
     rm -f run.log
     ../../tools/potential/tab.coulomb --scale $pert_rescale --scale-ele-start 1000 --scale-ele-end 1001 --scale-ele-scale-0 1.0 --scale-vdw-scale-0 $pert_vdw_rescale_scale0 --scale-vdw-start $pert_vdw_rescale_start --scale-vdw-end $pert_vdw_rescale_end --rc $pert_rcut --r-smooth $pert_rsmooth --erf $pert_erf -o table.xvg
     ../../tools/potential/tab.coulomb --scale $pert_rescale --scale-ele-start 1000 --scale-ele-end 1001 --scale-ele-scale-0 1.0 --scale-vdw-scale-0 $pert_vdw_rescale_scale0 --scale-vdw-start $pert_vdw_rescale_start --scale-vdw-end $pert_vdw_rescale_end --rc $pert_rcut --r-smooth $pert_rcut --erf $pert_erf -o tablep.xvg
@@ -64,7 +64,7 @@ do
     ../../tools/parse.top/rescale.param -f topol.top -b $pert_bond_rescale -a $pert_angle_rescale --scal-angle-bond $pert_angle_bond_rescale -d $pert_rescale --scal-cmap $pert_rescale -o out.top
     mv -f out.top topol.top
     set_parameters_pert grompp.mdp
-    start_time=`grep $count $pert_equi_result/equi.frame | awk '{print $2}'`
+    start_time=`grep ^$count $pert_equi_result/equi.frame | awk '{print $2}'`
     echo "# run with command `which grompp`"
     $grompp_command -t $pert_equi_result/traj.trr -time $start_time &> run.log
     if [ $? -ne 0 ]; then
