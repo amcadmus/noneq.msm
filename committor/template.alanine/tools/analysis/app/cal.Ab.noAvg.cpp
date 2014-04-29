@@ -288,7 +288,7 @@ int main(int argc, char * argv[])
     if (ii != nBase - 1) printf ("; ");
   }
   printf (" ];\n\n");
-  printf ("ae = [ \n");
+  printf ("ae = [ ");
   for (int ii = 0; ii < nBase; ++ii){
     for (int jj = 0; jj < nBase; ++jj){
       matA[ii][jj].calculate();
