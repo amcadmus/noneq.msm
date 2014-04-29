@@ -26,6 +26,8 @@ touch success.dir.name
 touch last.time.record
 
 make_tables
+rm -f $cwd/coreset*dat
+cp $fht_coreset_data $cwd/
 #targets=`awk '{print $1}' $fht_equi_dir/$fht_equi_frame_name | head -n $fht_num_conf_use`
 targets=`seq 0 $(($fht_num_conf_use-1))`
 

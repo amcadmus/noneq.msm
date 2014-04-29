@@ -6,7 +6,7 @@ fht_equi_frame_count=$fht_equi_dir/equi.frame.cnt
 fht_coreset_data=$fht_equi_dir/coreset.all.dat
 fht_coreset_target=2
 fht_coreset_notin=0
-fht_num_conf_use=5000
+fht_num_conf_use=20000
 
 fht_integrator=sd1
 fht_dt=0.0005			# ps
