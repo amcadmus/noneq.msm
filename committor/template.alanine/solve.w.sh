@@ -11,9 +11,15 @@ nnotUse=`echo "$nbase - $nbaseUse" | bc`
 rangeStart=`echo "$nbase - $nbaseUse + 1" | bc`
 rangeCode="$rangeStart:$nbase"
 
-echo "# calculating the matrix A and rsh b"
-$calAb_command -n 100 --target-indicate $fht_coreset_target --input-coreset $fht_coreset_data &> calAb.out
-echo "# done"
+if [ ! -f success.dir.name ]; then
+    echo "# no simulation is done, exit"
+    exit
+fi
+if [ ! -f calAb.out ] || [ calAb.out -ot success.dir.name ]; then
+    echo "# calculating the matrix A and rsh b"
+    $calAb_command -n 100 --target-indicate $fht_coreset_target --input-coreset $fht_coreset_data &> calAb.out
+    echo "# done"
+fi
 
 echo "# solve w by octave"
 grep "a = " calAb.out				> solve.w.m
@@ -30,8 +36,6 @@ echo "fid=fopen('$outfileName', 'w');"		>> solve.w.m
 echo "fprintf(fid,'%.10f\n',w);"		>> solve.w.m
 echo "fclose(fid);"				>> solve.w.m
 echo "# done"
-
-rm -f calAb.out
 
 octave solve.w.m
 
