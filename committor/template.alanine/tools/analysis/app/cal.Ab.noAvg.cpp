@@ -16,7 +16,7 @@
 #include "BlockAverage.h"
 #include "SetTable.h"
 
-#define MaxLineLength 2048
+#define MaxLineLength 65536
 
 namespace po = boost::program_options;
 using namespace std;

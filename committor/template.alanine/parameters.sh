@@ -24,9 +24,9 @@ fht_meta_low=150		# deg.
 fht_meta_up=-150		# deg.
 
 # parameters for bases 
-fht_base_phi_number=8
+fht_base_phi_number=6
 fht_base_phi_k_file=base.k.phi
-fht_base_psi_number=8
+fht_base_psi_number=6
 fht_base_psi_k_file=base.k.psi
 
 fht_parallel_num_pro=1		# n
