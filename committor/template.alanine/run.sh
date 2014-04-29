@@ -4,6 +4,8 @@ source env.sh
 source parameters.sh
 source functions.sh
 
+make -C tools/analysis/ makedir
+make -C tools/analysis/ -j8
 make -C tools/dihedral.table/ makedir
 make -C tools/dihedral.table/ -j8
 
@@ -21,6 +23,7 @@ fi
 #rm -f gxs.name
 #rm -f success.dir.name
 touch success.dir.name
+touch last.time.record
 
 make_tables
 #targets=`awk '{print $1}' $fht_equi_dir/$fht_equi_frame_name | head -n $fht_num_conf_use`
@@ -67,7 +70,7 @@ do
 	echo "failed at grompp exit"; exit
     fi
     echo "# run with command `which mdrun`"
-    $mdrun_command &> mdrun.log
+    $mdrun_command &> run.log
     if [ $? -ne 0 ]; then
 	echo "failed at mdrun exit"; exit
     fi
@@ -94,6 +97,7 @@ do
     mv -f angdist.xvg angdist.psi.xvg
     mv -f angaver.xvg angaver.psi.xvg
     
+    traj_last_time=`tail -n 1 angaver.phi.xvg | awk '{print $1}'`
     traj_last_angle_phi=`tail -n 1 angaver.phi.xvg | awk '{print $2}'`
     traj_last_angle_psi=`tail -n 1 angaver.psi.xvg | awk '{print $2}'`
     last_angle_ind=`$cwd/tools/analysis/angle.ind --input-angle-phi $traj_last_angle_phi --input-angle-psi $traj_last_angle_psi --input-coreset-file $fht_coreset_data`
@@ -112,7 +116,7 @@ do
 
     # hit meta, remove useless files
     if test $bool_hit_set -eq 1; then
-	rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.*.xvg angle.ndx gxs.out table_d*xvg ener.edr cos.k.in confout.gro coreset.dat &
+	rm -f traj.xtc traj.trr state*.cpt topol.tpr conf.gro index.ndx angle.log md.log genbox.log mdout.mdp protein.gro run.log tablep.xvg table.xvg grompp.mdp topol.top angdist.*.xvg angle.ndx gxs.out table_d*xvg ener.edr cos.k.in confout.gro coreset.dat  base.k.phi base.k.psi alanine.itp &
     fi
     
     cd $cwd
@@ -125,6 +129,7 @@ do
     # echo "$my_dir/angle.dat" >> angle.name
     # echo "$my_dir/gxs.out" >> gxs.name
     echo "$my_dir" >> success.dir.name
+    echo "$my_dir $traj_last_time $traj_last_angle_phi $traj_last_angle_psi $last_angle_ind" >> last.time.record
 #    sync
 done
 
