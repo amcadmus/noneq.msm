@@ -24,8 +24,12 @@ fi
 echo "# solve w by octave"
 grep "a = " calAb.out				> solve.w.m
 grep "b = " calAb.out				>> solve.w.m
+grep "ae = " calAb.out				>> solve.w.m
+grep "be = " calAb.out				>> solve.w.m
+echo "relative_a_error=ae./(abs(a))"		>> solve.w.m
+echo "relative_b_error=be./(abs(b))"		>> solve.w.m
 echo "[v d] = eig(a);"				>> solve.w.m
-echo "d"					>> solve.w.m
+echo "diag(d)"					>> solve.w.m
 echo "rd = d($rangeCode,$rangeCode);"		>> solve.w.m
 echo "vb = v'*b';"				>> solve.w.m
 echo "rvb = vb($rangeCode);"			>> solve.w.m
