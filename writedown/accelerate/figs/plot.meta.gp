@@ -41,6 +41,20 @@ set ytics .1
 set mytics 5
 set grid
 
+set out 'fig-meta01-check.eps'
+pl \
+   'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/metastable.out' u 1:2 w l ls 11 not,\
+   '' u 1:3 w l ls 21 not,\
+   '' u 1:4 w l ls 31 not,\
+   '' u 1:5 w l ls 41 not,\
+   '' u 1:6 w l ls 51 not,\
+   'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0.dtcomp/set/metastable.out' u ($1*1):2  w l ls 12 not,\
+   '' u ($1*1):3  w l ls 22 not,\
+   '' u ($1*1):4  w l ls 32 not,\
+   '' u ($1*1):5  w l ls 42 not,\
+   '' u ($1*1):6  w l ls 52 not
+
+
 set out 'fig-meta02.eps'
 pl \
    'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/metastable.out' u 1:2 w l ls 11 not,\

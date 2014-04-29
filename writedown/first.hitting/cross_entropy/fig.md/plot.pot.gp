@@ -31,7 +31,7 @@ set out 'fig-pot.eps'
 
 set xlabel '{/Symbol f} [ deg. ]'
 #set ylabel 'V_{{/Symbol f}}({/Symbol f}) + V_{ctrl}({/Symbol f})'
-set ylabel 'Dihedral angle energy'
+set ylabel 'Dihedral angle energy [ kJ/mol ]'
 set xtics 20
 set mxtics 2
 set mytics 5
@@ -39,7 +39,7 @@ set grid
 
 pl [40:150] 0 ls 20 not,\
    'table_orig.xvg' u 1:($2 - 5.920000e+00) w l ls 11 t 'V_{{/Symbol f}}({/Symbol f})',\
-   'ctrl.1.00.xvg' u 1:($2 - 2.349671e+00) w l ls 12 t 'V_{{/Symbol f}}({/Symbol f}) + V_{ctrl}({/Symbol f}), {/Symbol l}=1.00 ps',\
-   'ctrl.0.50.xvg' u 1:($2 - 8.613114e-01) w l ls 13 t 'V_{{/Symbol f}}({/Symbol f}) + V_{ctrl}({/Symbol f}), {/Symbol l}=0.50 ps',\
-   'ctrl.0.20.xvg' u 1:($2 - -2.410373e+00) w l ls 14 t 'V_{{/Symbol f}}({/Symbol f}) + V_{ctrl}({/Symbol f}), {/Symbol l}=0.20 ps',\
-   'ctrl.0.10.xvg' u 1:($2 - -1.102120e+01) w l ls 15 t 'V_{{/Symbol f}}({/Symbol f}) + V_{ctrl}({/Symbol f}), {/Symbol l}=0.10 ps'
+   'ctrl.1.00.xvg' u 1:($2 - 2.393946e+00) w l ls 12 t 'V_{{/Symbol f}}({/Symbol f}) + V_{ctrl}({/Symbol f}), T=1.00 ps',\
+   'ctrl.0.50.xvg' u 1:($2 - 1.611490e+00) w l ls 13 t 'V_{{/Symbol f}}({/Symbol f}) + V_{ctrl}({/Symbol f}), T=0.50 ps',\
+   'ctrl.0.20.xvg' u 1:($2 - -1.391067e+00) w l ls 14 t 'V_{{/Symbol f}}({/Symbol f}) + V_{ctrl}({/Symbol f}), T=0.20 ps',\
+   'ctrl.0.10.xvg' u 1:($2 - -1.219882e+01) w l ls 15 t 'V_{{/Symbol f}}({/Symbol f}) + V_{ctrl}({/Symbol f}), T=0.10 ps'

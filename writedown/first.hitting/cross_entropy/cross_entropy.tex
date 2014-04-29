@@ -44,17 +44,30 @@
 
 \newcommand{\rates}[2]{\displaystyle \mathrel{\longrightleftharpoons^{#1\mathstrut}_{#2}}}
 \newcommand{\cL}{{\mathcal L}}
+\newcommand{\cI}{{\mathcal I}}
+\newcommand{\cF}{{\mathcal F}}
+\newcommand{\cD}{{\mathcal D}}
 \newcommand{\bR}{{\mathbb R}}
-\newcommand{\argmin}{\mathop{\rm argmin}}%
-
+\newcommand{\R}{{\mathbb R}}
+\newcommand{\Q}{{\mathbb Q}}
+\newcommand{\N}{{\mathbb N}}
 \newcommand{\bE}{{\mathbf E}}
+\newcommand{\bP}{{\mathbf P}}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\blambda}{\bm{\lambda}}
+\newcommand{\argmin}{\mathop{\rm argmin}}%
+\newcommand{\bk}[2]{\left\langle #1,#2\right\rangle}
+\newcommand{\ip}{\langle\cdot,\cdot\rangle}
+\newcommand{\di}{{\rm div}\,}
+\newcommand{\vol}{{\rm vol}}
+\newcommand{\wrt}{with respect to }
 
 \newtheorem{remark}{Remark}
 \titleformat{\subsubsection}[runin]{\normalfont\bfseries}{\thesubsection.}{3pt}{}
 
 \begin{document}
-\title{Applications of the cross-entropy method in diffusion processes}
-%\author{Wei Zhang}
+\title{Applications of the cross-entropy method to importance sampling and optimal control of diffusions}
 \author{Wei Zhang\textsuperscript{2}\and Han Wang\textsuperscript{1} \and
   Carsten Hartmann\textsuperscript{1,*}\and 
 Marcus Weber\textsuperscript{2}\and Christof Sch\"{u}tte\textsuperscript{1,2}}
@@ -65,450 +78,395 @@ Marcus Weber\textsuperscript{2}\and Christof Sch\"{u}tte\textsuperscript{1,2}}
 \date{}
 \maketitle
 \begin{abstract}
-  The cross-entropy method in the diffusion process setting is studied. The
-  general algorithm is proposed and is applied to design efficient importance sampling for rare events as well as to solve optimal
-  control problem of diffusion process. Several examples are studied
-  numerically to demonstrate this method.
+ We study the cross-entropy method for diffusions. One of the results is a
+  versatile cross-entropy algorithm that can be applied to the design of efficient importance sampling strategies for rare events as well as optimal
+  control problems. The approach is based on the minimization of a suitable cross-entropy functional, based on a parametric family of exponentially tilted probability distributions. We illustrate the new algorithm with several numerical examples and discuss algorithmic issues and possible extensions of the method.
 \end{abstract}
 \begin{keywords}
-importance sampling, optimal control, cross-entropy method, Monte Carlo
-method, rare event, change of measure. 
+importance sampling, optimal control, cross-entropy method, rare events, change of measure. 
 \end{keywords}
 \begin{AMS}
 \end{AMS}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 \label{intro}
-Diffusion process has been extensively investigated because of its wide
-applications in mathematics, physics, economics, and so on.
-Here we are mainly interested in two topics in diffusion process, i.e. importance sampling and optimal control. 
-For importance sampling, it is one kind of variance reduction technique 
-in Monte Carlo simulations and becomes especially necessary in rare event simulation.
-For optimal control, the purpose is to driven the dynamical system in certain
-optimal way and has strong applicational backgrounds in finance, climate
-science, mechanics \cite{fleming2006}. We emphasize that these two different areas are actually related and can
-be unified as the same problem, i.e. how to change the measure in certain optimal way.
-
-Here we take an applied point of view, i.e. we aim at designing efficient
-algorithms to find the way to do the importance sampling, or to find the
-optimal control strategy. One main reason that designing efficient algorithms
-is urgent and challenging is due to the high dimensionality of the dynamical
-systems, as in the case of climate system, biological system and so on. However, when the dynamical
-systems have multiscale feature, efficient algorithms may be designed by
-taking this feature into account. See \cite{ip-dupuis-multiscale, ip-eric,
-zhws13} on importance sampling and \cite{control_schuette, zlph2013} on
-optimal control for more details.
-
-In this work, we consider these two topics together as how to design the change of
-measure in an optimal way. If we further assume the existence of the optimal
-change of measure $\mu^*$, the problem can be roughly described as how to find the approximation of
-$\mu^*$ under some measure distance. For the choice of measure distances, we will use the Kullback-Leibler
-divergence, which, although not a metric, is
-widely used to quantified the similarity of two probability measures. 
-What is more, given certain target probability measure $\mu^*$, the so-called cross-entropy method has been
-developed recently and provides a general algorithm to find the minimizer of the
-Kullback-Leibler divergence w.r.t. $\mu^*$, among a family of parameterized
-probability measures. It has wide applications in different areas, such as
-Monte Carlo simulation, optimization, and machine learning \cite{ce_tutorial, ce_book}. The
-main purpose of this paper is to formulate the cross-entropy method in the
-context of diffusion process, i.e. for measures defined in path space, and
-discuss the applications of this method in importance sampling and optimal control
-problems.
-
-This paper is organized as follows. In Section~\ref{sec-om-functional},
-using Girsanov theorem, we derive the Onsager-Machlup functional for a given trajectory.
-In Section~\ref{sec-ce-is}, the cross-entropy method in path space is
-formulated for the importance sampling problem.
-In Section~\ref{sec-ocp}, by using the dual relationship between importance
-sampling and optimal control problem, we discuss the cross-entropy method for
-optimal control problem. The cross-entropy algorithm is summarized in
-Section~\ref{sec-ce-algo}. Several numerical examples are studied in
-Section~\ref{sec-examples}. Discussions are presented in
-Section~\ref{sec-discuss}.
+This article deals with the application of the cross-entropy method to diffusion processes, specifically, with the application to  
+%Diffusion processes have been extensively investigated because of their wide range of applications in mathematics, physics, economics, and other fields. 
+importance sampling for rare events and optimal control. Generally, the cross-entropy method is a Monte-Carlo method that was originally developed for the efficient simulation of rare events in queuing models and that has, in the meantime, been extended to, e.g., combinatorial optimization or analysis of networks \cite{ce_book,ce_tutorial}. To our knowledge, however, the cross-entropy approach has not been analysed or used in connection with diffusion processes, even though there have been significant research activities in the direction of efficient algorithms for importance sampling and optimal control high dimensional multiscale diffusions; see, e.g., \cite{ip-dupuis-multiscale, ip-eric,
+zhws13} for some ideas related to importance sampling of rare events or \cite{control_schuette, zlph2013} for problems in 
+optimal control. 
 
 
-\section{Onsager-Machlup functional}
-\label{sec-om-functional}
-Let $O \subset \mathbb{R}^n$, $z_s \in \mathbb{R}^n$ satisfies the SDE 
-\begin{align}
-\begin{split}
-  d z_s &= b(z_s) ds + \sqrt{2\beta^{-1}} dw_s, \quad 0 < s < \tau  \\
-  z_0&=x
-  \end{split}
-\label{dynamics-1}
-\end{align}
-$\beta >0$ is constant, $\tau = \inf_{s>0} \{s;\, z_s \in O\}$ is some
-stopping time, $b : \mathbb{R}^n \rightarrow \mathbb{R}^n$, $w$ is a
-$n$-dimensional Brownian motion. 
+%Importance sampling is a quite general variance reduction technique 
+%for Monte Carlo simulations that is essential in rare event simulation, especially if applied to Monte Carlo simulations in path space. 
+%Seemingly different, optimal control aims at solving the problem of how to driven the dynamical system in certain
+%optimal way and has strong applicational backgrounds in finance, climate
+%science, mechanics \cite{fleming2006}. 
 
-We derive the Onsager-Machlup functional for dynamics (\ref{dynamics-1}) in
-this section.
-Let $\mu$ and $\mu_0$ be the probability measures on path space generated by
-(\ref{dynamics-1}) and the scaled Brownian motion
-\begin{align}
-  \begin{split}
-  dz_s &= \sqrt{2\beta^{-1}}dw_s, \hspace{3mm} 0 < s < \tau \\
-   z_0 &= x .
-  \end{split}
-\end{align}
-From Girsanov theorem \cite{oksendalSDE}, we have 
-\begin{align}
-  \frac{d\mu}{d\mu_0} &= \exp\Big(\sqrt{\frac{\beta}{2}}\int_0^\tau
-  \langle b(z_s), dw_s\rangle + \frac{\beta}{4}\int_0^\tau |b(z_s)|^2ds\Big) \notag\\
-  &=\exp\Big(\frac{\beta}{2}\int_0^\tau \langle b(z_s),dz_s\rangle -
-  \frac{\beta}{4}\int_0^\tau |b(z_s)|^2ds\Big) 
-\end{align}
-and
-\begin{align}
-  d\mu_0 = \exp\Big(-\frac{\beta}{4}\int_0^\tau
-  \Big|\frac{dz}{ds}\Big|^2ds\Big) d\nu\,
-\end{align}
-where $\nu$ is the Wiener measure. Together we obtain
-\begin{align}
-  d\mu &=\exp\Big(-\frac{\beta}{2} I_{1}(z)\Big)d\nu
-  \label{measure-1}
-\end{align}
-where
-\begin{align}
-  I_{1}(z) = \frac{1}{2}\int_0^\tau \Big|\frac{dz}{ds} - b(z_s)\Big|^2 ds
-\end{align}
-and the integral is interpreted as Ito integral.
-We could also rewrite it as Stratonovich integral using the relationship
-\begin{align}
-  \int_0^\tau \langle b(z_s), dz_s\rangle = \int_0^\tau b(z_s) \circ dz_s - \beta^{-1} \int_0^\tau \operatorname{div}\,b(z_s) ds
-\end{align}
-and therefore obtain 
-\begin{align}
-  d\mu = \exp \Big(-\frac{\beta}{2} I_2(z) \Big) d\nu\,
-\end{align}
-where functional 
-\begin{align}
-  I_2(z) = \frac{1}{2}\int_0^\tau \Big|\frac{dz}{ds}- b(z_s)\Big|^2 ds +
-  \beta^{-1} \int_0^\tau \operatorname{div}\,b(z_s) ds
-  \label{om-fun}
-\end{align}
-is often called Onsager-Machlup functional \cite{om1978, om_functional_pinski}. 
-\begin{remark}
-  The introduction of Onsager-Machlup functional and Stratonovich integral is
-  not necessary. However, it is helpful to allow us to follow the presentation of
-  \cite{ce_tutorial}, \cite{ce_book} and to compare with the case of random
-  variables.
-\end{remark}
-\begin{remark}
-  \label{remark-general}
-  The Onsager-Machlup functional can also be generalized to the following dynamics.
-  \begin{enumerate}
-    \item
-      SDEs with non-constant diffusion coefficients. We consider 
-      \begin{align}
-	\vspace{-9mm}
-    \begin{split}
-      d z_s &= b(z_s) ds + \sqrt{2\beta^{-1}} \sigma(z_s)\,dw_s, \quad 0 < s < \tau \\
-      z_0&=x
-    \end{split}
-    \label{dynamics-1-sigma}
-    \end{align}
-    where $a(z) = \sigma(z)\sigma(z)^T$ is $n \times n$ positive definite matrix. We have 
-    $d\mu = \exp(-\frac{\beta}{2} I_1(z)) d\nu$, with 
-    \begin{align*}
-      I_1(z) = \frac{1}{2} \int_0^\tau \Big|\frac{dz}{ds} -
-      b(z_s)\Big|_{a(z)}^2 ds
-    \end{align*}
-     where Ito integral is used and $|v|_a = \langle v, a^{-1}v\rangle$,
-     $\forall v \in \mathbb{R}^n$.
-    \item
-      System contains both stochastic and deterministic equations. For
-      simplicity, here we consider dynamics 
-      \begin{align}
-      \begin{split}
-	dx_s & = b_1(x_s, y_s)\, ds \\
-	dy_s & = b_2(x_s, y_s)\, ds + \sqrt{2\beta^{-1}} dw_s
-      \end{split}
-      \label{ode-sde}
-      \end{align}
-      where $x_s \in \mathbb{R}^k, y_s, w_s \in \mathbb{R}^{n-k}$, $b_1 :
-      \mathbb{R}^k \times \mathbb{R}^{n-k} \rightarrow \mathbb{R}^k$, $b_2 :
-      \mathbb{R}^k \times \mathbb{R}^{n-k} \rightarrow
-      \mathbb{R}^{n-k}$. We can still assign a probability measure $\mu$ on the
-      \textbf{trajectory space}, i.e. $\forall z = (x,y) $ is a trajectory, we have 
-      $d\mu = \exp(-\frac{\beta}{2} I_1(z)) d\nu$, where $\nu$ is Wiener
-      measure on $\mathbb{R}^{n-k}$ and 
-      \begin{align*}
-	I_1(z) = \frac{1}{2} \int_0^\tau \Big|\frac{dy}{ds} - b_2(x_s, y_s)
-	\Big|^2 ds\,.
-      \end{align*}
-      Notice that only the stochastic equations are used.
-  \end{enumerate}
-\end{remark}
-\section{Cross-entropy method for importance sampling}
+We will exploit the fundamental duality between importance sampling and optimal control, which arises due to the fact that both problems admit a variational formulation that boils down to finding an optimal transformation of the underlying path space measure \cite{WangDupuis2004}. Algorithms for computing an optimal change of measure problems usually seek an approximation of the optimal measure \wrt some distance on the space of (probability) measures. Here, we will use the Kullback-Leibler 
+divergence, which, although not a metric, is a numerically convenient and widely used similarity measure for probability measures. 
+The cross-entropy method then provides a general algorithm to find the minimizer of the
+Kullback-Leibler divergence among a family of parameterized
+probability measures, and the main purpose of this paper is to formulate the 
+method in the context of diffusions, i.e.~for probability measures on the space of continuous paths, and discuss 
+its application to importance sampling and optimal control.
+
+This paper is organized as follows. The cross-entropy method in path space is
+outlined in Section~\ref{sec-ce-is} and discussed in the context of importance
+sampling and the dual optimal control problem. Section~\ref{sec-ce-algo} is
+devoted to the formulation of the cross-entropy algorithm for diffusions. Several numerical examples are studied in Section~\ref{sec-examples}. We summarize our findings in Section~\ref{sec-discuss}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The cross-entropy method in path space}
 \label{sec-ce-is}
-In this section, we discuss how to apply the cross-entropy
-method \cite{ce_tutorial, ce_book} to guide the
-importance sampling in diffusion process.
+In this section, we discuss how to use the cross-entropy
+method for stochastic differential equations. The mathematical set-up will be largely based on the application of the method to importance sampling, which is the most standard application of the cross-entropy method in the literature. The associated (dual) optimal control problem will be briefly discussed at the end of this section. 
 
-Let $\mathcal{D}$ be certain subset in the path space and
-$\textbf{1}_{\mathcal{D}}$ be the
-characteristic function on $\mathcal{D}$. 
-In the following, for simplicity, we will use $z$ to denote a path trajectory
-$\{z_s\}$ and keep the notation $z_s \in \mathbb{R}^n$ for the state at time $s$. 
-Let $F(\cdot)$ be certain path functional and will be written as $F(z)$ for
-path $z$. 
-We consider Monte Carlo method with importance sampling to compute the quantity
+ 
+\subsection{Problem set-up}
+
+Consider  $z_s \in \mathbb{R}^n$ satisfying 
+\begin{equation}\label{dynamics-1}
+\begin{aligned}
+  d z_s & =  b(z_s) ds + \sqrt{2\eps }\, dw_s\,, \quad 0\le s\le T\\
+  z_{0} & = x
+\end{aligned}
+\end{equation}
+where $\eps>0$ is constant, $b\colon \mathbb{R}^n \to \mathbb{R}^n$ is a smooth, locally Lipschitz-continuous vector field, and $w$ is 
+$n$-dimensional Brownian motion. Further let $O \subset \mathbb{R}^n$ be open and bounded and call 
+\begin{equation}\label{tau}
+\tau = \inf\{s>0\colon \, z_s \notin O\}  
+\end{equation}
+the first exit time of the set $O\subset\mathbb{R}^n$.
+%
+%Let $\mathcal{D}$ be certain subset in the path space and
+%$\textbf{1}_{\mathcal{D}}$ be the
+%characteristic function on $\mathcal{D}$. 
+In the following we will use $Z$ to denote a path trajectory
+$\{z_s\}$ and use the notation $z_s \in \mathbb{R}^n$ for the state at time $s$. 
+Accordingly we denote by $F(Z)$ a path functional that, throughout this paper, is assumed to be of the form
+\begin{equation}
+F(Z) = \exp\left(-\frac{1}{\eps}\int_0^{\tau\wedge T} G(z_s) \,ds - \frac{1}{\eps} H(z_{\tau\wedge T})\right).
+  \label{path-fun-f}
+\end{equation}
+for some continous and bounded functions $G,H\colon\R^{n}\to\R$ and with $\tau\wedge T=\min\{\tau,T\}$. We consider a Monte Carlo method to compute the quantity
 \begin{align}
-  l = \mathrm{E}(F(z)~|~z_0 = x)
+  \ell(x) =\bE(F(Z)),
   \label{mean-l}
 \end{align}
-where we assume $F(\cdot)$ has the following type
+with $\bE(\cdot) = \bE(\cdot|\,z_0 = x)$ denoting the conditional expectation over all realizations of (\ref{dynamics-1}) starting at $z_{0}=x$.  
+A special and interesting case is when $G = 0$ and $H=-\eps\log{\mathbf 1}_{O^{c}}$ with $O^{c}=\R^{n}\setminus O$ denoting the complement of the set $O$, in which case 
 \begin{align}
-  F(z) = \textbf{1}_{\mathcal{D}}(z) \quad \mbox{or} \quad F(z) = \exp(-\beta\int_0^\tau G(z_s) \,ds).
-  \label{path-fun-f}
+  \bE({\mathbf 1}_{O^{c}}(z_{\tau\wedge T})) = \bP(\tau\le T),
+  \label{mean-chi}
 \end{align}
-  A special and interesting case is when $\mathcal{D} = \{z, \tau(z) \le \lambda\}$,
-  $\lambda > 0$ is fixed. Then $l = \mathrm{E}(\textbf{1}_{\mathcal{D}}(z)) =
-  \mathcal{P}(\tau \le \lambda)$, i.e. the probability of the trajectories
-  stop before time $\lambda$. This quantity may provide us some details of the
-  distribution of the stopping time $\tau$ and help us understand the
-  behaviors of the dynamics.
+is the probability of trajectories starting at $z_{0}=x$ to reach the boundary of $O$ before time $T$. In many cases, this quantity provides details of the distribution of the stopping time $\tau$ and can be used to understand the behaviour of the dynamics.
 
-We suppose $m$ basis functions on state space $\{\phi_i\}_{1\le i \le m}$ are
-available, where $\phi_i : \mathbb{R}^n\rightarrow \mathbb{R}$. 
-We will add a control force to the original dynamics (\ref{dynamics-1})
-and the importance sampling will be realized by simulating trajectories from
-this modified dynamics. Specifically, given $\bm{\omega} = (\omega_1, \omega_2,
-\cdots, \omega_m)^T \in \mathbb{R}^m$,
-the corresponding control force is state-dependent and is supposed to be 
-\begin{align}
-  u(x; \bm{\omega}) = \sum\limits_{i = 1}^{m} \omega_i \nabla \phi_i(x), \quad x \in
-  \mathbb{R}^n\,.
-  \label{control-force}
-\end{align}
-Therefore, for fixed parameter $\bm{\omega}$, the controlled dynamics is 
-\begin{align}
-\begin{split}
-  d z_s &= b(z_s) ds + \sqrt{2}u(z_s;\bm{\omega}) ds + \sqrt{2\beta^{-1}} dw_s, \quad t \le s \le \tau \\
-     z_0 &=z
-  \end{split}
-\label{dynamics-2}
-\end{align}
-Let $\mu_{\bm{\omega}}$ be the probability measure of dynamics (\ref{dynamics-2}). 
-From Section \ref{sec-om-functional},  we know $\mu_{\bm{\omega}}$ has density 
-$f(z;\bm{\omega}) = \exp(-\frac{\beta}{2} I(z ; \bm{\omega}))$ w.r.t. Wiener
-measure $\nu$, with
-\begin{align}
-  I(z ; \bm{\omega}) = \frac{1}{2}\int_0^\tau \Big|\frac{dz}{ds}- b(z_s) -
-  \sqrt{2}\sum\limits_{i = 1}^{m} \omega_i \nabla \phi_i(z_s)\Big|^2 ds + \beta^{-1}
-  \int_0^\tau \operatorname{div}\, \Big(b(z_s) + \sqrt{2}\sum\limits_{i =
-  1}^{m} \omega_i \nabla \phi_i(z_s)\Big) ds
-  \label{om-fun-w}
-\end{align}
-and the original dynamics (\ref{dynamics-1}) corresponds to $\bm{\omega} = \bm{0}$ (we use $\mu = \mu_{\bm{0}}$).
-Given a probability measure $\mu_g$ on path space with $d\mu_g = g(z)d\nu$, 
-we can design a unbiased Monte Carlo estimator for (\ref{mean-l}) as 
-\begin{align}
-  l_N = \frac{1}{N} \sum_{i=1}^{N}  \frac{F(z_i)f(z_i;\bm{0})}{g(z_i)}
-\end{align}
-where trajectories $z_i, i = 1, \cdots, N$ are sampled from measure $\mu_g$.
-The optimal measure $\mu_{g^*}$, which gives
-zero-variance estimator, should satisfy 
-\begin{align}
-  g^*(z) = \frac{F(z)f(z;\bm{0})}{l}, \hspace{3mm} \forall z
-  \label{optimal_pdf}
-\end{align}
-However, $g^*(z)$ depends on the path $z$ and is not easy to compute. 
 
-The idea of cross-entropy method is to find the best approximation of $g^*(z)$ among
-$f(z;\bm{\omega}), \bm{\omega} \in \mathbb{R}^m$. More specifically, define the
-Kullback-Leibler divergence between
-two measures $d\mu_1 = g_1d\nu$, $d\mu_2 = g_2d\nu$ as
+%%%%%%%%%%%%%%%%%%
+\subsection{Cross-entropy method for importance sampling}
+
+We now formulate the cross-entropy method in path space following the relevant literature \cite{ce_tutorial,ce_book}. To this end we first introduce  the general concept of importance sampling in path space: Suppose we are able to generate path samples from a family of probability
+measures $\{\mu_{\blambda}\}_{\blambda \in
+\cF}$ on the space of continuous functions $C([0,T],\R^{n})$ that are
+parametrized by $\blambda \in \cF\subset \mathbb{R}^m$ where the  dynamics
+(\ref{dynamics-1}) corresponds to $\blambda = \bm{0}$; for the sake of
+simplicity,  we set $\cF=\mathbb{R}^m$. We use the shorthand $\mu = \mu_{\bm{0}}$ and refer to $\mu_{\blambda\neq\bm{0}}$ as the \emph{tilted probability measure}. We further assume that every $\mu_{\blambda}$ has a probability density $f(\cdot;\blambda)$ \wrt the scaled Wiener measure $\nu_{\eps}$.\footnote{The scaled measure $\nu_{\eps}$ is the probability measure induced by the scaled Brownian motion $\sqrt{2\eps} w_{s}$ on the space $C([0,T],\R^{n})$. It is related to the standard Wiener measure underlying the standard Brownian motion $w_{s}$ by rescaling of time, which follows from the fact that $w_{s}$ and $\sqrt{2\eps}\,w_{s/(2\eps)}$ have the same law.}
+
+\subsubsection*{Importance sampling.}
+%
+The idea of importance sampling is---instead of drawing samples from the measure $\mu$---to generate samples from an alternative probability measure $\eta = g(\cdot)\nu_{\eps}$ that is absolutely continuous \wrt $\mu$, but that yields better Monte-Carlo estimators, e.g., having smaller variance or smaller relative error \cite{Liu2008}. Using independent draws from $\eta$ an unbiased Monte Carlo estimator of (\ref{mean-l}) is then given by 
 \begin{align}
-  D(\mu_1, \mu_2) = \mathrm{E}_{\mu_1} \log \frac{d\mu_1}{d\mu_2} = \int
-  g_1\log g_1\, d\nu - \int g_1\log g_2\,d\nu,
+  \ell_N = \frac{1}{N} \sum_{i=1}^{N}  \frac{F(\tilde{Z}_i)f(\tilde{Z}_i;\bm{0})}{g(\tilde{Z}_i)}\,,
+\end{align}
+where the trajectories $\tilde{Z}_i, i = 1, \cdots, N$ are independent realizations from $\eta$. It is well known that the optimal measure $\eta^*$ that minimizes the variance of the estimator has the density
+\begin{align}
+  g^*(Z) = \frac{F(Z)f(Z;\bm{0})}{\ell}\,.
+  \label{optimal-pdf}
+\end{align}
+It is easy to see that the thus defined $\eta^{*}$ yields a zero variance estimator, note however that it depends on $\ell=\bE(F(Z))$, which is the quantity that we want to compute.
+
+The idea of the cross-entropy method is to find the best approximation of $\eta^*$ among the family
+$\mu_{\blambda}, \blambda \in \cF$ of tilted probability measures. The approach is based on minimizing the 
+Kullback-Leibler divergence, which in our case can be defined as follows:
+given two probability measures $\mu_1 = g_1\nu_{\eps}$, $\mu_2 =
+g_2\nu_{\eps}$ that are absolutely continuous \wrt the scaled Wiener measure, the \emph{Kullback-Leibler divergence} or \emph{relative entropy} between $\mu_{1}$ and $\mu_{2}$ is defined as
+\begin{align}
+  D(\mu_1, \mu_2) = \bE_{\mu_1}\!\left(\log \frac{d\mu_1}{d\mu_2}\right) 
   \label{kl-dist}
 \end{align}
-and we try to minimize
+where the expectation \wrt the measure $\mu_{1}$ is defined as
 \begin{align}
-  \min_{\bm{\omega} \in \mathbb{R}^m} D(\mu_{g^*}, \mu_{\bm{\omega}}).
+  \bE_{\mu_1}\!\left(\log \frac{d\mu_1}{d\mu_2}\right) = \int \log \frac{d\mu_1}{d\mu_2}\,d\mu_{1} = \int
+  g_1\log g_1\, d\nu_{\eps} - \int g_1\log g_2\,d\nu_{\eps}\,.
+  \label{kl-dist2}
+\end{align}
+
+
+\subsubsection*{Cross-entropy method I.}
+%
+The cross entropy method now seeks an optimal change of measure by solving the minimization task
+\begin{align}
+  \min_{\blambda\in\R^{m}} D(\eta^*, \mu_{\blambda}).
   \label{kl-dist-d}
 \end{align}
-Using (\ref{optimal_pdf}) and (\ref{kl-dist}), it is equivalent to solve
+for the tilt parameter $\blambda\in\R^{m}$. Not knowing what $\eta^{*}$ is, this still sounds like an infeasible minimization problem. It turns out, however, that we need to know $\eta^{*}$ only up to a constant prefactor, which in our case, since $x$ is fixed, eliminates the unknown quantity $\ell=\ell(x)$. Using (\ref{optimal-pdf}) and (\ref{kl-dist}), the minimization problem is equivalent to the following maximization problem
+\begin{align}\label{ce-1}
+  \max_{\blambda \in \bR^m} \bE_{\mu} ( F(Z) \log
+  f(Z;\blambda))\,.
+\end{align}
+
+For the efficient numerical solution of (\ref{ce-1}) it is often convenient to allow for drawing samples from a probability measure that  somehow ``in between'' $\mu$ and $\mu_{\blambda^{*}}$. This will give us some extra freedom to use, e.g., an iterative solver for the maximization problem (\ref{ce-1}). Letting $\bm{v}\in \bR^{m}$  denote an arbitrary family parameter, our maximization problem reads 
 \begin{align}
-  \max_{\bm{\omega} \in \mathbb{R}^m} \mathrm{E}_{\mu} ( F(z) \log
-  f(z;\bm{\omega}))
-  = \max_{\bm{\omega} \in \mathbb{R}^m} \mathrm{E}_{\mu_{\bm{v}}} ( F(z)
-  \eta(z;\bm{v}) \log f(z;\bm{\omega})), \hspace{3mm} \forall \bm{v} \in
-  \mathbb{R}^m
+  \max_{\blambda \in \mathbb{R}^m} \bE_{\mu_{\bm{v}}} ( F(Z)
+  h(Z;\bm{v}) \log f(Z;\blambda)),
   \label{ce-2}
 \end{align}
 where
 \begin{align}
-  \eta(z;\bm{v}) = \frac{f(z;\bm{0})}{f(z;\bm{v})}.
+  h(Z;\bm{v}) = \frac{f(Z;\bm{0})}{f(Z;\bm{v})}.
 \end{align}
-For numerical purpose, we consider the discrete formulation of (\ref{ce-2})
+An unbiased estimator of (\ref{ce-2}) is 
 \begin{align}
-\max_{\bm{\omega} \in \mathbb{R}^m} \frac{1}{N} \sum_{i=1}^{N} F(z_i)
-\eta(z_i; \bm{v}) \log f(z_i;\bm{\omega}) 
+\max_{\blambda \in \mathbb{R}^m} \frac{1}{N} \sum_{i=1}^{N} F(\tilde{Z}_i)
+h(\tilde{Z}_i; \bm{v}) \log f(\tilde{Z}_i;\blambda) 
 \label{ce-2-discrete}
 \end{align}
-where $z_i, i = 1, \cdots, N$ are trajectories generated from $\mu_{\bm{v}}$. 
-Taking gradient, the maximizer of (\ref{ce-2-discrete}) could be found by solving
+where $\tilde{Z}_i, i = 1, \cdots, N$ are independent realizations generated from $\mu_{\bm{v}}$. The necessary condition for $\blambda^{*}$ being a maximizer of (\ref{ce-2-discrete}) is obtained by taking the gradient \wrt $\blambda$: 
 \begin{align}
-  \frac{1}{N} \sum_{i=1}^{N} F(z_i) \eta(z_i; \bm{v}) \nabla_{\bm{\omega}} \log
-  f(z_i;\bm{\omega}) = 0.
+\sum_{i=1}^{N} F(\tilde{Z}_i) h(\tilde{Z}_i; \bm{v}) \nabla_{\blambda} \log
+  f(\tilde{Z}_i;\blambda) = 0\,.
   \label{max-gradient}
 \end{align}
-With formula (\ref{om-fun-w}), equations (\ref{max-gradient}) could be written more explicitly
-as linear equations $A\bm{\omega} = \bm{r}$, where $\forall 1\le i,j\le m$, 
+
+The degree of difficulty when solving (\ref{max-gradient}) numerically of course depends on the parameterization of the tilted family of distributions that will be introduced in Section \ref{sec-ce-algo} below. 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Cross-entropy method for optimal control}
+\label{subsec-ocp}
+In this section, we consider applying the cross-entropy method to solve optimal control problems
+for diffusion processes. 
+%
+To this end consider the optimal control problem with cost
+function \cite{control_schuette,zlph2013}
+\begin{equation}\label{cost}
+  J(u) = \bE_{\mu_u}\left(\int_0^{\tau\wedge T} G(z_{s}) + \frac{1}{4} |u_{s}|^2
+ds  + H(z_{\tau\wedge T})\right),
+\end{equation}
+with bounded continuous function $G,H\colon\R^{n}\to\R$ and $u_{s}\in\R^{n}$ being a measurable control that will specified below. The expectation $\bE_{\mu_u}$ \wrt the probability measure $\mu_u$ is understood as the expectation over all realizations of the controlled dynamics
+\begin{equation}
+ \begin{aligned}
+   d z_s &= \left(b(z_s) +  u_{s}\right)ds + \sqrt{2\eps }\,dw_s, \quad 0 \le s \le T \\
+    z_0&=x
+  \end{aligned}
+  \label{ctr-sde}
+\end{equation}
+We suppose that $G\ge 0$ and, for the ease of notation, we set $H=0$. We wish to minimize (\ref{cost}) under the constraint (\ref{ctr-sde}) and over all measurable controls $u$ that are adapted to the filtration generated by the Brownian motion driving the dynamics (\ref{ctr-sde}). Then, given suitable conditions on the vector field $b$, it is known that this optimal control problem has a unique solution in form of a Markovian feedback control. That is, for some continuous and bounded function $c\colon[0,T]\times \R^{n}\to\R^{n}$, it holds that 
+\begin{equation}\label{feedback}
+ \hat{u}_{s} = c(s, z_{s})\,.
+\end{equation}
+Now call $\mu, \hat{\mu}$ the probability measures on the path space  $C([0,T],\R^{n})$ corresponding to (\ref{ctr-sde}) with $u = 0$ and $\hat{u}$. Then, using the Legendre-type dual relation, we have \cite{DaiPra1996,HaEtal14} 
+    \begin{align}
+      J(\hat{u}) = -\eps \log \bE_\mu\left(\exp\left(-\frac{1}{\eps}\int_0^{\tau\wedge T} G(z_s) \,ds\right) \right) ,
+      \label{dual-relation}
+    \end{align}
+    where, by Jensen's inequality (see \cite[Sec.~VI.2]{fleming2006}), we know that $\hat{\mu}$-a.s.
+    \begin{align}
+    \exp\left(-\frac{1}{\eps}\int_0^{\tau\wedge T} G(z_s)\,ds\right)\frac{d\mu}{d\hat{\mu}} =
+    \bE_\mu\left(\exp\left(-\frac{1}{\eps}\int_0^{\tau\wedge T} G(z_s)\, ds\right)\right) 
+    \label{jensen-as}
+  \end{align}
+From the above we conclude that (see \cite[Sec.~VI.3]{fleming2006} for details)
+  \begin{equation}\label{cost-2}
+  \begin{aligned}
+    J(u) &= \bE_{\hat{\mu}}\!\left(\int_0^{\tau\wedge T} \left(G(z_s) + \frac{1}{4} |u_{s}|^2\right)\,ds\right)\frac{d\mu_u}{d\hat{\mu}}  \\
+    & = J(\hat{u}) + \bE_{\hat{\mu}}\!\left(\left(\eps \log
+    \frac{d\mu}{d\hat{\mu}} + \frac{1}{4} \int_0^{\tau\wedge T} |u_{s}|^2\,ds\right)\frac{d\mu_u}{d\hat{\mu}}\right)
+\end{aligned}
+\end{equation}
+After some rearrangement and simplification, we get the following simple relationship: 
+\begin{align}
+J(u) = J(\hat{u}) + \eps D(\mu_u, \hat{\mu}).
+\label{J-entropy}
+\end{align}
+where $D(\cdot, \cdot)$ is the Kullback-Leibler divergence as defined in (\ref{kl-dist}).
+
+\subsubsection*{Cross-entropy method II.}
+%
+Computing the optimal control $\hat{u}$ can be tedious, or is infeasible if the dynamics are 
+high dimensional. As a remedy we suggest again to find the best approximation of $\hat{\mu}=\hat{g}(\cdot)\nu_{\eps}$ among a suitably 
+defined family $\mu_{\blambda}, \blambda \in \cF$ of tilted probability measures that are absolutely continuous \wrt $\nu_{\eps}$. 
+%
+Sticking to the notation from Section \ref{sec-ce-is}, it readily follows that the minimizer of (\ref{J-entropy}) has the density   
+\begin{align}
+  \hat{g}(Z) \propto \exp\left(-\frac{1}{\eps}\int_0^{\tau\wedge T} G(z_s) \,ds\right) f(Z; 0)\,
+\end{align}
+\wrt $\nu_{\eps}$ (cf.~\pageref{optimal-pdf}). By Girsanov's theorem
+there is a one-to-one correspondence between the control force $u=u(\blambda)$ and a certain family of \emph{exponentially tilted} probability measures $\mu_{\blambda}$. 
+Instead of minimizing (\ref{cost}) subject to the dynamics (\ref{ctr-sde}), we solve the constrained optimization problem  
+\begin{align}
+  \min_{\blambda \in \mathbb{R}^m} J(u(\blambda)).
+  \label{J-w}
+\end{align}
+subject to the dynamics (\ref{ctr-sde}). From (\ref{J-entropy}), we know that solving (\ref{J-w})
+is equivalent to minimizing the Kullback-Leibler divergence $D$ between
+$\mu_u$ and $\hat{\mu}$, which, however, is still not easy. On the other hand, inspired by 
+the discussions in Section \ref{sec-ce-is}, we can apply cross-entropy method 
+to minimize the relaxed entropy functional $D(\hat{\mu}, \mu_u)$ rather than $D(\mu_{u},\hat{\mu})$. As a consequence, 
+the problem is reduced to the case in Section \ref{sec-ce-is}. 
+
+
+Note that the relaxed problem solved by the cross-entropy method is different from (\ref{J-w}), as the Kullback-Leibler divergence is not symmetric. Yet both (\ref{J-w}) and its relaxed version agree at the minimum, therefore the hope is that the latter yields a reasonable approximation of the optimal control problem---given that the family of tilted distributions is cleverly chosen. 
+
+\FloatBarrier
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Cross-entropy algorithm}
+\label{sec-ce-algo}
+
+In this section, we will specify the family  $\{\mu_{\blambda}\}_{\blambda \in
+\cF}$ of tilted probability measures that we are going to use for the
+procedure introduced above and formulate the cross-entropy algorithm. As a
+first step, let $\mu$  denote the probability measure on $C([0,T],\R^{n})$
+that is induced by the dynamics (\ref{dynamics-1}) and let $\nu_{\eps}$ be scaled Wiener measure associated with 
 \begin{align}
   \begin{split}
-  A_{ij} &= \frac{1}{N}\sum_{k = 1}^{N} F(z_k)\eta(z_k; \bm{v}) \int_0^\tau
-  \nabla\phi_i(z_{k,s})\nabla\phi_j(z_{k,s})\,ds, \\
-     r_i &= \frac{1}{\sqrt{2}N}\sum_{k = 1}^{N} F(z_k)\eta(z_k; \bm{v})
-  \Big[\int_0^\tau \Big(\frac{dz_k}{ds} - b(z_s)\Big)\nabla\phi_i(z_{k,s})\,ds
-  - \beta^{-1} \int_0^\tau \operatorname{div} \nabla \phi_i(z_{k,s})\,ds\Big]
+  dz_s &= \sqrt{2\eps }\,dw_s, \hspace{3mm} 0 \le  s \le T \\
+   z_0 &= x .
+  \end{split}
+\end{align}
+By Girsanov's theorem \cite{oksendalSDE}, we have 
+\begin{equation}\label{girsanov1}
+  {d\mu}= \exp\left(-\frac{1}{\eps}S(Z)\right) d\nu_{\eps}\,, 
+\end{equation}
+with the action
+\begin{equation}\label{girsanov2}
+\begin{aligned}
+  S(Z) & = -\sqrt{\frac{\eps}{2}}\int_0^{\tau\wedge T}
+  b(z_s)\cdot dw_s - \frac{1}{4}\int_0^{\tau\wedge T} |b(z_s)|^2\,ds\\
+  &=-\frac{1}{2}\int_0^{\tau\wedge T} b(z_s)\cdot dz_s +
+  \frac{1}{4}\int_0^{\tau\wedge T} |b(z_s)|^2ds \,
+\end{aligned}
+\end{equation}
+where the stochastic integral is interpreted in the sense of It\^o \cite{oksendalSDE}.
+%
+A remark is in order. 
+%%
+\begin{remark}
+  We could rewrite (\ref{girsanov1})--(\ref{girsanov2}) as a Stratonovich integral using the relationship
+\begin{align}
+  \int_0^{\tau\wedge T} b(z_s)\cdot dz_s = \int_0^{\tau\wedge T} b(z_s) \circ dz_s - \eps  \int_0^{\tau\wedge T} \operatorname{div}\,b(z_s)\,ds\,,
+\end{align}
+by which we obtain 
+\begin{equation}\label{girsanov3}
+  {d\mu} =\exp\left(\frac{1}{2\eps}\int_0^{\tau\wedge T} b(z_s)\circ dz_s -
+  \frac{1}{4\eps}\int_0^{\tau\wedge T} (|b(z_s)|^2 + 2\eps \operatorname{div}\,b(z_s))\,ds\right)d\nu_{\eps} \,
+\end{equation}
+The associated action functional reads
+\begin{align}
+  S(Z)= -\frac{1}{2}\int_0^{\tau\wedge T} b(z_s)\cdot dz_s +
+  \frac{1}{4}\int_0^{\tau\wedge T} |b(z_s)|^2ds +
+  \frac{\eps}{2}  \int_0^{\tau\wedge T} \operatorname{div}\,b(z_{s}) ds
+  \label{om-fun}
+\end{align}
+It is closely related to what is known as the \emph{Onsager-Machlup functional} in the physical literature. See \cite{om1978,
+om_functional_pinski} for details. We will stick to It\^o interpretation of (\ref{girsanov2}) in the
+following.
+\end{remark}
+%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Choosing a family of path space measures}
+\label{subsec-om-functional}
+
+We will confine our attention to a special class of tilted probability distributions that is suggested by the 
+the optimal control problem from in Section \ref{subsec-ocp}. To this end, let  
+ $\{\phi_i\}_{1\le i \le m}$ denote a set of continuously differentiable basis functions $\phi_i\colon [0,T]\times \mathbb{R}^n\rightarrow \mathbb{R}$. 
+ The cross-entropy method will be based on realizations of 
+ \begin{equation}
+\begin{aligned}
+  d z_s &= \left(b(z_s) + c(s,z_{s};\blambda) \right)ds + \sqrt{2\eps } dw_s, \quad 0 \le s \le T \\
+     z_0 &=x\,,
+     \end{aligned}
+\label{dynamics-2}
+\end{equation}
+with 
+\begin{align}
+  c(s,x;\blambda) = 2\sum_{i = 1}^{m} \lambda_i \nabla \phi_i(s,x)\,.
+  \label{control-force}
+\end{align}
+(The scaling factor $2$ is merely conventional.) It follows from Girsanov's theorem that  
+the associated path probability measure $\mu_{\blambda}$ has a density $f(\cdot;\blambda)$ \wrt the scaled Wiener measure $\nu_{\eps}$. It 
+is given by the usual exponential expression
+\begin{equation}\label{girsanov4}
+  f= \exp\left(\frac{1}{2\eps}\int_0^{\tau\wedge T} (b(z_s)+c(s,z_{s};\blambda))\cdot dz_s 
+  - \frac{1}{4\eps}\int_0^{\tau\wedge T} |b(z_s) + c(s,z_{s};\blambda)|^2\,ds\right) \,.
+\end{equation}
+As a consequence, we can generate independent samples from $\mu_{\blambda}$ by 
+repeatedly simulating the controlled dynamics (\ref{dynamics-2}). Since the tilting parameter 
+$\blambda=(\lambda_{1},\ldots,\lambda_{m})$ enters linearly, the associated 
+cross-entropy maximization problem (\ref{ce-2-discrete}) is strictly convex and thus has a unique solution. 
+Note that, indeed, $\mu_{\bm{0}} = \mu$ is the probability measure corresponding (\ref{dynamics-1}).
+
+
+\subsubsection*{Cross-entropy method III.}
+Defining 
+\begin{equation}\label{girsanov5}
+   f(Z;\blambda) = \exp\left(-\frac{1}{\eps}S(Z;\blambda)\right) \,, 
+\end{equation}
+with the action
+\begin{equation}\label{girsanov6}
+  S 
+ =-\frac{1}{2}\int_0^{\tau\wedge T} (b(z_s)+c(s,z_{s};\blambda))\cdot dz_s +
+  \frac{1}{4}\int_0^{\tau\wedge T} |b(z_s)+c(s,z_{s};\blambda)|^2ds \,
+\end{equation}
+and noting that 
+\begin{align}
+\nabla_{\blambda} \log f(Z;\blambda) = -\frac{1}{\eps}  \nabla_{\blambda} S(Z;\blambda),
+\end{align}
+the necessary optimality condition (\ref{max-gradient}) can be recast as a linear system of equations: 
+\begin{align}
+A\blambda = \bm{r},
+\end{align}
+where $A=(A_{ij})_{1\le i,j\le m}$ and $\bm{r}=(r_{i})_{1\le i\le m}$ with  
+\begin{align}
+  \begin{split}
+  A_{ij} &= 2\sum_{k = 1}^{N} F(Z_k)h(Z_k; \bm{v}) \int_0^{\tau\wedge T}
+  \nabla\phi_i(s,z^{k}_{s})\nabla\phi_j(s,z^{k}_{s})\,ds, \\
+     r_i &= \sum_{k = 1}^{N} F(Z_k)h(Z_k; \bm{v})
+  \left(\int_0^{\tau\wedge T} \nabla\phi_i(s,z^{k}_{s})\cdot dz^{k}_{s} - \int_0^{\tau\wedge T}  \nabla\phi_i(s,z^{k}_{s})\cdot b(z^{k}_{s})\,ds\right)\,. 
   \end{split}
   \label{linear-eqn}
 \end{align}
-Notice that (\ref{max-gradient}) holds $\forall \bm{v} \in \mathbb{R}^m$ and
-$A$ is in general a positive definite matrix when $\phi_i$'s are linearly independent.
-\begin{remark}
-  The more general type conditional expectation 
-  $l = \mathrm{E}(F(z)~|~ z_0 \sim \pi)$
-  can be similarly considered,
-where $\pi(dx) = \rho(x)dx$ is a probability measure on $\Omega
-\subset \mathbb{R}^n$, i.e. $\int_\Omega \rho(x)\,dx = 1$. Let $E = \{z ~|~ z \in
-  C([0,\infty), \mathbb{R}^n), z_0 \in \Omega\}$ be the set of trajectories
-  starting from $\Omega$. Denote $\mu^x$ as the aforementioned measure for
-  dynamics (\ref{dynamics-1}) starting from $x \in \mathbb{R}^n$. Further
-  define $\mu^\pi(\mathcal{D}) = \int_{\Omega} \mu^x(\mathcal{D}) \pi(dx)$,
-  where $\mathcal{D}$ is a measurable subset of $E$.
-  We have $d\mu^\pi_{\bm{v}} = f(z;\bm{v})\,d\nu^\pi, \forall
-  \bm{v} \in \mathbb{R}^n$, where $\mu^\pi_{\bm{v}}$ and $\nu^{\pi}$ are
-  defined similarly. The aim is to find the optimal $\bm{\omega} \in
-  \mathbb{R}^m$ and the corresponding measure $\mu^\pi_{\bm{\omega}}$ to do
-  the importance sampling. All the derivations are the same with the above
-  except that, while simulating the trajectories, 
-  the starting point $z_0$ should be generated from $z_0 \sim \pi$.
-\end{remark}
-\begin{remark}
-   The above algorithm can be further applied to dynamics (\ref{ode-sde}), discussed
-   in Remark \ref{remark-general}. In this case, since only stochastic
-   equations appear in the Radon-Nikodym derivative, the control should
-   also be only added to these equations, in order to obtain linear equations
-   with full rank. Specifically, we study the controlled dynamics 
-         \begin{align}
-      \begin{split}
-	dx_s & = b_1(x_s, y_s)\, ds \\
-	dy_s & = b_2(x_s, y_s)\, ds + \sqrt{2} u(x_s, y_s ; \bm{\omega})\, ds + \sqrt{2\beta^{-1}} dw_s
-      \end{split}
-      \label{ode-sde-control}
-      \end{align}
-      with $u(x_s, y_s ; \bm{\omega}) = \sum\limits_{i=1}^{m} \omega_i \nabla \phi_i(x_s,
-      y_s)$ and optimize the coefficients $\bm{\omega}$. All the derivations are
-      the same as above.
-\end{remark}
-\section{Cross-entropy method for optimal control problem}
-\label{sec-ocp}
-In this section, we consider applying the cross-entropy method to solve optimal control problem
-for diffusion process.
+Here $\bm{v}\in \mathbb{R}^m$ is an arbitrary vector, and $Z_k=(z^{k}_{s})_{0\le s\le T}$ denotes the sample paths of (\ref{dynamics-2}) with control $u_{s}=c(s,z^{k}_{s};\bm{v})$. Note that the realizations are generated from $\mu_{\bm{v}}$ and therefore do not depend on $\blambda$. Further notice  
+$A$ is positive definite matrix if the basis functions $\phi_i$ are linearly
+independent,  which implies that (\ref{linear-eqn}) has a unique solution. 
 
-Consider the optimal control problem with cost
-function \cite{control_schuette,zlph2013}
-\begin{equation}
-  J(u) = \mathrm{E}_{\mu_u}\left[\int_0^\tau \left(G(z_s) + \frac{1}{2} |u(z_s,s)|^2
-\right) ds ~\bigg|~ z_0 = x\right],
-\end{equation}
-where $G : \mathbb{R}^n\rightarrow \mathbb{R}$ is nonnegative, $u$ is the
-control force and $\mathrm{E}_{\mu_u}$ denotes the expectation under probability measure $\mu_u$,
-which is generated by the controlled dynamics
-of (\ref{dynamics-1-sigma}), namely,
-\begin{align}
- \begin{split}
-   d z_s &= b(z_s) ds + \sqrt{2}\sigma(z_s) u(z_s, s) ds + \sqrt{2\beta^{-1}} \sigma(z_s)\,dw_s, \quad 0 < s < \tau \\
-    z_0&=x
-  \end{split}
-  \label{dynamics-1-sigmma-c}
-\end{align}
-
-Suppose the lower bound of $J(u)$ can be achieved and let $\hat{u} = \argmin J(u)$. For simplicity, we denote $\mu, \hat{\mu}$ as
-the probability measure corresponding to $u \equiv 0$ and $\hat{u}$
-respectively. Using the dual relation \cite{DaiPra1996, zlph2013}
-    \begin{align}
-      -\beta^{-1}\log \mathrm{E}_\mu\left[\exp\Big(-\beta\int_0^\tau G(z_s)\, ds\Big)\right] = \inf_u J(u) = J(\hat{u})
-      \label{dual-relation}
-    \end{align}
-    and Jensen's inequality, we know that 
-    \begin{align}
-    \exp\Big(-\beta\int_0^\tau G(z_s)\,ds\Big)\frac{d\mu}{d\hat{\mu}} =
-    \mathrm{E}_\mu\left[\exp\Big(-\beta\int_0^\tau G(z_s)\, ds\Big)\right],
-    \hspace{3mm} \hat{\mu}-a.s.
-    \label{jensen-as}
-  \end{align}
-From the above we have 
-  \begin{align}
-    J(u) &= \mathrm{E}_{\hat{\mu}} \left\{\Big[\int_0^\tau \Big(G(z_s) + \frac{1}{2} |u(z_s,
-    s)|^2\Big)\,ds\Big]\frac{d\mu_u}{d\hat{\mu}}\right\}  \\
-    & = J(\hat{u}) + \mathrm{E}_{\hat{\mu}}\Big[\Big(\beta^{-1}\log
-    \frac{d\mu}{d\hat{\mu}} + \int_0^\tau \frac{1}{2} |u(z_s,
-    s)|^2\,ds\Big)\frac{d\mu_u}{d\hat{\mu}}\Big]
-\end{align}
-After simplification, we get the following simple relationship 
-\begin{align}
-J(u) = J(\hat{u}) + \beta^{-1}D(\mu_u|\, \hat{\mu}).
-\label{J-entropy}
-\end{align}
-where $D(\cdot, \cdot)$ is the Kullback-Leibler divergence in (\ref{kl-dist}).
-
-We are interested in finding the optimal control $\hat{u}$. For high
-dimensional dynamics ($n$ is large), this becomes difficult.  
-Similarly as the in previous section, we suppose the control force can be written
-as (\ref{control-force}) with $m$ predefined basis functions $\{\phi_i\}_{1\le
-i \le m}$. And our problem is simplified to solve
-\begin{align}
-  \min_{\bm{\omega} \in \mathbb{R}^m} J(u(z;\bm{\omega})).
-  \label{J-w}
-\end{align}
-under dynamics (\ref{dynamics-1-sigmma-c}).
-
-From (\ref{J-entropy}), we know that solving (\ref{J-w})
-is equivalent to minimize the Kullback-Leibler divergence $D$ between
-$\mu_u$ and $\hat{\mu}$, which, however, is still not easy. On the other hand, inspired by 
-the discussions in Section \ref{sec-ce-is}, we can apply cross-entropy method 
-to minimize $D(\hat{\mu} \,|\, \mu_u)$ (notice this is different from
-(\ref{J-w}), because the Kullback-Leibler divergence is not symmetric), and
-hope that (\ref{J-w}) can be solved approximately. Following
-the notations in Section \ref{sec-ce-is} and from (\ref{jensen-as}), we know the optimal measure
-satisfies
-\begin{align}
-  g^*(z) \propto \exp\Big(-\beta\int_0^\tau G(z_s) \,ds\Big) f(z ; 0),
-  \quad \forall z\,,
-\end{align}
-therefore the problem is reduced to the case in Section \ref{sec-ce-is} with $F(z) = \exp(-\beta\int_0^\tau G(z_s) \,ds)$.
-\section{Cross-entropy algorithm}
-\label{sec-ce-algo}
-In this section, we consider how to implement the cross-entropy algorithm in
-order to maximize (\ref{ce-2-discrete}), which is equivalent to (\ref{kl-dist-d}) in the discrete case. 
-We suppose the optimal density $g^*(z)$ is given by (\ref{optimal_pdf}) and
-$F(z)$ takes the forms in (\ref{path-fun-f}).
-
-Ideally, the solution of the maximization problem (\ref{ce-2-discrete}) can be
-obtained by solving the linear equation (\ref{linear-eqn}) without iterations. But in real
-applications, when the expectation value $l$ of $F(z)$ in (\ref{mean-l}) is very rare, it will become
-difficult to estimate the coefficients (\ref{linear-eqn}) and therefore the solution
-will be inaccurate. In diffusion processes, one major reason for this rarity
-is the metastability in the dynamics when $\beta \gg 1$. In this case, the
-trajectories are long and $F(z)$ is small, which means computing
+It thus seems that the solution of the discrete maximization problem (\ref{ce-2-discrete}) can be
+obtained by just solving the linear equation (\ref{linear-eqn}). However in real
+applications, when the expectation value $\ell$ of $F(Z)$ in (\ref{mean-l}) is very small so that it is
+difficult to estimate the coefficients (\ref{linear-eqn}) accurately enough, the solution itself is in danger of being inaccurate. In many applications, the reason for this is metastability of the dynamics when $\eps\ll 1$. In this case, the
+trajectories are long and $F(Z)$ is small, which means computing
 (\ref{linear-eqn}) is both time-consuming and inaccurate. Inspired by the
-original cross-entropy method \cite{ce_tutorial},
-we may overcome this problem by starting from a higher temperature (smaller $\beta$) and compute
-(\ref{linear-eqn}) while decreasing the temperature (increasing $\beta$). The proposed iterative
-method to solve the maximization problem (\ref{ce-2-discrete}) is illustrated in Algorithm \ref{ce-algo}.
+original cross-entropy method \cite{ce_tutorial}, we may overcome this problem by starting from a higher temperature (here: $\eps$) and compute
+(\ref{linear-eqn}) while decreasing the temperature. The proposed iterative
+method to solve (\ref{ce-2-discrete}) is illustrated in Algorithm \ref{ce-algo}.
+
 \begin{algorithm}
-  \caption{Algorithm to solve the maximization problem (\ref{ce-2-discrete}) \label{ce-algo}}
+  \caption{Cross-entropy algorithm \label{ce-algo}}
   \begin{algorithmic}[1]
-    \State Define $0 < \beta_0 < \beta_1 < \cdots <\beta_k = \beta$, set
+    \State Define $\eps_0 > \eps_{1} > \ldots > \eps_k = \eps$, set
     $\bm{v}^{(0)} = 0$.
     \For {$j=0$ to $k$}
     \State generate $N_j$ trajectories $z_i, i=1,2,\cdots, N$ from dynamics (\ref{dynamics-2}), with
-    $\bm{\omega} = \bm{v}^{(j)}$, $\beta = \beta_j$.
+    $\blambda = \bm{v}^{(j)}$, $\eps = \eps_j$.
     \State compute the coefficients of $A^{(j)}, \bm{r}^{(j)}$ from (\ref{linear-eqn}) with $\bm{v} =
     \bm{v}^{(j)}$, and solve the linear equations $A^{(j)}\bm{v}^{(j+1)} =
     \bm{r}^{(j)}$.
@@ -516,61 +474,122 @@ method to solve the maximization problem (\ref{ce-2-discrete}) is illustrated in
   \end{algorithmic}
   \label{algo1}
 \end{algorithm}
-\FloatBarrier
+
+
+
+We conclude this subsection with a few remarks on possible extensions of the method.
+\begin{remark}
+It is straightforward to relax restriction of the fixed initial condition and consider distributed initial conditions instead, i.e.~$z_{0}=x\in\R^{n}$ following some probability distribution $\pi$ on $\R^{n}$. All considerations and the cross-entropy method remain valid without alterations, if the sum over the $N$ realizations of the dynamics is replaced by the sum over all realization \emph{and} the sum over sufficiently many independent initial conditions $x\sim \pi$. 
+\end{remark}
+
+\begin{remark}
+  \label{remark-general}
+  We briefly mention two more possible generalization of the above algorithm. 
+  %
+The first generalization concerns dynamics with multiplicative noise: 
+      \begin{equation}
+      d z_s = b(z_s) ds + \sqrt{2\eps } \sigma(z_s)\,dw_s\,, 
+    \label{dynamics-1-sigma}
+    \end{equation}
+    where the $n \times n$  matrices $a(\cdot) = \sigma(\cdot)\sigma(\cdot)^T$  are positive definite with bounded inverses. Defining the weighted scalar product $\bk{u}{v}=u^{T} (a(z))^{-1}v$, then all considerations remain valid, with the dot product $u\cdot v$ being replaced by $\bk{u}{v}$. In particular, (\ref{girsanov2}) must be replaced by 
+       \begin{equation}\label{I-1-sigma}
+  S(Z) = -\frac{1}{2}\int_0^{\tau\wedge T} \bk{b(z_s)}{dz_s} +
+  \frac{1}{4}\int_0^{\tau\wedge T} \|b(z_s)\|^2ds \,,
+\end{equation}
+     where  $\|v\|=\sqrt{\bk{v}{v}}$ is the norm induced by the scalar product $\ip$. 
+%   
+Another important class of systems are Langevin-type diffusions with degenerate noise:  
+      \begin{equation}
+      \begin{aligned}
+	dx_s & = y_s\, ds \\
+	dy_s & = -\left(\nabla V(x_s) + y_{s}\right)  ds + \sqrt{2\eps } dw_s\,,
+      \end{aligned}
+      \label{ode-sde}
+      \end{equation}
+      Here $(x_s,y_{s}) \in \mathbb{R}^{2n}$ are the state variables and $V\colon\R^{n}\to\R$ is a smooth potential energy that is bounded below 
+      and sufficiently growing at infinity; more general variants of (\ref{ode-sde}) can be considered too, but we refrain from discussing the most general scenario here. 
+      %
+      Langevin diffusions have the 
+      property that, even though the noise is degenerate and hence the tilting of the distribution can be only in the direction of some variables, one has control over the full path space distribution.\footnote{The reason for this lies in the fact that the Langevin equation satisfies a condition known as \emph{complete controllability}, which ensures that noise drives all degrees of freedom in the system \cite{mattingly2002}.} 
+      \end{remark}
+      
+      \begin{remark}
+      If the terminal time $T$ is large, it is possible to suppress the time dependence of the basis functions
+      and consider only functions $\phi_{j}=\phi_{i}(x)$. In this case the optimal tilting is not explicitly time-dependent as is the case in 
+      optimal stopping problems (see, e.g., \cite{Shiryaev2006}).    
+      \end{remark}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Numerical examples}
 \label{sec-examples}
 In this section, we will study the cross-entropy method with some concrete dynamics and
 illustrate some numerical results.
 \subsection{One-dimensional double well potential}
-Here we consider the simplest 1D diffusion process with double well potential.
-Let $b(x) = - V'(x), x\in \mathbb{R}^1$, with $V(x) = \frac{1}{2}(x^2 - 1)^2$.
-The dynamics is 
+We consider the one-dimensional diffusion process 
 \begin{align}
-  dz_s = - V'(z_s) ds + \sqrt{2\beta^{-1}} dw_s
+  dz_s = - V'(z_s) ds + \sqrt{2\eps } dw_s\,,
 \end{align}
-where $w_s$ is 1D Brownian motion. The potential $V$ has two minima points
-$x_0 = -1, x_2 = 1$, while $x_1 = 0$ is
-a saddle point. Define $\tau = \inf\{s >0, |z_s - x_2| \le 1 \}$, and choose
-the starting point $z_0 = x_0 =
--1$. We define three basis functions of Gaussian type as $\phi_i(x) = \exp(-\frac{(x -
-x_i)^2}{2r^2})$, $i = 0, 1, 2$, and choose $r = 0.5, \beta = 5.0$ (see Figure. \ref{fig-ex1-basis}).
-
-We first study the optimal control problem  
+with $w_s$ standard one-dimensional Brownian motion, $\eps=0.2$  and the double well potential 
+\begin{equation}
+V(x) = \frac{1}{2}(x^2 - 1)^2\,.
+\end{equation}
+The bistable potential $V$ has two minima at $x_0 = -1$ and $x_2 = 1$ and a local maximum at $x_1 = 0$. Define $\tau = \inf\{s >0 \colon z_s - x_2| \le 1 \}$, and choose
+the starting point $z_0 = x_0$ to be the left minimum. As basis function we use three (unnormalized) Gaussians of the form
+\begin{equation}
+\phi_i(x) = \exp\left(-\frac{(x - x_i)^2}{2r^2}\right)\,,\quad i = 0, 1, 2\,,
+\end{equation}
+with $r = 0.5$ (see Fig.~\ref{fig-ex1-basis}). Note that the basis functions are independent of time, which is due to the fact that the time dependence of the optimal tilting is relatively weak in our case.  
+ %
+ 
+ \subsubsection*{Optimal control.}
+ 
+We begin by studying the following optimal control problem: minimize   
 \begin{align}
-  \inf_{u_s} \mathrm{E} \Big(\tau + \frac{1}{2} \int_0^\tau u_s^2 \,ds~\Big|~
-  z_0 = -1\Big)\,,
+  J(u) = \bE \left(\tau + \frac{1}{4} \int_0^{\tau}  u_s^2 \,ds \right)\,,
   \label{ex1-cost}
 \end{align}
-under dynamics
+under the tilted dynamics
 \begin{align}
-  dz_s = - V'(z_s) ds + \sqrt{2}u_s ds + \sqrt{2\beta^{-1}} dw_s\,.
+  dz_s = \left( u_{s} - V'(z_s) \right) ds + \sqrt{2\eps } dw_s\,.
 \end{align}
-$\mbox{dt} = 1.0 \times 10^{-3}$, $N_j = 10^{4}, j=0,1,2$ are used to compute the
-coefficients $\bm{\omega}$ using Algorithm.\ref{ce-algo}, with $\{\beta_0,\beta_1, \beta_2\}
-= \{1.0, 3.0, 5.0\}$.  Therefore $k=2$ in Algorithm.\ref{ce-algo} and $3$
-iteration steps are performed. Denote $\bm{v}^{(0)} = \bm{0}$ and suppose
-coefficients $\bm{v}^{(j+1)}$ are obtained
-in $j$th steps, $j=0,1,2$. Then applying control force $u(x;\bm{v}^{(j)})$ is
-equivalent to modifying the potential as $V^{(j)}(x) = V(x) - \sqrt{2}\sum\limits_{i=0}^{2} v^{(j)}_i
-\phi_i(x)$. The numerical results are presented in Figure.\ref{fig-ex1-1} and Figure.\ref{fig-ex1-2}.
-In Figure.\ref{fig-ex1-1}, we show the modified potential $V^{(j)}(x), 0\le
-j\le 3$ when different basis functions are used. We can observe that the potential is
-gradually modified during the iterations. In Figure.\ref{fig-ex1-2}, it shows
-the modified potentials $V^{(3)}(x)$ with optimized coefficients
-$\bm{v}^{(3)}$ in Algorithm.\ref{ce-algo} for different basis functions. In
-one-dimension, the optimal control problem (\ref{ex1-cost}) can also be solved
-from a Feymann-Kac type boundary value PDE \cite{control_schuette}. The
-potential (the cost value) obtained in this way can be considered as the exact solution and is also
-shown in Figure.\ref{fig-ex1-2} (The last row of Tab.~\ref{tab-ex1-1}).
-Later on, $N = 10^{6}$ samples are generated to compute
-the cost function (\ref{ex1-cost}) and the results are presented in
-Tab.~\ref{tab-ex1-1}. We can observe that better results are obtained when basis function
-$\phi_1$ is used, since in job 2 and 3, the cost value (1.31) is closer to the exact
-solution (1.25). Notice that this fact is also shown in
-Figure.\ref{fig-ex1-2}, as the potential profiles with Label ``basis 0, 1'' and
-Label ``basis 1'' are more similar to the profile with Label ``exact'', the
-optimal potential. (Notice that only the region $x<0$ is meaningful and the dynamics remains the same when
-the potential is shifted vertically) 
+The cost functional considered here is a variant of (\ref{cost}) for
+$T\to\infty$ with running cost $G=1$ and terminal cost $H=0$. In all numerical computations, however, $T=\infty$ is replaced by a large but finite terminal time $T<\infty$, so that $\tau\wedge T\approx \tau <\infty$; the latter is to make sure that we can apply Girsanov's theorem and thus use the cross-entropy algorithm. 
+
+We generated trajectories using the Euler-Maruyama scheme with time step $\mbox{dt} = 1.0 \times 10^{-3}$. The number of realizations used in Algorithm \ref{ce-algo} was set to $N_j = 10^{4}$ for all temperature steps $\eps_{j}=(2j+1)^{-1}$, $j=0,1,2$. The algorithm was initialized with $\bm{v}^{(0)} = \bm{0}$, from which $\bm{v}^{(j+1)}$ were obtained in the $j$th step with $j=0,1,2$. Note that applying a control force $u^{j}_{s}=c(s,z_{s};\bm{v}^{(j)})$ in the $j$-th iteration is equivalent to modifying the potential by  
+\begin{equation}
+V^{I,j}(x) = V(x) - 2\sum_{i\in I} v^{(j)}_i \phi_i(x)
+\end{equation} 
+where $I\subset \N$ is the index set of the basis functions. We denote the
+final optimized potential as $V^I(x)=V^{I,3}(x)$. 
+%
+The numerical results for up to three basis functions (i.e. $I\subset\{0,1,2\}$) are presented in Figure \ref{fig-ex1-1} and 
+Figure \ref{fig-ex1-2}. Figure \ref{fig-ex1-1} shows the modified potentials using four different index sets 
+\begin{equation}
+I\in\left\{\{0\},\{1\},\{0,1\},\{0,2\}\right\} 
+\end{equation}
+that were kept fixed throughout the iteration over the different temperature levels $\eps_{j}$. It can be seen that the solution is relatively sensitive to basis functions that either do not capture the relevant region of state space (here: the transition region around the maximum at $x_{1}=0$) or that are supported in regions that are not sampled (here: rightmost energy well). 
+
+
+To analyse the accuracy of the cross-entropy-algorithm in more detail, we computed the solution of the optimal control problem (\ref{ex1-cost}) 
+by solving a Feymann-Kac type elliptic boundary value problem using a highly accurate finite element discretization (see
+\cite{control_schuette} for details); this is our reference solution. We then apply the cross-entropy method with $17$ Gaussian basis functions
+with centres  $a_k = -1.5 + 0.1k$, $k=0,1,\cdots, 16$ and variance $r=0.1$ and compute the modified potential via Algorithm \ref{ce-algo}.
+From Fig.~\ref{fig-ex1-2}, we see that cross-entropy
+solutions with $17$ basis functions can approximate the reference solution quite well.
+We also observe that a similarly good approximation can be obtained with a \emph{single} well-chosen
+basis function $\phi_1$. This indicates the possibility to solve high-dimensional problems with few basis functions.
+
+With these optimized potential, we then generated $N = 10^{6}$ samples from the
+controlled dynamics and computed the value of the associated cost function (\ref{ex1-cost}). The results are presented in
+Tab.~\ref{tab-ex1-1}: We clearly observe that the best results are obtained when the basis functions capture the relevant transition region (here: 
+$\phi_1$), since in job 2 and 3, the cost value 1.31 is closer to the exact
+solution 1.25 than elsewhere. 
+
+ 
 \begin{figure}[tphb]
   \centering
 \includegraphics[width=7cm]{./fig/basis_1d.eps}
@@ -579,133 +598,143 @@ the potential is shifted vertically)
 \begin{figure}[tphb]
   \centering
   \begin{tabular}{ll}
-    \subfigure[basis $\phi_0$]{\includegraphics[width=5.0cm]{./fig/pot_1d_0_converge_control.eps}}
+    \subfigure[basis $\{\phi_0\}$]{\includegraphics[width=5.0cm]{./fig/pot_1d_0_converge_control.eps}}
 &
-    \subfigure[basis $\phi_1$]{\includegraphics[width=5.0cm]{./fig/pot_1d_1_converge_control.eps}} \\
-    \subfigure[basis $\phi_0,\phi_1$]{\includegraphics[width=5.0cm]{./fig/pot_1d_2_converge_control.eps}}
+    \subfigure[basis $\{\phi_1\}$]{\includegraphics[width=5.0cm]{./fig/pot_1d_1_converge_control.eps}} \\
+    \subfigure[basis $\{\phi_0,\phi_1\}$]{\includegraphics[width=5.0cm]{./fig/pot_1d_2_converge_control.eps}}
     &
-    \subfigure[basis $\phi_0,\phi_2$]{\includegraphics[width=5.0cm]{./fig/pot_1d_3_converge_control.eps}}
+    \subfigure[basis $\{\phi_0,\phi_2\}$]{\includegraphics[width=5.0cm]{./fig/pot_1d_3_converge_control.eps}}
 \end{tabular}
-\caption{Optimal control problem for one-dimensional dynamics. Convergence results for the modified
-potentials $V^{(j)}, j=0,1,2,3$, with different sets of basis functions\label{fig-ex1-1}}
+\caption{Effective potentials for one-dimensional dynamics. The modified
+potentials $V^{I,j}(x)$, $j=0,1,2,3$, obtained by performing Algorithm~\ref{ce-algo}, with different sets of basis functions as explained in the text. \label{fig-ex1-1}}
 \end{figure}
+
+
 \begin{figure}[tphb]
   \centering
     \includegraphics[width=7.0cm]{./fig/pot_1d_basis_control.eps}
-    \caption{Optimal control problem for one-dimensional dynamics. Optimized potential $V^{(3)}$ with
-    different sets of basis functions. The curve with Label ``exact'' is
-  computed directly by solving a Feymann-Kac boundary value PDE. \label{fig-ex1-2}}
+    \caption{Optimal control problem. Optimized
+      potential $V^{I}(x)$ with a single
+    basis function $\phi_1$ compared to the cross-entropy optimized potential with $17$ basis functions and the (''exact'') reference  solution. The potentials are vertically shifted for better presentation. \label{fig-ex1-2}}
 \end{figure}
+
 \begin{table}
   \centering
 %  \begin{tabular}{c|c|c|c|c}
-  \begin{tabular*}{0.8\textwidth}{@{\extracolsep{\fill}}ccccc}
+  \begin{tabular*}{0.7\textwidth}{@{\extracolsep{\fill}}cccc}
     \hline
     \hline
-    job & coefficients & cost & relative variance & mean of $\tau$ \\
+    basis set & coefficients & cost & mean of $\tau$ \\
     \hline
-       $1$ & $(-1.771, 0, 0)$ & $5.14$ & $1.35$ & $2.02$  \\
-       $2$ & $(0, 1.857, 0)$ & $1.31$ & $0.44$ & $0.57$  \\
-       $3$ & $(-0.110, 1.762, 0)$ & $1.31$ & $0.44$ & $0.57$  \\
-       $4$ & $(-1.611, 0, 1.379)$ & $3.88$ & $1.22$ & $1.73$  \\
-       $5$ & $$ & $1.25$ & $0.30$ & $0.52$  \\
+       $\{\phi_0\}$ & $(-1.252, 0, 0)$ & $5.14$ &  $2.02$  \\
+       $\{\phi_1\}$ & $(0, 1.313, 0)$ & $1.31$ &   $0.57$  \\
+       $\{\phi_0,\phi_1\}$ & $(-0.078, 1.246, 0)$ & $1.31$ &  $0.57$  \\
+       $\{\phi_0,\phi_2\}$ & $(-1.139, 0, 0.975)$ & $3.88$ &   $1.73$  \\
+       17 Gaussians /reference &  & $1.27$/$1.25$ & $0.52$/$0.52$  \\
     \hline
     \hline
   \end{tabular*}
-  \caption{Results of the optimal control problem for the one-dimensional dynamics with different sets
-  of basis functions. The coefficients are solved by Algorithm.\ref{ce-algo}.
-Job $1$-$4$ are the results with different sets of functions $\{\phi_0\}$,
-$\{\phi_1\}$, $\{\phi_0, \phi_1\}$, $\{\phi_0, \phi_2\}$ respectively. The
-costs are the exectation (\ref{ex1-cost}) computed with $N=10^6$ samples. The
-last column is the mean of the stopping time $\tau$ under the modified
-dynamics. The last row is the computed by solving a Feymann-Kac type PDE and
-is considered as the ``accurate'' solution.\label{tab-ex1-1}}
+  \caption{One-dimensional optimal control problem with different sets
+  of basis functions. The
+cost is given by the expectation (\ref{ex1-cost}) that is computed from $N=10^6$ samples. The
+last column shows the mean of the stopping time $\tau$ under the modified
+dynamics. The last row displays the results for $17$ Gaussian basis functions and the reference solution.
+\label{tab-ex1-1}}
 \end{table}
 
-We continue to study the computation of $P(\tau \le \lambda)$ for $\lambda > 0$.
-We choose $\lambda = 2.0, 1.0, 0.5, 0.3, 0.1$ and two sets of basis functions are used : $\{\phi_1\}$
-and $\{\phi_2\}$. We compare the results using importance sampling with the
-standard Monte Carlo method. These results are shown in
-Tab.~\ref{tab-ex1-2}--\ref{tab-ex1-4} and Figure.\ref{fig-ex1-3}.
-Tab.~\ref{tab-ex1-2} and Tab.~\ref{tab-ex1-3} shows the results of
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection*{Importance sampling.}
+
+We continue our study with the computation of the exit time distribution
+$\bP(\tau \le T)$ for different values of $T$. Here we choose $T \in\{2.0,
+1.0, 0.5, 0.3, 0.2, 0.1\}$ with two sets of basis functions, $\{\phi_0\}$
+and $\{\phi_1\}$. We compare the outcome of the cross-entropy algorithm with that obtained by 
+standard Monte Carlo; the results are shown in 
+Tables \ref{tab-ex1-2}--\ref{tab-ex1-4} and Figure \ref{fig-ex1-3}.
+Tables \ref{tab-ex1-2} and \ref{tab-ex1-3} show the results of
 importance sampling with basis function $\{\phi_0\}$ and $\{\phi_1\}$,
-respectively, while Tab.~\ref{tab-ex1-4} is the result using standard Monte Carlo method.
-In each case, we can observe that the estimators' relative variance will increase when $\lambda$ becomes
-small. However, for fixed $\lambda$, the relative variances of importance
-sampling are largely reduced comparing to the standard Monte Carlo method. And this becomes
-more apparent when $\lambda$ decreases, while the standard Monte Carlo method
-may fail to work (see the last row of Tab.~\ref{tab-ex1-4}).
-In Figure.\ref{fig-ex1-3}, the optimized potentials used to perform importance sampling
-are ploted for different $\lambda$ and different sets of basis functions. As
-$\lambda$ decreases,
-the optimized potentials become more different from the original
-potential, which indicates larger forces are needed.
+respectively, while Table \ref{tab-ex1-4} records the result of vanilla Monte Carlo. 
+We can observe that, for each value of $T$, the variances of the importance
+samplers are largely reduced compared to those of standard Monte Carlo. The
+difference increases when $T$ decreases as is to be expected, for the event
+$\{\tau\le T\}$ rarer the smaller $T$. Note that for $T=0.1$ standard Monte Carlo cannot be used at all because not a single realization is  generated that hits the set boundary, while importance sampling still gives a resonable estimate; see Table~\ref{tab-ex1-4}.
+
+In order to measure the speed-up gained by importance sampling (IS) compard to standard Monte Carlo (MC) we define the accelaration index 
+\begin{equation}
+\cI=\frac{\textrm{Var}_{MC}}{\textrm{Var}_{IS}}\,
+\end{equation}
+as the ratio of MC and IS sample variances. According to the central limit theorem the variances of the two methods will decrease as $N^{-1}$ with the number $N$ of trajectories, and hence the accelaration index $\cI$ has the following interpretation: If $N$ is sufficiently large and IS reaches a certain error with $N$ trajectories, MC requires about $\cI N$ trajectories to achieve the same error. Thus, $\cI$ is the speed-up factor of IS relative to MC, provided that we can ignore the computational overhead associated with importance sampling (which is the case here). 
+
+In Figure \ref{fig-ex1-3}, the optimized potentials resulting from the IS 
+are plotted for different values of $T$ and different sets of basis functions. As expected 
+the optimized potentials become increasingly different from the original 
+potential the smaller the value of $T$, indicating that larger forces are needed when the event is rarer.
 
 \begin{table}
 \centering
-  \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}cccccc}
+  \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}ccccrr}
     \hline
     \hline
-   $\lambda$ & coefficients & $P(\tau \le \lambda)$ & relative variance & Traj. Usage & time (sec.) \\
+    $T$ & coefficients & $\bP(\tau \le T)$ & Var & Accel. $\cI$ & Traj. Usage \\
     \hline
-  $2.0$ & $(-0.837, 0, 0)$ & $9.22 \times 10^{-2}$ & $1.45$ & $6.1 \times 10^{-1}$ & $70.4$ \\
-    $1.0$ & $(-1.391, 0, 0)$ & $3.23 \times 10^{-2}$ & $1.48$ & $4.8 \times 10^{-1}$ & $39.4$ \\
-    $0.5$ & $(-2.221, 0, 0)$ & $6.45 \times 10^{-3}$ & $1.75$ & $3.9 \times 10^{-1}$ & $21.5$ \\
-    $0.3$ & $(-3.282, 0, 0)$ & $9.51 \times 10^{-4}$ & $2.30$ & $3.3 \times 10^{-1}$ & $13.6$ \\
-    $0.2$ & $(-4.553, 0, 0)$ & $9.53 \times 10^{-5}$ & $3.10$ & $2.7 \times 10^{-1}$ & $9.4$ \\
-    $0.1$ & $(-8.245, 0, 0)$ & $1.22 \times 10^{-7}$ & $6.84$ & $1.6 \times
- 10^{-1}$ & $4.9$ \\
+    $2.0$ & $(-0.592, 0, 0)$ & $9.22 \times 10^{-2}$ & $1.8 \times 10^{-2}$ & $4.7 $ & $61\%$  \\
+    $1.0$ & $(-0.984, 0, 0)$ & $3.23 \times 10^{-2}$ & $2.2 \times 10^{-3}$ & $13.7$ & $48\%$  \\
+    $0.5$ & $(-1.570, 0, 0)$ & $6.45 \times 10^{-3}$ & $1.3 \times 10^{-4}$ & $50.3 $ & $39\%$  \\
+    $0.3$ & $(-2.321, 0, 0)$ & $9.51 \times 10^{-4}$ & $4.8\times 10^{-6}$ & $198.6 $ & $33\%$  \\
+    $0.2$ & $(-3.219, 0, 0)$ & $9.53 \times 10^{-5}$ & $8.7\times 10^{-8}$ & $1091.8 $ & $27\%$  \\
+    $0.1$ & $(-5.830, 0, 0)$ & $1.22 \times 10^{-7}$ & $7.0\times 10^{-13}$ & very large & $16\%$ \\
     \hline
     \hline
   \end{tabular*}
-  \caption{ $\mathcal{P}(\tau \le \lambda)$ for one-dimensional dynamics.
-  $N=10^6$ samples and importance sampling are used with basis function
-  $\{\phi_0\}$. ``Traj. Usage'' is the
-ratio of trajectories satisfying $\tau \le \lambda$ under the modified dynamics. \label{tab-ex1-2}}
+  \caption{Computation of $\bP(\tau \le T)$ by importance sampling, based on 
+  $N=10^6$ independent  realizations a single basis function
+  $\phi_0$. ``Accel.'' $\cI$ (acceleration) measures the computational speed-up of importance sampling relative to standard MC. ``Traj. Usage'' denotes the portion of trajectories satisfying $\tau \le T$ under the modified dynamics. \label{tab-ex1-2}}
 \end{table}
+
 \begin{table}
   \centering
-  \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}cccccc}
+  \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}ccccrr}
     \hline
     \hline
-    $\lambda$ & coefficients & $P(\tau \le b)$ & relative variance & Traj. Usage & time (sec.) \\
+    $T$ & coefficients & $\bP(\tau \le T)$ & Var & Accel. $\cI$ & Traj. Usage \\
     \hline
-  $2.0$ & $(0, 0.962, 0)$ & $9.23 \times 10^{-2}$ & $1.04$ & $8.5 \times 10^{-1}$ & $56.1$\\
-  $1.0$ & $(0, 1.498, 0)$ & $3.23 \times 10^{-2}$ & $1.00$ & $8.1 \times 10^{-1}$ & $32.7$ \\
-  $0.5$ & $(0, 2.314, 0)$ & $6.46 \times 10^{-3}$ & $1.33$ & $6.8 \times 10^{-1}$ & $19.4$ \\
-  $0.3$ & $(0, 3.338, 0)$ & $9.49 \times 10^{-4}$ & $1.84$ & $5.6 \times 10^{-1}$ & $12.8$ \\
-  $0.2$ & $(0, 4.578, 0)$ & $9.56 \times 10^{-5}$ & $2.54$ & $4.6 \times 10^{-1}$ & $9.02$\\
-  $0.1$ & $(0, 8.232, 0)$ & $1.21 \times 10^{-7}$ & $5.28$ & $2.6 \times 10^{-1}$ & $4.8$\\
+    $2.0$ & $(0, 0.680, 0)$ & $9.23 \times 10^{-2}$ & $9.2 \times 10^{-3}$ & $9.1$ & $85\% $ \\
+    $1.0$ & $(0, 1.059, 0)$ & $3.23 \times 10^{-2}$ & $1.0 \times 10^{-3}$ & $30.0$ & $81\% $ \\
+    $0.5$ & $(0, 1.636, 0)$ & $6.46 \times 10^{-3}$ & $7.4 \times 10^{-5}$ & $86.9$ & $68\% $ \\
+    $0.3$ & $(0, 2.360, 0)$ & $9.49 \times 10^{-4}$ & $3.0 \times 10^{-6}$ & $310.9$ & $56\% $ \\
+    $0.2$ & $(0, 3.237, 0)$ & $9.56 \times 10^{-5}$ & $5.9\times 10^{-8}$  & $1621.2$ & $46\% $ \\
+    $0.1$ & $(0, 5.821, 0)$ & $1.21 \times 10^{-7}$ & $4.1 \times 10^{-13}$ & very large & $26\%$ \\
     \hline
     \hline
   \end{tabular*}
-  \caption{ $\mathcal{P}(\tau \le \lambda)$ for one-dimensional dynamics.
-  $N=10^6$ samples and importance sampling are used with basis function
-$\{\phi_1\}$. ``Traj. Usage'' is the ratio of trajectories satisfying $\tau \le \lambda$ under the modified dynamics. \label{tab-ex1-3}}
+  \caption{Computation of $\bP(\tau \le T)$ for the one-dimensional dynamics, based on
+  $N=10^6$  independent  realizations a single basis function
+$\{\phi_1\}$; see Tab.~\ref{tab-ex1-2} for comparison. \label{tab-ex1-3}}
 \end{table}
+
 \begin{table}
   \centering
-  \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}ccccc}
+  \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}cccrr}
     \hline
     \hline
-    $\lambda$ & $P(\tau \le \lambda)$ & relative variance & Traj. Usage & time (sec.) \\
+    $T$ & $\bP(\tau \le T)$ & Var & Accel. & Traj. Usage  \\
     \hline
-    $2.0$ & $9.23 \times 10^{-2}$ & $3.14$ & $9.23 \times 10^{-2}$ & $95.0$ \\
-    $1.0$ & $3.22 \times 10^{-2}$ & $5.48$ & $3.22 \times 10^{-2}$ & $48.8$ \\
-    $0.5$ & $6.28 \times 10^{-3}$ & $12.58$ & $6.28 \times 10^{-3}$ & $24.6$ \\
-    $0.3$ & $1.00 \times 10^{-3}$ & $31.61$ & $1.00 \times 10^{-3}$ & $14.9$ \\
-    $0.2$ & $9.30 \times 10^{-5}$ & $103.69$ & $9.30 \times 10^{-5}$ & $9.9$ \\
-    $0.1$ & $0.00$ & $-$ & $0.00$ & $5.0$ \\
+    $2.0$ & $9.23 \times 10^{-2}$ & $8.4 \times 10^{-2}$ & $1.0$ & $9.2\%$  \\
+    $1.0$ & $3.22 \times 10^{-2}$ & $3.1 \times 10^{-2}$ & $1.0$ &$3.2\% $  \\
+    $0.5$ & $6.28 \times 10^{-3}$ & $6.2 \times 10^{-3}$ & $1.0$ &$0.6\% $ \\
+    $0.3$ & $1.00 \times 10^{-3}$ & $1.0 \times 10^{-3}$ & $1.0$ &$0.1\% $ \\
+    $0.2$ & $9.30 \times 10^{-5}$ & $9.3 \times 10^{-5}$ & $1.0$ & $0.009\% $ \\
+    $0.1$ & $0.00$ & $-$ & $1.0$ & $0.0\%$  \\
     \hline
     \hline
   \end{tabular*}
   \centering
-  \caption{$\mathcal{P}(\tau \le \lambda)$ for one-dimensional dynamics.
-    ``Traj. Usage'' is the
-ratio of trajectories satisfying $\tau \le \lambda$ . $N=10^6$ samples are
-used with standard Monte Carlo method. In the last row, the estimation fails because there is no
-  trajectories satisfying $\tau \le \lambda$ among $N=10^6$ trajectory samples. \label{fig-ex1-3}}
+  \caption{Computation of $\bP(\tau \le T)$ for the one-dimensional dynamics by standard Monte-Carlo, based on
+  $N=10^6$  independent  realizations; compare Tabs. \ref{tab-ex1-2} and \ref{tab-ex1-3}. \label{fig-ex1-3}}
 \end{table}
+
+
 \begin{figure}[tphb]
   \centering
   \begin{tabular}{lll}
@@ -713,262 +742,50 @@ used with standard Monte Carlo method. In the last row, the estimation fails bec
     &
     \subfigure[basis $\phi_1$]{\includegraphics[width=5.0cm]{./fig/pot_1d_2_b_ip.eps}}
     &
-    \subfigure[$P(\tau \le \lambda)$]{\includegraphics[width=5.0cm]{./fig/pdf_tau.eps}}
+    \subfigure[$\bP(\tau \le T)$]{\includegraphics[width=5.0cm]{./fig/pdf_tau.eps}}
 \end{tabular}
-\caption{The modified potentials for computing $\mathcal{P}(\tau \le \lambda)$ of
-one-dimensional dynamics with different sets of basis functions. The
-potentials
-become more different from the original one when $\lambda$ decreases. (c) shows the cumulative distribution function of
-$\tau$ (only for small $\lambda$). \label{tab-ex1-4}} 
-\end{figure}
-%\FloatBarrier
-%\subsection{Non-gradient dynamical system}
-%Possibly more interesting examples are the noise-driven non-gradient
-%systems studied in \cite{mechanism_coherence, stochastic_resonance}.
-\subsection{Two dimensional example}
-We choose the potential 
-\begin{align}
-V(x) = (1 - x_1^2 - x_2^2)^2 + \frac{x_1^2}{x_1^2 + x_2^2}, \quad x = (x_1,x_2) \in \mathbb{R}^2
-\end{align}
-and consider the two-dimensional dynamics
-\begin{align}
-  dz_s = - \nabla V(z_s) ds + \sqrt{2\beta^{-1}} dw_s
-\end{align}
-where $w_s$ is a two-dimensional Brownian motion.
-The potential $V(x)$ (see Figure.\ref{fig-ex2-0}) has two minima at $a = (-1, 0)$ and $b = (1,0)$.
-$c_1 = (0, 1)$ and $c_2 = (0,-1)$ are two saddle points and $d=(0,0)$ is a
-singular point. The basis functions we choose are 
-\begin{align}
-  & \phi_0(x) = \exp(-\frac{|x - a|^2}{2r_0^2}), \quad \phi_1(x) = \exp(-\frac{|x - c_1|^2}{2r_1^2}), \\
-  & \phi_2(x) = \exp(-\frac{|x - c_2|^2}{2r_2^2}) \quad \phi_3(x) = \exp(-\frac{|x|^2}{2r_0^2}) 
-\end{align}
-with $r_0 = 0.5, r_1 = r_2 = 1.0$. We study the dynamics starting from $z_0 =
-a$ and define the stopping time as $\tau = \inf\{s > 0, |z_s - b| \le 1.0\}$.
-
-For the optimal control problem, we consider the cost function 
-\begin{align}
-  \inf_{u_s} \mathrm{E}\Big(\tau + \frac{1}{2}\int_0^\tau |u_s|^2 ds ~\Big|~ z_0 = a \Big)
-  \label{cost-ex2}
-\end{align}
-under dynamics
-\begin{align}
-  dz_s = - \nabla V(z_s) ds + \sqrt{2}u_s ds + \sqrt{2\beta^{-1}} dw_s
-\end{align}
-We choose $\beta = 8.0$, $\mbox{dt} = 0.001$. When solving the coefficients
-using Algorithm.\ref{ce-algo}, we
-choose $(\beta_0, \beta_1 , \beta_2, \beta_3) = (2.0, 4.0, 6.0, 8.0)$, and
-$N_i = 10^4$ for each $\beta_i, i = 0, 1, 2, 3$. Four different sets of
-basis functions $\{\phi_0\}$, $\{\phi_0, \phi_1\}$, $\{\phi_0, \phi_1,
-\phi_2\}$, $\{\phi_0, \phi_1, \phi_2, \phi_3\}$ are studied. After finding the coefficients, the cost function (\ref{cost-ex2}) is computed with $N =
-10^6$ samples. Results are tabulated in Tab.~\ref{tab-ex2-1}. From the dual relation
-(\ref{dual-relation}), we also compute the optimal cost by Monte Carlo method
-and the value is $1.27$. It can be observed that the cost ($1.39$) is close to the
-optimal cost ($1.27$) if all basis functions are used. Figure.\ref{fig-ex2-1} shows the optimized potential with different basis functions.
-\begin{figure}[tphb]
-  \centering
-    \includegraphics[width=7.5cm]{./fig/pot_2d_1_0_0.eps}
-    \caption{Potential $V(x)$ for the 2D example. \label{fig-ex2-0}}
-\end{figure}
-\begin{table}[tphb]
-  \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}ccccc}
-    \hline
-    \hline
-    job & coefficients & cost & relative variance & mean of $\tau$ \\
-    \hline
-    $0$ & ($-1.535$, $0.000$, $0.000$, $0.000$) & $3.69$ & $0.67$ & $2.97$ \\
-    $1$ & ($-1.379$, $0.744$, $0.000$, $0.000$) & $3.86$ & $0.82$ & $3.16$ \\
-    $2$ & ($-0.943$, $1.527$, $1.500$, $0.000$) & $2.48$ & $0.94$ & $1.71$ \\
-    $3$ & ($-0.909$, $0.479$, $0.484$, $0.936$) & $1.39$ & $0.46$ & $0.63$ \\
-    \hline
-    \hline
-  \end{tabular*}
-  \centering
-  \caption{2D example, optimal control problem with different sets of basis
-  functions $\{\phi_0\}$, $\{\phi_0, \phi_1\}$, $\{\phi_0, \phi_1, \phi_2\}$, $\{\phi_0, \phi_1, \phi_2, \phi_3\}$.
-  The coefficients are solved using Algorithm.\ref{ce-algo}. The cost value is
-  computed with $N=10^{6}$ trajectories.
-The last column is the mean value of stopping time $\tau$ under the modified
-dynamics. \label{tab-ex2-1}}
-\end{table}
-\begin{figure}[tphb]
-  \centering
-  \begin{tabular}{ll}
-    \subfigure[basis $\{\phi_0\}$]{\includegraphics[width=6.0cm]{./fig/pot_2d_1_0_4.eps}} 
-    &
-    \subfigure[basis $\{\phi_0, \phi_1\}$]{\includegraphics[width=6.0cm]{./fig/pot_2d_1_1_4.eps}} \\
-    \subfigure[basis $\{\phi_0, \phi_1, \phi_2\}$]{\includegraphics[width=6.0cm]{./fig/pot_2d_1_2_4.eps}} 
-    &
-    \subfigure[basis $\{\phi_0, \phi_1, \phi_2, \phi_3\}$]{\includegraphics[width=6.0cm]{./fig/pot_2d_1_3_4.eps}}
-  \end{tabular}
-    \caption{2D example. The optimized potentials for optimal control problem with different sets of basis functions.\label{fig-ex2-1}}
+\caption{The modified potentials for $\bP(\tau \le T)$ with different sets of basis functions. The
+potentials become increasingly different from the original one when $T$
+decreases. The rightmost panel shows the cumulative distribution function of
+$\tau$ for $T \in [0.1, 2.0]$. \label{tab-ex1-4}} 
 \end{figure}
 
-We continue to compute the probability of the rare events $\mathcal{P}(\tau
-\le \lambda)$. We choose a large $\beta = 20.0$, $\mbox{dt} = 0.001$. 
-For simplicity we only consider basis functions : 
-%$\{\phi_0\}$, $\{\phi_0, \phi_1, \phi_2\}$, 
-$\{\phi_0, \phi_1, \phi_2, \phi_3\}$. $(\beta_0, \beta_1 , \beta_2,
-\beta_3, \beta_4, \beta_5, \beta_6) = (4.0, 8.0, 10.0, 12.0, 16.0, 18.0,
-20.0)$ and $N_i = 10^4, 0\le i \le 5, N_6 = 10^5$ are used when solving the coefficients.
-The numerical results are shown in Tab.~\ref{tab-ex2-4}--\ref{tab-ex2-5}.
-Tab.~\ref{tab-ex2-4} shows the
-results of importance sampling and the results
-of standard Monte Carlo method are given in Tab.~\ref{tab-ex2-5}. $N=5 \times
-10^{6}$ samples are used to compute the probability. We clearly
-see that, comparing to the standard Monte Carlo method, the (relative) variances are always largely reduced with importance sampling, especially when $\lambda$ is small. 
-\begin{comment}
-Comparing different basis
-functions, we observe that the performance is better when all four basis functions are used.
-The cumulative distribution function is computed using importance sampling and is shown in Figure.\ref{fig-ex2-2}. 
-The optimized potentials for different $\lambda$ are presented in Figure.\ref{fig-ex2-3}. We see once again that large force is needed when $\lambda$ is small.
-\begin{table}
-  \begin{tabular}{c|c|c|c|c|c}
-    \hline
-    \hline
-  $\lambda$ & coefficients & $P(\tau \le \lambda)$ & relative variance & $R_e$ & time (sec.) \\
-    \hline
-    $12.0$ & ($-0.271$, $0.000$, $0.000$, $0.000$) & $9.36\times 10^{-3}$ & $7.00$ & $2.08\times 10^{-1}$ & $3219.7$ \\ 
-    $10.0$ & ($-0.305$, $0.000$, $0.000$, $0.000$) & $6.47\times 10^{-3}$ & $8.25$ & $1.87\times 10^{-1}$ & $2688.7$ \\
-    $8.0$ & ($-0.337$, $0.000$, $0.000$, $0.000$) & $3.97\times 10^{-3}$ & $8.93$ & $1.50\times 10^{-1}$ & $2184.4$ \\
-    $6.0$ & ($-0.391$, $0.000$, $0.000$, $0.000$) & $2.03\times 10^{-3}$ & $9.13$ & $1.13\times 10^{-1}$ & $1660.6$ \\
-    $4.0$ & ($-0.471$, $0.000$, $0.000$, $0.000$) & $7.50\times 10^{-4}$ & $12.38$ & $6.86\times 10^{-2}$ & $1121.4$ \\
-    $2.0$ & ($-0.593$, $0.000$, $0.000$, $0.000$) & $1.19\times 10^{-4}$ & $16.30$ & $2.33\times 10^{-2}$ & $569.6$ \\
-    $1.0$ & ($-0.945$, $0.000$, $0.000$, $0.000$) & $7.26\times 10^{-6}$ & $31.37$ & $1.86\times 10^{-2}$ & $286.2$ \\
-    $0.5$ & ($-1.654$, $0.000$, $0.000$, $0.000$) & $3.60\times 10^{-8}$ & $52.00$ & $2.03\times 10^{-2}$ & $143.3$ \\
-    \hline
-    \hline
-  \end{tabular}
-  \centering
-  \caption{2D example, $\mathcal{P}(\tau \le \lambda)$ using importance
-  sampling method. Coefficients are computed using Algorithm.\ref{ce-algo}
-with basis functions $\{\phi_0\}$. $R_e$ is the ratio of trajectories
-satisfying $\tau \le \lambda$ under the modified dynamics. \label{tab-ex2-2}}
-\end{table}
-\begin{table}
-  \begin{tabular}{c|c|c|c|c|c}
-    \hline
-    \hline
-    $\lambda$ & coefficients & $P(\tau \le \lambda)$ & relative variance & $R_e$ & time (sec.) \\
-    \hline
-  $12.0$ & ($-0.255$,  $0.030$, $0.029$, $0.000$) & $9.40\times 10^{-3}$ & $6.76$ & $1.95\times 10^{-1}$ & $4724.0$ \\
-  $10.0$ & ($-0.291$,  $0.035$, $0.040$, $0.000$) & $6.40\times 10^{-3}$ & $6.85$ & $1.81\times 10^{-1}$ & $3967.5$ \\
-  $8.0$ & ($-0.341$,  $0.049$, $0.051$, $0.000$) & $3.98\times 10^{-3}$ & $17.59$ & $1.63\times 10^{-1}$ & $3190.7$ \\
-  $6.0$ & ($-0.400$,  $0.065$, $0.069$, $0.000$) & $2.03\times 10^{-3}$ & $10.99$ & $1.30\times 10^{-1}$ & $2418.9$ \\
-  $4.0$ & ($-0.446$,  $0.127$, $0.127$, $0.000$) & $7.47\times 10^{-4}$ & $11.95$ & $8.30\times 10^{-2}$ & $1638.6$ \\
-  $2.0$ & ($-0.519$,  $0.317$, $0.318$, $0.000$) & $1.21\times 10^{-4}$ & $13.95$ & $6.78\times 10^{-2}$ & $860.5$ \\
-  $1.0$ & ($-0.719$,  $0.712$, $0.729$, $0.000$) & $7.24\times 10^{-6}$ & $20.08$ & $1.43\times 10^{-1}$ & $457.4$ \\
-  $0.5$ & ($-1.035$,  $1.681$, $1.552$, $0.000$) & $3.71\times 10^{-8}$ & $12.97$ & $2.69\times 10^{-1}$ & $210.4$ \\
-    \hline
-    \hline
-  \end{tabular}
-  \centering
-  \caption{2D example, $\mathcal{P}(\tau \le \lambda)$ using importance
-    sampling method. Basis functions are $\{\phi_0, \phi_1, \phi_2\}$. $R_e$ is the ratio of trajectories
-satisfying $\tau \le \lambda$ under the modified dynamics. \label{tab-ex2-3}}
-\end{table}
-\end{comment}
-\begin{table}[htbp]
-  \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}ccccc}
-    \hline
-    \hline
-    $\lambda$ & coefficients & $P(\tau \le \lambda)$ & relative variance &
-    Traj. Usage  \\
-    \hline
-    $12.0$ & ($-0.270$, $-0.029$, $-0.034$, $0.074$) & $9.39 \times 10^{-3}$ & $6.65$ & $2.26\times 10^{-1}$  \\
-    $10.0$ & ($-0.319$, $-0.062$, $-0.064$, $0.108$) & $6.43\times 10^{-3}$ & $7.87$ & $2.35\times 10^{-1}$ \\
-    $8.0$ & ($-0.373$,  $-0.107$, $-0.098$, $0.155$) & $3.95\times 10^{-3}$ & $7.52$ & $2.35\times 10^{-1}$ \\
-    $6.0$ & ($-0.438$,  $-0.158$, $-0.148$, $0.232$) & $2.03\times 10^{-3}$ & $8.17$ & $2.48\times 10^{-1}$ \\
-    $4.0$ & ($-0.505$,  $-0.223$, $-0.209$, $0.343$) & $7.43\times 10^{-4}$ & $8.12$ & $2.76\times 10^{-1}$  \\
-    $2.0$ & ($-0.602$,  $-0.269$, $-0.254$, $0.556$) & $1.19\times 10^{-4}$ & $11.28$ & $3.85\times 10^{-1}$  \\
-    $1.0$ & ($-0.787$,  $-0.003$, $-0.003$, $0.630$) & $7.16\times 10^{-6}$ & $12.15$ & $4.18\times 10^{-1}$  \\
-    $0.5$ & ($-1.064$, $0.865$, $0.896$, $0.566$) & $3.71\times 10^{-8}$ & $9.28$ & $4.24\times 10^{-1}$ \\
-    \hline
-    \hline
-  \end{tabular*}
-  \centering
-  \caption{2D example, $\mathcal{P}(\tau \le \lambda)$ using importance
-  sampling method. Basis functions $\{\phi_0, \phi_1, \phi_2, \phi_3\}$.
-``Traj. Usage'' is the ratio of trajectories satisfying $\tau \le \lambda$ under the modified dynamics. \label{tab-ex2-4}}
-\end{table}
-\begin{table}[htbp]
-  \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}cccc}
-    \hline
-    \hline
-    $\lambda$ & $P(\tau \le \lambda)$ & relative variance & Traj. Usage  \\
-    \hline
-    $12.0$  & $9.44\times 10^{-3}$ & $10.25$ & $9.44\times 10^{-3}$  \\
-    $10.0$  & $6.38\times 10^{-3}$ & $12.48$ & $6.38\times 10^{-3}$  \\
-    $8.0$  & $3.94\times 10^{-3}$ & $15.90$ & $3.94\times 10^{-3}$  \\
-  $6.0$  & $2.04\times 10^{-3}$ & $22.10$ & $2.04\times 10^{-3}$  \\
-  $4.0$  & $7.40\times 10^{-4}$ & $36.74$ & $7.40\times 10^{-4}$  \\
-  $2.0$  & $1.25\times 10^{-4}$ & $89.44$ & $1.25\times 10^{-4}$  \\
-  $1.0$  & $6.80\times 10^{-6}$ & $383.48$ & $6.80\times 10^{-6}$  \\
-  $0.5$  & $0.00$ & $-$ & $0.00$ \\
-    \hline
-    \hline
-  \end{tabular*}
-  \centering
-  \caption{2D example, $\mathcal{P}(\tau \le \lambda)$ using standard Monte
-  Carlo method. ``Traj. Usage'' is the ratio of trajectories satisfying $\tau \le \lambda$
-under the orininal dynamics. \label{tab-ex2-5}}
-\end{table}
-\begin{comment}
-\begin{figure}[tphb]
-  \centering
-    \includegraphics[width=8.0cm]{./fig/pdf_tau_2d.eps} \caption{2D example,
-    cumulative distribution function of $\tau$, computed using importance
-  sampling with basis $\{\phi_0, \phi_1, \phi_2, \phi_3\}$.\label{fig-ex2-2}}
-\end{figure}
-\begin{figure}[tphb]
-  \centering
-  \begin{tabular}{ll}
-    \subfigure[$\lambda=12.0$]{\includegraphics[width=6.0cm]{./fig/pot_2d_2_2_7.eps}} 
-    &
-    \subfigure[$\lambda=6.0$]{\includegraphics[width=6.0cm]{./fig/pot_2d_2_11_7.eps}} \\
-    \subfigure[$\lambda=2.0$]{\includegraphics[width=6.0cm]{./fig/pot_2d_2_17_7.eps}}
-    &
-    \subfigure[$\lambda=0.5$]{\includegraphics[width=6.0cm]{./fig/pot_2d_2_23_7.eps}}
-  \end{tabular}
-  \caption{2D example, optimized potentials for computing $\mathcal{P}(\tau
-  \le \lambda)$ with different $\lambda$. Basis functions $\{\phi_0,
-\phi_1, \phi_2, \phi_3\}$ are used.\label{fig-ex2-3}}
-\end{figure}
-\end{comment}
-%\FloatBarrier
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Conformational transition of butane dissolved in water}
 
 \begin{figure}
   \centering
   \includegraphics[width=6cm]{./fig.md/butane.eps}
-  \caption{The butane molecule in water}
+  \caption{The butane molecule.}
   \label{fig:tmp1}
 \end{figure}
 
-The butane-dissolved-in-water system is set up in a $3.0\times
+The butane dissolved in water system is set up in a $3.0\times
 3.0\times 3.0\, \textrm{nm}^3$ periodic simulation region, with one
 butane molecule described by the GROMOS 45a3 force
 field~\cite{schuler2001improved} dissolved in 900
 SPC/E~\cite{berendsen1987missing} water molecules.
 %The EF exserts force $\vect F = r \vect E(t)$ on
 %the partial charge $r$ in the system.
-All simulations are performed by a home-modified GROMACS
+All simulations are performed by a modified GROMACS
 4.5~\cite{pronk2013gromacs}.  The molecular dynamics of the system is
 subject to the Langevin equation:
 \begin{align}\label{eqn:langevin-r}
   dr_i &= m_i^{-1}p_idt, \\\label{eqn:langevin-p}
   dp_i &= [ f_i(r)  + u_i (r, w) ] dt - \gamma p_i dt + \sigma_i dw_t,
 \end{align}
-where $r$ is the Cartisian coordinates of the $i$-th atom in the
-system and $p$ is the corresponding momenta. The friction
+where $r\in\R^{3}$ denotes the Cartesian coordinate of the $i$-th atom in the
+system and $p\in\R^{3}$ is the corresponding momentum. The friction
 constant is denoted by $\gamma$. Due to the
-fluctuation-dissipation theorem, the realtion $\sigma_i^2 = 2\gamma
-m_i k_B T$ holds, where $k_B$ is the Boltzmann constant, $T$ is the
-temperature and $m_i$ is the mass of the atom.  $f_i(r)$ and $u_i(r, w)$
-are the force that modelled by the GROMOS 45a3 force field and the
+fluctuation-dissipation theorem, the relation $\sigma_i^2 = 2\gamma
+m_i k_B \mathcal T$ holds, where $k_B$ is the Boltzmann constant, $\mathcal T$ is the
+temperature and $m_i$ is the mass of the atom.  $f_i(r)$
+denotes the force resulting from the GROMOS 45a3 force field and $u_i(r, w)$ the
 control force on the $i$-th atom, respectively. Being more specific,
 the force term is given by
 \begin{align}\label{eqn:gromos-inter}
-  f(r) = -\nabla_{r_i} V_{\textrm{bond}}(r) - \nabla_{r_i} V_{\textrm{non-bond}}(r),
+  f_i(r) = -\nabla_{r_i} V_{\textrm{bond}}(r) - \nabla_{r_i} V_{\textrm{non-bond}}(r),
 \end{align}
 where the bond interaction is
 \begin{align}\nonumber
@@ -981,8 +798,8 @@ where the bond interaction is
   &+
   \sum_{k = 1}^{N_\phi} k_\phi [ 1 + \cos (\delta_k) \cos (m_k\,\phi_k(r))]
 \end{align}
-The $V_b(r)$ is the energy due to the covalent bonds in the system that
-are not constrained as a constant. $b_k(r)$ is the instantaneous
+The bond potential $V_b(r)$ is the energy due to the covalent bonds in the system that
+are not constrained as fixed. $b_k(r)$ is the instantaneous
 length of the $k$-th bond, which depends on the coordinates of the
 bonding atoms (that is why it is $r$ dependent), while constant
 $b_{k,0}$ is the equilibrium length. $k_b$ is the constant denoting
@@ -992,25 +809,24 @@ denote the instantaneous angle, equilibrium angle and interaction
 constant, respectively. The third term is the energy due the torsional
 dihedral angle.  $\phi_k(r)$, $\delta_k$, $m_k$ and $k_\phi$ denote
 the instantaneous dihedral angle, phase shift, multiplicity and the
-interaction constant, respectively. For a butane molecule, presented
-by Fig.~\ref{fig:tmp1}, the covalent bonds exist for atom pairs 1--2,
-2--3 and 3--4. The bond angle interactions exist for atom triples
-1--2--3 and 2--3--4. The dihedral angle interaction exists for atom
+interaction constant, respectively. For a butane molecule as illustrated in Fig.~\ref{fig:tmp1}, the covalent bonds exist for atom pairs 1--2,
+2--3 and 3--4, while the bond angle interactions exist for atom triples
+1--2--3 and 2--3--4, and the dihedral angle interaction for atom
 quadruple 1--2--3--4. The strength of $k_b$ ($=7.15\times
-10^6~\textrm{kJ/mol/nm}^4)$ for all bonds) and $k_\theta$
-($=530~\textrm{kJ/mol}$ for all bond angles) are relatively much large
-than the dihedral angle constant $k_\phi$ ($=5.92~\textrm{kJ/mol}$),
-therefore, the vibrations of the bond and bond angle are rigid, so can
-be viewed as fast motions in the system. For butane dihedral angle,
+10^6$~\textrm{kJ/(mol$\times$nm$^4$)} for all bonds) and $k_\theta$
+($=530~\textrm{kJ/mol}$ for all bond angles) are much larger
+than the dihedral angle constant $k_\phi$ ($=5.92~\textrm{kJ/mol}$).
+Therefore, the vibrations of the bonds and bond angles  can
+be viewed as fast motions in the system. For the butane dihedral angle,
 the multiplicity is $m=3$ and phase shift $\delta = 0$, so the
 dihedral angle is more populated around three angles: $-60^\circ$,
-$60^\circ$ and $180^\circ$. The first two are usually called
-\emph{cis} conformation, and the last one is usually called
-\emph{trans} conformation. And the transitions between the
-conformations are slow motion in the system. The bonds and bond angles
+$60^\circ$ and $180^\circ$. The first two are called
+\emph{gauche conformations}, the other one is called
+\emph{trans conformation}. And the transitions between these
+conformations are the slow motions in the system. The bonds and bond angles
 in water molecules are constrained by the SETTLE
 algorithm~\cite{miyamoto2004settle}.  The non-bonded interaction,
-i.e.~the second term of R.H.S.~of Eq.~\eqref{eqn:gromos-inter}, is
+i.e.~the second term in equation \eqref{eqn:gromos-inter}, is
 given by
 \begin{align}\label{gromos-nb}
   V_{\textrm{non-bond}}(r) =
@@ -1019,7 +835,7 @@ given by
   \sum_{i,j}\frac{1}{4\pi\varepsilon_0} \frac{q_i q_j}{ r_{ij}},
 \end{align}
 where $r_{ij}$ is the relative distance between atom $i$ and $j$. The
-first term of Eq.~\eqref{gromos-nb} is the van der Waals interaction
+first term of \eqref{gromos-nb} is the van der Waals interaction
 and the second term is the Coulomb interaction, where $q_i$ denotes the
 partial charge due to the atom $i$. The van der Waals interaction is
 treated by the cut-off method with cut-off radius $9$~nm, while the Coulomb
@@ -1027,22 +843,25 @@ interaction is treated by the smooth particle mesh Ewald
 method (SPME)~\cite{essmann1995spm}.
 
 In this butane dissolved in water system, we are interested in the
-first hitting time $\tau$ of transition from cis to trans
-conformation, and want to precisely calculate the probability of rare
-event that $\tau$ being smaller than some given threshold $\lambda$,
-i.e.~$\mathcal{P}(\tau \leq\lambda)$. We firstly run an equilibrium simulation
+first hitting time $\tau$ of transitions from the \emph{gauche} to the
+\emph{trans}
+conformations, and we want to precisely calculate the probability of the rare
+event that $\tau$ is smaller than some given threshold $T$,
+i.e.~$\bP(\tau \leq T)$. We firstly run an equilibrium simulation
 (i.e.~with $u = 0$ in Eq.~\eqref{eqn:langevin-p}) at 300~K, with
-friction constant $1.0~\textrm{ps}^{-1}$.  The dihedral angle of the
-butane molecule is calculated every 10~ps. If $\phi$ is in the range
-$[40^\circ, 80^\circ]$ (corresponding to the cis conformation), then
-the conformation (including all water coordinates) is recorded, and
-used for the later study of cis-to-trans transition. In our
-simulation, we only record the first observed 5000 conformations.
+friction constant $1.0~\textrm{ps}^{-1}$.  The dihedral angle $\phi$ of the
+butane molecule is monitored for every interval of 10~ps. If $\phi$ is in the range
+$[40^\circ, 80^\circ]$ (corresponding to the \emph{gauche} conformation), then
+the system state (including all water coordinates) is recorded, and
+used for the later study of \emph{gauche}-to-\emph{trans} transition. In our
+simulation, we only record the first 5000 of these system states as an
+equilibrium sample of the \emph{gauche} conformation.
+
 Then controlled simulation (Eq.~\eqref{eqn:langevin-r} and
 \eqref{eqn:langevin-p}) are performed also at 300~K with friction
-constant $10~\textrm{ps}^{-1}$ until $\lambda$, or until the butane
-changes to the trans conformation. Here the butane is of trans
-conformation, when the dihedral angle $\phi$ is equal or larger than
+constant $10~\textrm{ps}^{-1}$ until $T$, or until the transition to the
+\emph{trans} conformation happens. Here the butane molecule is in \emph{trans}
+conformation when the dihedral angle $\phi$ is equal or larger than
 $150^\circ$. The control  $u_i$ is defined as a function of
 the dihedral angle:
 \begin{align}
@@ -1052,100 +871,97 @@ the dihedral angle:
 Notice that the dihedral angle is a function of atomic coordinates
 $\phi = \phi(r)$.  The control is defined as a function of the
 dihedral angle $\phi$, because it fully describes the conformational
-change of the butane moelcule, moreover, bond lengths and bond angles
+change of the butane moelcule, and, moreover, bond lengths and bond angles
 are fast variables, so (as a good approximation) they decouple from
-the dynamics of the dihedral angle.  The transitional, rotational
-movement and the neighboring solvation structure may also play a role
+the dynamics of the dihedral angle.  The transitional and rotational
+movements and the neighboring solvation structure may also have an effect
 on the conformation of butane, and it is also fully justified to
-design control also based on these degrees of freedoms (DOFs), however, we
+design the control as depending on these degrees of freedoms (DOFs); however, we
 will show later that they do not contribute significantly in the
 investigated butane system.  The control potential
 $V_{\textrm{ctrl}}(\phi(r))$ is chosen as a expansion of cosine base
-functions of $\phi$, because the system is symmetric between range $\phi \in
-[-180^\circ,0^\circ]$ and $\phi \in [0^\circ, 180^\circ]$, so the sine
-bases are eliminated. In all our simulations, the number of control
-base functions $N_c$ is chosen to be 8. Numerical results show that
-the coefficient of the 8th base $\omega_8$ is already very small comparing
-to the dominant contributing bases, that means the number of base is
-large enough that can capture the essential structure of the control.
+functions of $\phi$ because the system is symmetric between range $\phi \in
+[-180^\circ,0^\circ]$ and $\phi \in [0^\circ, 180^\circ]$, so that the corresponding sine
+functions are eliminated. In all of our simulations, the number of control
+basis functions $N_c$ is chosen to be 8. Numerical results show that
+the coefficient of the 8th base $\omega_8$ is already very small compared
+to the dominant coefficients, which means that the number of basis functions is
+large enough for  capturing the essential structure of the control.
 In all our simulations, the Langevin equation is discretized by the
 BAOAB scheme~\cite{leimkuhler2013rational} with a time step of
-$10^{-4}$~ps for the case $\lambda = 0.1$~ps, and $5\times10^{-4}$~ps
-otherwise.
+ $5\times10^{-4}$~ps.
 
 \begin{figure}
   \centering
   \includegraphics[width=8cm]{./fig.md/fig-pot.eps}
   \caption{The original dihedral potential and the dihedral potential
-    with control.}
+    with optimal control potential.}
   \label{fig:tmp2}
 \end{figure}
 
 
-We considered $\lambda = 1.0$, 0.5, 0.2 and 0.1~ps and shown the
-results in Fig.~\ref{fig:tmp2}, Tab.~\ref{tab:tmp1} and~\ref{tab:tmp2}.
-From each of the 5000 equilibrium conformations, 4 trajectories with
-different randoms seeds are simulated for each $\lambda$, so we
-generate 20000 trajectories for each case.  The control $u(r, \omega)$ is
-calculated by simulations of butane in vacumm, in which all other
+We considered $T = 1.0$, 0.5, 0.2 and 0.1~ps. The results of the importance sampling computations are shown in Fig.~\ref{fig:tmp2}, Tab.~\ref{tab:tmp1} and Tab.~\ref{tab:tmp2}.
+From each of the 5,000 equilibrium system states from the \emph{gauche} conformation, 4 trajectories with
+different random seeds are simulated for each $T$, so we
+generate $M_{IS}=20,000$ trajectories for $T = 1.0$, 0.5, 0.2.
+For $T = 0.1$~ps, 12 trajectories are simulated from each
+initial system state, so 60,000 trajectories in total.
+The optimal control $u(r, \omega)$ is
+calculated by simulations of butane in vacuum, in which all other
 parameters are the same as the aforementioned descriptions, except
-that the waters are removed. We do it this way because the vacumm
+that the water molecules are removed. This is done because the vacuum
 simulation is much cheaper than the in-water simulation, and
-practically, the control calculated in the corresponding vacumm
-systems perform well enough in the in-water systems, because we find
-that no further iteration is need to refine the control. Furthermore,
-in the vacumm system, the probability $\mathcal{P}(\tau\leq\lambda) =
-2.19\times10^{-2}$, $9.32\times 10^{-3}$, $1.35\times 10^{-3}$ and
-$5.76\times 10^{-5}$ for $\lambda = 1.0$, 0.5, 0.2 and 0.1~ps,
-respectively. These values does not significantly differ from the
+practically, the control calculated in the corresponding vacuum
+systems performs well enough in the in-water system, because we find, when tested,
+ no further iteration is needed to refine the control. In the vacuum system, we find  probabilities $\bP(\tau\leq T) =
+2.16\times10^{-2}$, $8.66\times 10^{-3}$, $1.48\times 10^{-3}$ and
+$6.13\times 10^{-5}$ for $T = 1.0$, 0.5, 0.2 and 0.1~ps,
+respectively. These values do not significantly differ from those of the
 dissolved system (see the second column of Tab.~\ref{tab:tmp1}).
-Noticing the butane is symmetric with respect to transitional and
-rotational movement, the above observation therefore indicates that
-the transitional, rotational DOFs and the water structure does not
+Noticing that butane is invariant with respect to transitional and
+rotational movement, the above observations  indicate that
+the transitional, rotational DOFs and the water structure do not
 play a dominant role in the conformational change of butane, and the
 definition of control only as a function as the dihedral angle, and
-the computation of control in the vacumm system are reasonable
+the computation of control in the vacuum system are reasonable
 choices.  
 
 \begin{table}[t]
   \centering
   \caption{
-    Butane dissolved in water. The probability
-    $\mathcal{P} (\tau \leq \lambda)$ calculated by the important sampling with
-    control on the dihedral angle.
-    See the text for more details of the definition of the control.
-    Column ``Error'' denotes the statistical uncertainty of
-    estimating the probablity $\mathcal{P} (\tau \leq \lambda)$.
-    If the  trajectories are statistically independent, the expected error is $\sqrt{\textrm{Var}/M}$, where
-    $M$ is the number of trajectories. If the trajectories are not independent, the error
+    Results for butane dissolved in water: The probability
+    $\bP (\tau \leq T)$ is calculated by the importance sampling procedure with
+    control acting on the dihedral angle only; see the text for more details.
+    The column ``Error'' denotes the statistical uncertainty of
+    estimating the probablity $\bP (\tau \leq T)$.
+    If the  trajectories are statistically independent, the expected error is $\sqrt{\textrm{Var}/M_{IS}}$, where
+    $M_{IS}$ is the number of trajectories used. If the trajectories are not independent, the error
     can be estimated by the block average method~\cite{frenkel2001understanding}.
-    Column ``Var'' denotes the reduced variance of the esimate.
-    ``Accel.''(acceleration) is the ratio between
-    the reduced variance and the brute force variance (see Tab.~\ref{tab:tmp2}),
-    which is the actual speed-up of the simulation.
-    ``Traj. Usage'' dentoes percentage of trajectoies that changes
-    to the trans conformation within time interval $[0,\lambda]$.
+    The meaning of the other columns are the same as Tab.~\ref{tab-ex1-2}. 
+    %here, the accelaration index has to be computed as  $\cI=\textrm{Var}_{MC} M_{MC}/(\textrm{Var}_{IS}M_{IS})$ since the numbers of trajectories used in the IS and MC procedures are different.
   }
   \label{tab:tmp1}
   \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}lcccrr}
     \hline\hline
-    $\lambda$ [ps] & $\mathcal{P} (\tau \leq \lambda)$ & Error & Var & Accel. & Traj. Usage \\\hline
-    0.1 & $4.61\times 10^{-5}$ & $1.11\times 10^{-5}$ & $2.45\times10^{-6}$ &18.8 & 0.7\%\\
-    0.2 & $9.03\times 10^{-4}$ & $0.77\times 10^{-4}$ & $1.19\times10^{-4}$ & 7.6 &10.0\%\\
-    0.5 & $6.96\times 10^{-3}$ & $0.34\times 10^{-3}$ & $2.21\times10^{-3}$ & 3.1 &11.9\%\\
-    1.0 & $1.68\times 10^{-2}$ & $0.06\times 10^{-2}$ & $6.30\times10^{-3}$ & 2.7 &13.4\%\\
+    $T$ [ps] & $\bP (\tau \leq T)$ & Error & Var & Accel. $\cI$ & Traj. Usage \\\hline
+    0.1 & $4.30\times 10^{-5}$ & $0.77\times 10^{-5}$ & $3.53\times10^{-6}$ & 12.2 & 0.4\%\\
+    0.2 & $1.21\times 10^{-3}$ & $0.11\times 10^{-3}$ & $2.50\times10^{-4}$ & 4.8 & 5.4\%\\
+    0.5 & $6.85\times 10^{-3}$ & $0.38\times 10^{-3}$ & $2.88\times10^{-3}$ & 2.4 & 8.3\%\\
+    1.0 & $1.74\times 10^{-2}$ & $0.08\times 10^{-2}$ & $1.21\times10^{-2}$ & 1.4 &12.3\%\\
     \hline\hline
   \end{tabular*}
+
+%%HERE
   \caption{
-    Butane dissolved in water, brute force simulations
-    without any important sampling, i.e.~standard Monte Carlo. The meaning of the columns are the same
-    as Tab.~\ref{tab:tmp1}.}\label{tab:tmp2}
+    Results for butane dissolved in water: Brute force / standard Monte Carlo computations of $\bP (\tau \leq T)$ 
+    without any importance sampling.}\label{tab:tmp2}
   \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}lcccrr}
     \hline\hline
-    $\lambda$ [ps] & $\mathcal{P} (\tau \leq \lambda)$ & Error & Var & Accel. & Traj. Usage \\\hline
-    0.2 & $9.00\times 10^{-4}$ & $2.12\times 10^{-4}$ & $8.99\times10^{-4}$ & 1.0 & 0.1\%\\
-    0.5 & $7.40\times 10^{-3}$ & $0.61\times 10^{-3}$ & $7.35\times10^{-3}$ & 1.0 & 0.7\%\\
-    1.0 & $1.71\times 10^{-2}$ & $0.09\times 10^{-2}$ & $1.68\times10^{-2}$ & 1.0 & 1.7\%\\
+    $T$ [ps] & $\bP (\tau \leq T)$ & Error & Var & Accel. & Traj. Usage \\\hline
+    0.1 & $9.00\times 10^{-5}$ & $3.00\times 10^{-5}$ & $9.00\times10^{-5}$ & 1.0 & 0.009\%\\
+    0.2 & $1.29\times 10^{-3}$ & $0.11\times 10^{-3}$ & $1.29\times10^{-3}$ & 1.0 & 0.1\%\\
+    0.5 & $7.41\times 10^{-3}$ & $0.27\times 10^{-3}$ & $7.36\times10^{-3}$ & 1.0 & 0.7\%\\
+    1.0 & $1.78\times 10^{-2}$ & $0.04\times 10^{-2}$ & $1.75\times10^{-2}$ & 1.0 & 1.8\%\\
     % 0.2 & $7.46\times 10^{-4}$ & $2.36\times 10^{-4}$ & $7.46\times10^{-4}$ & 1.0 & 0.1\%\\
     % 0.5 & $6.94\times 10^{-3}$ & $0.72\times 10^{-3}$ & $6.89\times10^{-3}$ & 1.0 & 0.7\%\\
     % 1.0 & $1.61\times 10^{-2}$ & $0.11\times 10^{-2}$ & $1.59\times10^{-2}$ & 1.0 & 1.6\%\\
@@ -1153,31 +969,31 @@ choices.
   \end{tabular*}
 \end{table}
 
-The Fig.~\ref{fig:tmp1} plots the effective dihedral angle energy,
-which is the original dihedral energy $V_\phi(\phi)$ plus the control
+In Fig.~\ref{fig:tmp1} the effective dihedral angle energy is plotted being defined as the original dihedral energy $V_\phi(\phi)$ plus the control
 $V_{\textrm{ctrl}}(\phi)$. We only show the effective energy in the
-range $[40^\circ, 150^\circ]$, because the initial
-conformations start in range $[40^\circ, 80^\circ]$, and the
-trajectoies are stopped when they reach $\phi = 150^\circ$. For an easy
-comparison, all effective energies are switched by a constant, so that
-they are of vanishing value at $\phi = 150^\circ$. It clear that for
-smaller $\lambda$ value, the control applied is stronger. Different
-from the one-dimensional case, where the barrier is lowered, in this
-case, only the potential well around $\phi = 60^\circ$ is fill, and
-the barrier around $\phi = 120^\circ$ is almost kept the same.  The
-resultant probability $\mathcal{P} (\tau \leq \lambda)$ calculated by the
-important sampling simulation is summarized in Tab.~\ref{tab:tmp1},
+range $[40^\circ, 150^\circ]$, because the initial states of the trajectories are located in the range $[40^\circ, 80^\circ]$, and the
+trajectories are stopped when they reach $\phi = 150^\circ$. For an easy
+comparison, all effective energies are shifted by a constant, so that
+they are of  value zero at $\phi = 150^\circ$. It clear that for
+smaller $T$ values, the control applied is stronger.  The
+resulting probabilities $\bP (\tau \leq T)$ calculated by the
+importance sampling procedure are summarized in Tab.~\ref{tab:tmp1},
 which is consistent with Tab.~\ref{tab:tmp2} that presents the
-brute force results. Since the variance is redueced, the error of the
-statistical esitmate is more precise in the important sampling case. The
+brute force results (calculated from $M_{MC}=100,000$ trajectoies).
+The consistency at $T = 0.1$~ps is worse, because
+among the 100,000 trajectoies, only 9 of them hit the \emph{trans}
+conformation within 0.1~ps, therefore both the estimate of the probability
+$\bP (\tau \leq T)$ and its error are not reliable due to the
+insufficient sampling.
+Since the variance is reduced, the error of the
+statistical estimate is more precise in the importance sampling case. The
 reduced variance is shown in the fourth column of Tab.~\ref{tab:tmp1},
 which is much smaller than the brute force case (the fourth column of
-Tab.~\ref{tab:tmp2}). The fifth column presents the acceleration ratio
-with respect to the brute force simulation or the benefit from the
-important sampling, which is exactly the ratio between the brute force
-variance and the reduced variance. The column of trajectory usage
-presents the percentage of the trajectories that changes to the trans
-conformation within time interval $[0, \lambda]$. It is increased by
+Tab.~\ref{tab:tmp2}). The fifth column presents the acceleration index $\cI$
+of the importance sampling procedure relative to standard Monte Carlo. It measures the speed-up gained by the
+importance sampling. The column "trajectory usage"
+presents the percentage of the trajectories that changes to the \emph{trans}
+conformation within time interval $[0, T]$. It is increased by
 the control with respect to the brute force result.
 
 
@@ -1186,32 +1002,17 @@ the control with respect to the brute force result.
 \section{Discussions}
 \label{sec-discuss}
 
-As a continuation of the work \cite{zlph2013, zhws13}, we study the cross-entropy
-method in the setting of diffusion process and their application in the
+As a continuation of our works \cite{zlph2013, zhws13}, we propose a cross-entropy
+algorithm for diffusion processes and study its application to
 importance sampling and optimal control.
-In those previous work, some assumptions have been made on the dynamical systems and
-on the type of quantities to estimate \cite{zhws13}. For example, 
-in order to perform the asymptotic analysis, we assumed there are explicit parameters in dynamical systems and the dynamics
-is in certain limit regime. In the case of multiple time-scale systems, we
-also assumed that explicit slow/fast variables are known. In sampling problem \cite{zhws13}, we assumed 
-the optimal change of measure is related to certain Hamilton-Jacobi-Bellman equation,
-and therefore the type of quantity to estimate is restricted. With the
-cross-entropy method, all these assumptions could be removed. General
-diffusion processes can be investigated and importance sampling for more
-meaningful quantity such as the probability $\mathcal{P}(\tau \le \lambda)$ can be considered.
+For instance, in our previous work  \cite{zhws13}, we have analysed the effect of the use of suboptimal controls in multiscale systems with explicit scale separation, e.g., slow-fast systems or diffusions in the small-noise limit. Here the situation is different, in that no such small parameter or detailed information regarding the relevant degrees of freedom is used.  On the other hand, in the cross-entropy method, the approximation of the target measure and, consequently, effcient importance sampling or control strategies crucially depend on a sensible choice of a function basis. 
+%
+A good choice can be often based on prior knowledge about the dynamical
+system, such as metastable states or reactive cordinates; it is easy to
+imagine that there is no way to obtain satisfactory results when the basis functions used are not supported along the relevant degrees of freedom.
+The relation between the cross-entropy method and methods for multiscale dynamical systems is an interesting and yet open question that will be addressed in future work.
 
-On the other hand, some basis functions are needed in order to apply the
-cross-entropy method. The choice of these basis functions are crucial in order
-to obtain good approximation of the target measure and therefore effcient
-importance sampling or ``good control force'' in the optimal control problem.
-The successful choice is often based on our knowledge about the given dyanmical
-system, such as its metastable states, or reactive cordinates. It is easy to
-imagine that there is no way to obtain satisfactory results when the system
-has a reactive coordinate but the basis functions are supported somewhere else.
-The optimal control problem for dynamical systems having a reactive coordinate
-will be further studied in the future work.
-
-\section*{Acknowledgements}
+\section*{Acknowledgement}
 The authors acknowledge financial support by the DFG Research Center MATHEON.
 \FloatBarrier
 

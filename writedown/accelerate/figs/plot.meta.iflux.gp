@@ -75,6 +75,21 @@ u ($1*2):2 ls 12 w l not, \
 '' u ($1*2):5  w l ls 42 not,\
 '' u ($1*2):6  w l ls 52 not
 
+set out 'fig-meta-iflux-01-check-1.eps'
+pl\
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
+u 1:2 ls 11 w l not, \
+'' u 1:3 ls 21 w l not, \
+'' u 1:4 ls 31 w l not, \
+'' u 1:5 ls 41 w l not, \
+'' u 1:6 ls 51 w l not, \
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0.dtcomp/set/meta.flux.inte.out' \
+u ($1*1):2 ls 12 w l not, \
+'' u ($1*1):3  w l ls 22 not,\
+'' u ($1*1):4  w l ls 32 not,\
+'' u ($1*1):5  w l ls 42 not,\
+'' u ($1*1):6  w l ls 52 not
+
 set out 'fig-meta-iflux-04-1.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
@@ -141,6 +156,21 @@ u ($1*2):7 ls 12 w l not, \
 '' u ($1*2):10  w l ls 42 not,\
 '' u ($1*2):11  w l ls 52 not
 
+set out 'fig-meta-iflux-01-check-2.eps'
+pl\
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
+u 1:7 ls 11 w l not, \
+'' u 1:8 ls 21 w l not, \
+'' u 1:9 ls 31 w l not, \
+'' u 1:10 ls 41 w l not, \
+'' u 1:11 ls 51 w l not, \
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0.dtcomp/set/meta.flux.inte.out' \
+u ($1*1):7 ls 12 w l not, \
+'' u ($1*1):8  w l ls 22 not,\
+'' u ($1*1):9  w l ls 32 not,\
+'' u ($1*1):10  w l ls 42 not,\
+'' u ($1*1):11  w l ls 52 not
+
 set out 'fig-meta-iflux-04-2.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
@@ -205,6 +235,21 @@ u ($1*2):12 ls 12 w l not, \
 '' u ($1*2):14  w l ls 32 not,\
 '' u ($1*2):15  w l ls 42 not,\
 '' u ($1*2):16  w l ls 52 not
+
+set out 'fig-meta-iflux-01-check-3.eps'
+pl\
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
+u 1:12 ls 11 w l not, \
+'' u 1:13 ls 21 w l not, \
+'' u 1:14 ls 31 w l not, \
+'' u 1:15 ls 41 w l not, \
+'' u 1:16 ls 51 w l not, \
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0.dtcomp/set/meta.flux.inte.out' \
+u ($1*1):12 ls 12 w l not, \
+'' u ($1*1):13  w l ls 22 not,\
+'' u ($1*1):14  w l ls 32 not,\
+'' u ($1*1):15  w l ls 42 not,\
+'' u ($1*1):16  w l ls 52 not
 
 set out 'fig-meta-iflux-04-3.eps'
 pl\
@@ -271,6 +316,21 @@ u ($1*2):17 ls 12 w l not, \
 '' u ($1*2):20  w l ls 42 not,\
 '' u ($1*2):21  w l ls 52 not
 
+set out 'fig-meta-iflux-01-check-4.eps'
+pl\
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
+u 1:17 ls 11 w l not, \
+'' u 1:18 ls 21 w l not, \
+'' u 1:19 ls 31 w l not, \
+'' u 1:20 ls 41 w l not, \
+'' u 1:21 ls 51 w l not, \
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0.dtcomp/set/meta.flux.inte.out' \
+u ($1*1):17 ls 12 w l not, \
+'' u ($1*1):18  w l ls 22 not,\
+'' u ($1*1):19  w l ls 32 not,\
+'' u ($1*1):20  w l ls 42 not,\
+'' u ($1*1):21  w l ls 52 not
+
 set out 'fig-meta-iflux-04-4.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
@@ -336,6 +396,21 @@ u ($1*2):22 ls 12 w l not, \
 '' u ($1*2):24  w l ls 32 not,\
 '' u ($1*2):25  w l ls 42 not,\
 '' u ($1*2):26  w l ls 52 not
+
+set out 'fig-meta-iflux-01-check-5.eps'
+pl\
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
+u 1:22 ls 11 w l not, \
+'' u 1:23 ls 21 w l not, \
+'' u 1:24 ls 31 w l not, \
+'' u 1:25 ls 41 w l not, \
+'' u 1:26 ls 51 w l not, \
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0.dtcomp/set/meta.flux.inte.out' \
+u ($1*1):22 ls 12 w l not, \
+'' u ($1*1):23  w l ls 22 not,\
+'' u ($1*1):24  w l ls 32 not,\
+'' u ($1*1):25  w l ls 42 not,\
+'' u ($1*1):26  w l ls 52 not
 
 set out 'fig-meta-iflux-04-5.eps'
 pl\
@@ -430,6 +505,48 @@ u ($1*4):($22+$23) ls 12 w l not, \
 
 unset label
 set label 'Q_{J,A}, T = 40 ps' at 20,0.25
+set out 'fig-meta-iflux-02-1-1.eps'
+pl\
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
+u 1:($2+$3+$7+$8) ls 11 w l not, \
+'' u 1:($4+$5+$9+$10) ls 31 w l not, \
+'' u 1:($6+$11) ls 51 w l not, \
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale02.0/set/meta.flux.inte.out' \
+u ($1*2):($2+$3+$7+$8) ls 12 w l not, \
+'' u ($1*2):($4+$5+$9+$10)  w l ls 32 not,\
+'' u ($1*2):($6+$11)  w l ls 52 not
+
+
+unset label
+set label 'Q_{J,B}, T = 40 ps' at 20,0.25
+set out 'fig-meta-iflux-02-1-2.eps'
+pl\
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
+u 1:($12+$13+$17+$18) ls 11 w l not, \
+'' u 1:($14+$15+$19+$20) ls 31 w l not, \
+'' u 1:($16+$21) ls 51 w l not, \
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale02.0/set/meta.flux.inte.out' \
+u ($1*2):($12+$13+$17+$18) ls 12 w l not, \
+'' u ($1*2):($14+$15+$19+$20)  w l ls 32 not,\
+'' u ($1*2):($16+$21)  w l ls 52 not
+
+
+unset label
+set label 'Q_{J,C}, T = 40 ps' at 20,0.25
+set out 'fig-meta-iflux-02-1-3.eps'
+pl\
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
+u 1:($22+$23) ls 11 w l not, \
+'' u 1:($24+$25) ls 31 w l not, \
+'' u 1:($26) ls 51 w l not, \
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale02.0/set/meta.flux.inte.out' \
+u ($1*2):($22+$23) ls 12 w l not, \
+'' u ($1*2):($24+$25)  w l ls 32 not,\
+'' u ($1*2):($26)  w l ls 52 not
+
+
+unset label
+set label 'Q_{J,A}, T = 40 ps' at 20,0.25
 set out 'fig-meta-iflux-05-1-1.eps'
 pl\
 'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
@@ -511,5 +628,48 @@ u 1:($22+$23) ls 11 w l not, \
 u ($1*8):($22+$23) ls 12 w l not, \
 '' u ($1*8):($24+$25)  w l ls 32 not,\
 '' u ($1*8):($26)  w l ls 52 not
+
+
+
+unset label
+set label 'Q_{J,A}, T = 40 ps' at 20,0.25
+set out 'fig-meta-iflux-01-check-1-1.eps'
+pl\
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
+u 1:($2+$3+$7+$8) ls 11 w l not, \
+'' u 1:($4+$5+$9+$10) ls 31 w l not, \
+'' u 1:($6+$11) ls 51 w l not, \
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0.dtcomp/set/meta.flux.inte.out' \
+u ($1*1):($2+$3+$7+$8) ls 12 w l not, \
+'' u ($1*1):($4+$5+$9+$10)  w l ls 32 not,\
+'' u ($1*1):($6+$11)  w l ls 52 not
+
+
+unset label
+set label 'Q_{J,B}, T = 40 ps' at 20,0.25
+set out 'fig-meta-iflux-01-check-1-2.eps'
+pl\
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
+u 1:($12+$13+$17+$18) ls 11 w l not, \
+'' u 1:($14+$15+$19+$20) ls 31 w l not, \
+'' u 1:($16+$21) ls 51 w l not, \
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0.dtcomp/set/meta.flux.inte.out' \
+u ($1*1):($12+$13+$17+$18) ls 12 w l not, \
+'' u ($1*1):($14+$15+$19+$20)  w l ls 32 not,\
+'' u ($1*1):($16+$21)  w l ls 52 not
+
+
+unset label
+set label 'Q_{J,C}, T = 40 ps' at 20,0.25
+set out 'fig-meta-iflux-01-check-1-3.eps'
+pl\
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0/set/meta.flux.inte.out' \
+u 1:($22+$23) ls 11 w l not, \
+'' u 1:($24+$25) ls 31 w l not, \
+'' u 1:($26) ls 51 w l not, \
+'alanine.charmm.pme.localSD.mode2.040.Ex.01.00.t0200.scale01.0.dtcomp/set/meta.flux.inte.out' \
+u ($1*1):($22+$23) ls 12 w l not, \
+'' u ($1*1):($24+$25)  w l ls 32 not,\
+'' u ($1*1):($26)  w l ls 52 not
 
 

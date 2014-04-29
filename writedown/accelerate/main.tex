@@ -183,7 +183,7 @@ We therefore have the error estimate
   \int \dd\vect y_0 {\rho}(\vect y_0, 0)\cdot \me(\vect y_0, T/\alpha)
 \end{align}
 where
-\begin{align}
+\begin{align}\label{eqn:error}
   \me(\vect y_0, t) = 
   \int_{\mc\{T/\alpha; \vect y_0, 0\}}
   O[\vect y_t]
@@ -191,7 +191,7 @@ where
   W[\vect y_t]\,\dd\hat\pathmeas
 \end{align}
 and $W[\vect y_s]$ is defined by
-\begin{align}
+\begin{align}\label{eqn:error-exp}
   W[\vect y_t] = 
   \exp
   \Big[
@@ -232,7 +232,57 @@ the accelerated LJ potential (denoted by $\hat u(r)$) can be given by
 \end{align}
 where $u(r)$ is the original LJ potential. It is clear that
 $\hat u(0) = u(0)$, and $\hat u(\infty) = \alpha u(\infty)$.
+\\
 
+\recheck{ A possible idea is to estimate the error~\eqref{eqn:error}
+  by the Girsanov transformation~\eqref{eqn:meas-reweight}. However, we
+  suffer from the following difficulty: since the fast part of the
+  force are generally very stiff, the magnitude of $\vect b_f$ is
+  large comparing to the noise in the system,
+  i.e.~$\tilde\sigma$. In our alanine dipeptide simulation,
+  the typical magnitude of
+  $\frac{\alpha-1}{\tilde{\sigma}}\int_0^{T/\alpha}\vect b_f(\vect
+  y_s)\cdot\dd\vect w_s$ is of order $10^3$, while the magnitude of
+  $\frac{(\alpha-1)^2}{2\tilde\sigma^2} \int_0^{T/\alpha}\vect
+  b_f^2(\vect y_s)\dd t$ is of order $10^7$.  This means that for the
+  trajectories we sampled, the reweighting~\eqref{eqn:meas-reweight}
+  vanishes. There are also trajectories, along which the magnitude of
+  the fast forces is very small (for example the bonds and angles stay
+  around the equilibrium value), which means a significant contribution
+  to the reweighting~\eqref{eqn:meas-reweight}, however  these
+  trajectories are seldomly (actually not) sampled in real
+  simulations.
+
+  When we remove the fast forces from the system, actually the
+  microscopic dynamics of the system changes a lot, that is why the
+  direct application of Girsanov
+  transformation~\eqref{eqn:meas-reweight} does not work.  However, we
+  are only interested by the dynamics of the slow observables, which may NOT
+  be perturbed a lot by removing the fast forces.  The question is how
+  to derive an effective reweighting (or correction) for only the slow variables?
+
+  If the fast varibles only contribute entropy to the slow degrees of
+  freedom, and if during the nonequilibrium dynamics the fast varibles
+  relaxes much faster than the slow variables (short-term entropy
+  contribution is well defined), it may be possible to effectively
+  add back the removed fast force (defined on fast DOFs)  by
+  applying addtional free energy correction $\nabla_{\vect r}( \Delta A)$
+  (on slow DOFs), 
+  where $\Delta A$ denotes the free energy difference between
+  the original system and the perturbed system (fast force removed).
+  % then it may be possible to consider the Girsanov
+  % transformation based on the free energy (on the slow variables)
+  % difference:
+%   \begin{align}\label{eqn:meas-reweight-da}
+%     \frac{\dd\tilde\pathmeas[\vect y_t]}{\dd\hat\pathmeas[\vect y_t]}
+%     = \exp
+%     \Big[
+%     \frac{\alpha-1}{\tilde{\sigma}}\int_0^{T/\alpha} \nabla( \Delta A)\cdot\dd\vect w_s
+%     -
+%     \frac{(\alpha-1)^2}{2\tilde\sigma^2} \int_0^{T/\alpha}\vert \nabla( \Delta A) \vert^2\dd t\,
+%     \Big]
+% \end{align}  
+}
 
 
 \section{The slow and fast part of the CHARMM force field}
@@ -481,6 +531,11 @@ with the hard forces.
 
 \begin{figure}
   \centering
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-01-check-1.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-01-check-2.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-01-check-3.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-01-check-4.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-01-check-5.eps}\\
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-02-1.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-02-2.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-02-3.eps}
@@ -507,6 +562,12 @@ with the hard forces.
 
 \begin{figure}
   \centering
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-01-check-1-1.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-01-check-1-2.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-01-check-1-3.eps}\\
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-02-1-1.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-02-1-2.eps}
+  \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-02-1-3.eps}\\
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-1-1.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-1-2.eps}
   \includegraphics[width=0.195\textwidth]{figs/fig-meta-iflux-04-1-3.eps}\\
