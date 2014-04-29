@@ -267,174 +267,67 @@ int main(int argc, char * argv[])
   
   printf ("# committor\n");
   printf ("# value   var    error\n");
-  printf ("%e   %e   %e\n", ba.getAvg(), ba.getVar(), ba.getAvgError());
+  printf ("%e   %e   %e\n\n", ba.getAvg(), ba.getVar(), ba.getAvgError());
 
-  printf ("# vect b\n");
+  printf ("b = [ ");
   for (int ii = 0; ii < nBase; ++ii){
     vecb[ii].calculate();
     printf ("%e   ", vecb[ii].getAvg());
   }
-  printf ("\n# vect b error\n");
+  printf ("];\n\nbe = [ ");
   for (int ii = 0; ii < nBase; ++ii){
-    printf ("%e   ", vecb[ii].getAvgError());
+    printf ("%e ", vecb[ii].getAvgError());
   }
-  printf ("\n#;\n");
-  printf ("# mat A\n");
-  for (int ii = 0; ii < nBase; ++ii){
-    for (int jj = 0; jj < nBase; ++jj){
-      matA[ii][jj].calculate();
-      printf ("%e   ", matA[ii][jj].getAvg());
-    }
-    printf (";\n");
-  }
-  printf ("# mat A error\n");
+  printf (" ];\n\n");
+  printf ("a = [ ");
   for (int ii = 0; ii < nBase; ++ii){
     for (int jj = 0; jj < nBase; ++jj){
       matA[ii][jj].calculate();
-      printf ("%e   ", matA[ii][jj].getAvgError());
+      printf ("%e ", matA[ii][jj].getAvg());
     }
-    printf (";\n");
+    if (ii != nBase - 1) printf ("; ");
   }
+  printf (" ];\n\n");
+  printf ("ae = [ \n");
+  for (int ii = 0; ii < nBase; ++ii){
+    for (int jj = 0; jj < nBase; ++jj){
+      matA[ii][jj].calculate();
+      printf ("%e ", matA[ii][jj].getAvgError());
+    }
+    if (ii != nBase - 1) printf ("; ");
+  }
+  printf (" ];\n\n");
 
-
-  //   double sum_j = 0.;
-  //   if (ms.inSet(anglev[0])) {
-  //     record[angleIdx(anglev[0], bin)].push_back (0.0);
-  //     record_j[angleIdx(anglev[0], bin)].push_back (0.0);
-  //     countFound ++;
-  //   }
-  //   else {
-  //     bool found = true;
-  //     unsigned nextstab = 0;
-  //     do {
-  // 	nextstab ++;
-  // 	if (nextstab >= anglev.size()){
-  // 	  found = false;
-  // 	  break;
-  // 	}
-  //     } while (! ms.inSet(anglev[nextstab]));
-  //     if (found) {
-  // 	countFound ++;
-  // 	record [angleIdx(anglev[0], bin)].push_back (-(times[0] - times[nextstab]));
-  // 	sum_j = 0.;
-  // 	for (unsigned ii = 0; ii < nextstab; ++ii){
-  // 	  AngleCalculator ac (boxes[ii]);
-  // 	  double tmp = - pp.value_periodic (anglev[ii]) ;
-  // 	  double tmpAngle = ac.calAngle (c4Coord[ii]);
-  // 	  vector<vector<double > > tmpGrad;
-  // 	  ac.calGrad (c4Coord[ii], angleDx, tmpGrad);
-  // 	  // vector<vector<double > > yy (4);
-  // 	  // vector<double > yy1(3, 0.);
-  // 	  // yy[3] = yy[2] = yy[1] = yy[0] = yy1;
-  // 	  // yy[0][0] = 0.1;
-  // 	  // yy[2][1] = 0.1;
-  // 	  // yy[3][1] = yy[3][2] = 0.1;
-  // 	  // ac.calGrad (yy, angleDx, tmpGrad);
-  // 	  double sumGrad = 0.;
-  // 	  for (unsigned kk = 0; kk < tmpGrad.size(); ++kk){
-  // 	    for (unsigned ll = 0; ll < 3; ++ll){
-  // 	      sumGrad += tmpGrad[kk][ll] * tmpGrad[kk][ll];
-  // 	    }
-  // 	  }
-  // 	  // printf ("time %f, angle %f %f, sumGrad %e, dj is %f\n", times[ii], anglev[ii], tmpAngle, sumGrad, tmp);
-  // 	  sum_j += 0.5 * tmp * tmp * sumGrad * (times[1] - times[0]);
-  // 	}
-  // 	record_j [angleIdx(anglev[0], bin)].push_back (sum_j);
-  //     }
-  //     else {
-  // 	countUnFound ++;
-  //     }
-  //   }
+  /////////////////////////////////////////////////////////////////////////////////
+  // old way of printing
+  /////////////////////////////////////////////////////////////////////////////////
+  // printf ("# vect b\n");
+  // for (int ii = 0; ii < nBase; ++ii){
+  //   vecb[ii].calculate();
+  //   printf ("%e   ", vecb[ii].getAvg());
   // }
-  // printf ("\n");
-  // printf ("# read %d files, %d ( %.1f %% ) hit meta, %d ( %.1f %% ) do not hit\n",
-  // 	  countFile,
-  // 	  countFound, ((double)(countFound))/((double)(countFile)) * 100.,
-  // 	  countUnFound, ((double)(countUnFound))/((double)(countFile)) * 100.);
-
-  // BlockAverage ba;  
-  // BlockAverage ba_j;  
-  // FILE * fout = fopen (ofile.c_str(), "w");
-  // if (fout == NULL){
-  //   cout << "cannot open file " << ofile<< endl;
-  //   exit (1);
+  // printf ("\n# vect b error\n");
+  // for (int ii = 0; ii < nBase; ++ii){
+  //   printf ("%e   ", vecb[ii].getAvgError());
   // }
-  // for (unsigned ii = 0; ii < record.size(); ++ii){
-  //   double myangle = -180 + bin * (ii + 0.5);
-  //   if (record[ii].size() == 0){
-  //     int prevIdx = int(ii);
-  //     do {
-  // 	prevIdx --;
-  //     } while (prevIdx >= 0 && record[prevIdx].size() == 0);
-  //     if (prevIdx >= 0){
-  // 	fprintf (fout, "%f %e %e\n",
-  // 		 myangle,
-  // 		 sigma * ba.getAvg() + xi * ba_j.getAvg(), sigma * ba.getAvgError() + xi * ba_j.getAvgError()
-  // 		 );
-  //     }
-  //     else{
-  // 	fprintf (fout, "%f\n", myangle);
-  //     }
+  // printf ("\n#;\n");
+  // printf ("# mat A\n");
+  // for (int ii = 0; ii < nBase; ++ii){
+  //   for (int jj = 0; jj < nBase; ++jj){
+  //     matA[ii][jj].calculate();
+  //     printf ("%e   ", matA[ii][jj].getAvg());
   //   }
-  //   else if (record[ii].size() < nBlock * 5){
-  //     ba.processData (record[ii], record[ii].size());
-  //     ba_j.processData (record_j[ii], record_j[ii].size());
-  //     fprintf (fout, "%f %e %e    %e %e    %e %e\n",
-  // 	       myangle,
-  // 	       sigma * ba.getAvg() + xi * ba_j.getAvg(), sigma * ba.getAvgError() + xi * ba_j.getAvgError(),
-  // 	       ba.getAvg(), ba.getAvgError(),
-  // 	       ba_j.getAvg(), ba_j.getAvgError()
-  // 	  );
-  //   }
-  //   else {
-  //     ba.processData (record[ii], nBlock);
-  //     ba_j.processData (record_j[ii], nBlock);
-  //     fprintf (fout, "%f %e %e    %e %e    %e %e\n",
-  // 	       myangle,
-  // 	       sigma * ba.getAvg() + xi * ba_j.getAvg(), sigma * ba.getAvgError() + xi * ba_j.getAvgError(),
-  // 	       ba.getAvg(), ba.getAvgError(),
-  // 	       ba_j.getAvg(), ba_j.getAvgError()
-  // 	  );
-  //     // fprintf (fout, "%f %e %e\n", myangle, ba.getAvg(), ba.getAvgError());
-  //   }
-  // }  
-  // fclose (fout);
-
-  // string ofile1 = ofile + string (".f");
-  // fout = fopen (ofile.c_str(), "w");
-  // if (fout == NULL){
-  //   cout << "cannot open file " << ofile<< endl;
-  //   exit (1);
+  //   printf (";\n");
   // }
-  // for (unsigned ii = 0; ii < record.size(); ++ii){
-  //   double myangle = -180 + bin * (ii + 0.5);
-  //   if (record[ii].size() == 0){
-  //     fprintf (fout, "%f\n", myangle);
+  // printf ("# mat A error\n");
+  // for (int ii = 0; ii < nBase; ++ii){
+  //   for (int jj = 0; jj < nBase; ++jj){
+  //     matA[ii][jj].calculate();
+  //     printf ("%e   ", matA[ii][jj].getAvgError());
   //   }
-  //   else if (record[ii].size() < nBlock * 5){
-  //     ba.processData (record[ii], record[ii].size());
-  //     ba_j.processData (record_j[ii], record_j[ii].size());
-  //     fprintf (fout, "%f %e %e    %e %e    %e %e\n",
-  // 	       myangle,
-  // 	       sigma * ba.getAvg() + xi * ba_j.getAvg(), sigma * ba.getAvgError() + xi * ba_j.getAvgError(),
-  // 	       ba.getAvg(), ba.getAvgError(),
-  // 	       ba_j.getAvg(), ba_j.getAvgError()
-  // 	  );
-  //   }
-  //   else {
-  //     ba.processData (record[ii], nBlock);
-  //     ba_j.processData (record_j[ii], nBlock);
-  //     fprintf (fout, "%f %e %e  \n",
-  // 	       myangle,
-  // 	       sigma * ba.getAvg() + xi * ba_j.getAvg(), sigma * ba.getAvgError() + xi * ba_j.getAvgError(),
-  // 	       ba.getAvg(), ba.getAvgError(),
-  // 	       ba_j.getAvg(), ba_j.getAvgError()
-  // 	  );
-  //     // fprintf (fout, "%f %e %e\n", myangle, ba.getAvg(), ba.getAvgError());
-  //   }
-  // }  
-  // fclose (fout);
+  //   printf (";\n");
+  // }
   
-  
+
   return 0;
 }
