@@ -3,8 +3,8 @@
 source parameters.sh
 
 nbase=`wc -l base.info | awk '{print $1}'`
-nbaseUse=8
-calAb_command=/home/mi/wanghan/study/noneq.msm/committor/template.alanine//tools/analysis/cal.Ab.noAvg
+nbaseUse=14
+calAb_command=/home/mi/wanghan/study/noneq.msm/first.hitting/template.alanine//tools/analysis/cal.Ab.noAvg
 outfileName=base.new.info
 
 nnotUse=`echo "$nbase - $nbaseUse" | bc`
@@ -17,7 +17,7 @@ if [ ! -f success.dir.name ]; then
 fi
 if [ ! -f calAb.out ] || [ calAb.out -ot success.dir.name ]; then
     echo "# calculating the matrix A and rsh b"
-    $calAb_command -n 100 --target-indicate $fht_coreset_target --input-coreset $fht_coreset_data &> calAb.out
+    $calAb_command -n 100 --max-hitting $fht_stop_time --target-indicate $fht_coreset_target --input-coreset $fht_coreset_data &> calAb.out
     echo "# done"
 fi
 
