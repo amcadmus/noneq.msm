@@ -83,10 +83,15 @@ deposite (const double & psi,
   int ix = (psi - x0) / hx;
   int iv = (phi - v0) / hv;
   if ((ix < 0 || ix >= int(nx)) || (iv < 0 || iv >= int(nv))){
-    cerr << "wrong angle!!" << endl;
-    return;
+    // cerr << "wrong angle!!" << endl;
+    // printf ("\npsi: %f phi %f ix %d iv %d\n", psi, phi, ix, iv);
+    // return;
+    if (ix < 0) ix += nx;
+    else if (ix >= int(nx)) ix -= nx;
+    if (iv < 0) iv += nv;
+    else if (iv >= int(nv)) iv -= nv;   
   }
-  else {
+  // else {
     nframe += 1.;
     backup_unbacked_count += 1.;
     values[ix][iv] += valuepp * scale;
@@ -104,7 +109,7 @@ deposite (const double & psi,
       }
       backup_unbacked_count = 0.;
     }
-  }
+  // }
 }
 
 void Distribution_1d::
