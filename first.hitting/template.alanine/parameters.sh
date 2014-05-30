@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source env.sh
+
 fht_equi_dir=/home/mi/wanghan/study/noneq.msm/first.hitting/equi.systems/inwater.alanine.amber99sb-ildn/nvt.1000ns.confs
 fht_equi_frame_traj=$fht_equi_dir/alphaR.trr
 fht_equi_frame_count=$fht_equi_dir/alphaR.cnt
@@ -24,14 +26,14 @@ fht_meta_low=150		# deg.
 fht_meta_up=-150		# deg.
 
 # parameters for bases 
-fht_base_phi_number=6
+fht_base_phi_number=16
 fht_base_phi_k_file=base.k.phi
-fht_base_psi_number=6
+fht_base_psi_number=16
 fht_base_psi_k_file=base.k.psi
 
 fht_parallel_num_pro=1		# n
 fht_parallel_my_id=0		# n
 
 grompp_command="grompp"
-mdrun_command="mdrun -nt 1"
+mdrun_command="mdrun -nt $nnodes"
 

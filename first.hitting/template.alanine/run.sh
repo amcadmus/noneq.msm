@@ -113,7 +113,9 @@ do
     tmpid=`echo "$count - $fht_parallel_num_pro" | bc -l`
     echo "tmpid is $tmpid"
     if [ $tmpid -lt 0 ]; then
-	cp -a ..//fht.$count ..//backup.fht.$count
+	if [ $count -eq 0 ] ; then
+	    cp -a ..//fht.$count ..//backup.fht.$count
+	fi
     fi
 
     # hit meta, remove useless files
