@@ -3,7 +3,7 @@
 source parameters.sh
 
 nbase=`wc -l base.info | awk '{print $1}'`
-nbaseUse=6
+nbaseUse=8
 calAb_command=/home/mi/wanghan/study/noneq.msm/committor/template.alanine//tools/analysis/cal.Ab.noAvg
 outfileName=base.new.info
 

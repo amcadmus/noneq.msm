@@ -16,7 +16,7 @@
 #include "BlockAverage.h"
 #include "SetTable.h"
 
-#define MaxLineLength 2048
+#define MaxLineLength 65536
 
 namespace po = boost::program_options;
 using namespace std;
@@ -245,34 +245,36 @@ int main(int argc, char * argv[])
   
   printf ("# committor\n");
   printf ("# value   var    error\n");
-  printf ("%e   %e   %e\n", ba.getAvg(), ba.getVar(), ba.getAvgError());
+  printf ("%e   %e   %e\n\n", ba.getAvg(), ba.getVar(), ba.getAvgError());
 
-  printf ("# vect b\n");
+  printf ("b = [ ");
   for (int ii = 0; ii < nBase; ++ii){
     vecb[ii].calculate();
     printf ("%e   ", vecb[ii].getAvg());
   }
-  printf ("\n# vect b error\n");
+  printf ("];\n\nbe = [ ");
   for (int ii = 0; ii < nBase; ++ii){
-    printf ("%e   ", vecb[ii].getAvgError());
+    printf ("%e ", vecb[ii].getAvgError());
   }
-  printf ("\n#;\n");
-  printf ("# mat A\n");
-  for (int ii = 0; ii < nBase; ++ii){
-    for (int jj = 0; jj < nBase; ++jj){
-      matA[ii][jj].calculate();
-      printf ("%e   ", matA[ii][jj].getAvg());
-    }
-    printf (";\n");
-  }
-  printf ("# mat A error\n");
+  printf (" ];\n\n");
+  printf ("a = [ ");
   for (int ii = 0; ii < nBase; ++ii){
     for (int jj = 0; jj < nBase; ++jj){
       matA[ii][jj].calculate();
-      printf ("%e   ", matA[ii][jj].getAvgError());
+      printf ("%e ", matA[ii][jj].getAvg());
     }
-    printf (";\n");
+    if (ii != nBase - 1) printf ("; ");
   }
+  printf (" ];\n\n");
+  printf ("ae = [ ");
+  for (int ii = 0; ii < nBase; ++ii){
+    for (int jj = 0; jj < nBase; ++jj){
+      matA[ii][jj].calculate();
+      printf ("%e ", matA[ii][jj].getAvgError());
+    }
+    if (ii != nBase - 1) printf ("; ");
+  }
+  printf (" ];\n\n");
 
 
   //   double sum_j = 0.;

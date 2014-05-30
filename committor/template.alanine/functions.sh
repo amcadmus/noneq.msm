@@ -54,21 +54,21 @@ function make_tables () {
 
 
 function make_top () {
-    echo '; alanine dipeptide'							>  topol.top
-    echo '#include "amber99sb-ildn.ff/forcefield.itp"'				>> topol.top
-    echo ''									>> topol.top
-    echo '#include "alanine.itp"'						>> topol.top
-    echo ''									>> topol.top
-    echo '#include "amber99sb-ildn.ff/tip3p.itp"'				>> topol.top
-    echo ''									>> topol.top
-    echo '[ system ]'								>> topol.top
-    echo 'Alanine in vacumm'							>> topol.top
-    echo ''									>> topol.top
-    echo '[ molecules ]'							>> topol.top
-    echo 'Protein  1'								>> topol.top
-    echo 'SOL      0'								>> topol.top
-    echo ''									>> topol.top
-    echo ''									>> topol.top
+    # echo '; alanine dipeptide'							>  topol.top
+    # echo '#include "amber99sb-ildn.ff/forcefield.itp"'				>> topol.top
+    # echo ''									>> topol.top
+    # echo '#include "alanine.itp"'						>> topol.top
+    # echo ''									>> topol.top
+    # echo '#include "amber99sb-ildn.ff/tip3p.itp"'				>> topol.top
+    # echo ''									>> topol.top
+    # echo '[ system ]'								>> topol.top
+    # echo 'Alanine in vacumm'							>> topol.top
+    # echo ''									>> topol.top
+    # echo '[ molecules ]'							>> topol.top
+    # echo 'Protein  1'								>> topol.top
+    # echo 'SOL      0'								>> topol.top
+    # echo ''									>> topol.top
+    # echo ''									>> topol.top
     
     echo '[ dihedrals ]'							>> alanine.itp
     echo ''									>> alanine.itp
