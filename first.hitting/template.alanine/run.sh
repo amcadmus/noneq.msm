@@ -49,12 +49,12 @@ do
     fi
     echo "# doing in dir $my_dir"
     mkdir -p $my_dir
-    cp $fht_equi_dir/conf.gro	 $my_dir
-    cp $fht_equi_dir/grompp.mdp	 $my_dir
-    cp $fht_equi_dir/angle.ndx	 $my_dir
-    cp $fht_equi_dir/alanine.itp $my_dir
-    cp $cwd/$fht_base_phi_k_file $my_dir
-    cp $cwd/$fht_base_psi_k_file $my_dir
+    cp -L $fht_equi_dir/conf.gro	 $my_dir
+    cp -L $fht_equi_dir/grompp.mdp	 $my_dir
+    cp -L $fht_equi_dir/angle.ndx	 $my_dir
+    cp -L $fht_equi_dir/alanine.itp	 $my_dir
+    cp -L $cwd/$fht_base_phi_k_file	 $my_dir
+    cp -L $cwd/$fht_base_psi_k_file	 $my_dir
 #    cp $fht_equi_dir/topol.top	$my_dir
     cp $fht_coreset_data $my_dir/coreset.dat
     cd $my_dir
