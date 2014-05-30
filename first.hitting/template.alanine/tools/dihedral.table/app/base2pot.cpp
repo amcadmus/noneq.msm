@@ -62,7 +62,8 @@ int main(int argc, char * argv[])
   char valueline [MaxLineLength];
   while (fpname.getline(valueline, MaxLineLength)){
     if (valueline[0] == '#') continue;
-    if (nuse != 0 && ++count > nuse) break;
+    ++count;
+    if (nuse != 0 && count > nuse) break;
     cout << "# process " << count << "th line: " << valueline << endl;
     vector<string > words;
     StringOperation::split (string(valueline), words);
