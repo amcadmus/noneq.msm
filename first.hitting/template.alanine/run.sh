@@ -49,18 +49,18 @@ do
     fi
     echo "# doing in dir $my_dir"
     mkdir -p $my_dir
-    cp -L $fht_equi_dir/conf.gro	 $my_dir
+    ln -s $fht_equi_dir/conf.gro	 $my_dir
     cp -L $fht_equi_dir/grompp.mdp	 $my_dir
-    cp -L $fht_equi_dir/angle.ndx	 $my_dir
+    ln -s $fht_equi_dir/angle.ndx	 $my_dir
     cp -L $fht_equi_dir/alanine.itp	 $my_dir
-    cp -L $cwd/$fht_base_phi_k_file	 $my_dir
-    cp -L $cwd/$fht_base_psi_k_file	 $my_dir
-    cp -L $fht_equi_dir/topol.top	 $my_dir
-    cp $fht_coreset_data $my_dir/coreset.dat
+    ln -s $cwd/$fht_base_phi_k_file	 $my_dir
+    ln -s $cwd/$fht_base_psi_k_file	 $my_dir
+    ln -s $fht_equi_dir/topol.top	 $my_dir
+    ln -s $fht_coreset_data $my_dir/coreset.dat
     cd $my_dir
     make_top
 #    make_tables
-    test -f $cwd/table_d0.xvg && cp $cwd/table_d*xvg .
+    test -f $cwd/table_d0.xvg && ln -s $cwd/table_d*xvg .
     set_parameters_fht grompp.mdp
 
     nframe_equi=`cat $fht_equi_frame_count`
